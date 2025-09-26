@@ -1,2 +1,2 @@
 # Arkanoid
-ok anh côn
+Arkanoid là game bắn súng đỉnh cow trên con bò
