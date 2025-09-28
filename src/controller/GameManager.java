@@ -36,7 +36,7 @@ public class GameManager {
 
     private void initializeGame() {
         paddle = new Paddle(350, 550, 100, 20, 5);
-        ball = new Ball(395, 530, 10, 10, 1.5, 1, -1);
+        ball = new Ball(395, 530, 10, 10, 2, 1, -1);
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         score = 0;

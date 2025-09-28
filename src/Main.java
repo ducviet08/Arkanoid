@@ -41,16 +41,21 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        //Cửa sổ chính của canvas
         primaryStage.setTitle("Arkanoid Clone (JavaFX)");
         primaryStage.setResizable(false);
 
+        //Mặt phẳng canvas
         Canvas gameCanvas = new Canvas(WIDTH, HEIGHT);
+        //đối tượng để vẽ
         GraphicsContext gc = gameCanvas.getGraphicsContext2D();
 
         renderer = new Renderer(gc);
         gameManager = new GameManager(renderer);
 
+        //thành phần giao diện bên trong
         Pane root = new Pane(gameCanvas);
+        //bối cảnh chính cảu game
         Scene scene = new Scene(root, WIDTH, HEIGHT);
         scene.setFill(Color.BLACK);
 
@@ -69,9 +74,11 @@ public class Main extends Application {
             }
         });
 
+        //hiển thị cửa sổ
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        //bắt đầu game
         gameManager.startGame();
 
         // Vòng lặp game sử dụng AnimationTimer
@@ -112,6 +119,7 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+        //gọi javaFX để runtime
         launch(args);
     }
 }
