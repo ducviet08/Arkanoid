@@ -130,80 +130,15 @@ public class GameManager {
 
 
     private void checkCollisions() {
-        if (ball.getX() <= 0 || ball.getX() + ball.getWidth() >= 800) {
-            ball.setDirectionX(-ball.getDirectionX());
-        }
-        if (ball.getY() <= 0) {
-            ball.setDirectionY(-ball.getDirectionY());
-        }
-        if (ball.getY() + ball.getHeight() >= 600) {
-            lives--;
-            System.out.println("Ball fell! Lives remaining: " + lives);
-            ball.setX(395);
-            ball.setY(530);
-            ball.setDirectionY(-1);
-            ball.setDirectionX(1);
-            paddle.setX(350);
-            if (lives <= 0) {
-                gameOver();
-            }
-        }
-
-        if (ball.checkCollision(paddle)) {
-            ball.bounceOff(paddle);
-        }
-
-        Iterator<Brick> brickIterator = bricks.iterator();
-        while (brickIterator.hasNext()) {
-            Brick brick = brickIterator.next();
-            if (ball.checkCollision(brick)) {
-                ball.bounceOff(brick);
-                brick.takeHit();
-                if (brick.isDestroyed()) {
-                    System.out.println(brick.getType() + " Brick destroyed!");
-                    score += 10;
-                    brickIterator.remove();
-                    if (Math.random() < 0.2) {
-                        PowerUp newPowerUp;
-                        if (Math.random() < 0.5) {
-                            newPowerUp = new ExpandPaddlePowerUp(brick.getX(), brick.getY(), 20, 20, 5000);
-                        } else {
-                            // Cần đảm bảo FastBallPowerUp có tham chiếu đến ball
-                            newPowerUp = new FastBallPowerUp(brick.getX(), brick.getY(), 20, 20, 7000, ball);
-                        }
-                        powerUps.add(newPowerUp);
-                    }
-                }
-            }
-        }
     }
 
     public void gameOver() {
-        gameState = GameState.GAME_OVER;
-        System.out.println("GAME OVER! Final Score: " + score);
     }
 
     public void levelComplete() {
-        gameState = GameState.LEVEL_COMPLETE;
-        System.out.println("LEVEL COMPLETE! Score: " + score);
     }
 
     public void renderAll() {
-        // Render logic đã được chuyển sang Renderer.draw()
-        // Các lời gọi .render() trong các đối tượng model chỉ dùng để debug console
-        paddle.render();
-        ball.render();
-
-        for (Brick brick : bricks) {
-            brick.render();
-        }
-
-        for (PowerUp powerUp : powerUps) {
-            powerUp.render();
-        }
-
-        System.out.println("Score: " + score + ", Lives: " + lives + ", GameState: " + gameState);
-        renderer.drawScoreAndLives(score, lives);
     }
     public GameState getGameState() {
         return gameState;
