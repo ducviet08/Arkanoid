@@ -23,14 +23,6 @@ public class Paddle extends MovableObject {
 
     @Override
     public void update() {
-        super.update();
-        // Giới hạn Paddle trong các cạnh màn hình (800 là WIDTH của game)
-        if (x < 0) {
-            x = 0;
-        }
-        if (x + width > 800) {
-            x = 800 - width;
-        }
     }
 
     public void applyPowerUp(PowerUp powerUp) {

@@ -30,19 +30,7 @@ public class Renderer {
         this.gc = gc;
     }
 
-    /**
-     * Cập nhật danh sách các đối tượng cần vẽ và thông tin điểm số/mạng.
-     * Sau đó yêu cầu vẽ lại trên GraphicsContext.
-     *
-     * @param objects Danh sách các GameObject cần vẽ.
-     * @param score   Điểm số hiện tại.
-     * @param lives   Số mạng hiện tại.
-     */
     public void draw(List<GameObject> objects, int score, int lives) {
-        this.gameObjectsToRender = objects;
-        this.score = score;
-        this.lives = lives;
-        renderAll();
     }
 
     /**
