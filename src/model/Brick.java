@@ -1,7 +1,7 @@
 // Arkanoid/model/Brick.java
-package Arkanoid.model;
+package model;
 
-public abstract class Brick extends model.GameObject {
+public abstract class Brick extends GameObject {
     protected int health;
     protected String type; // "Normal", "Strong"
 
