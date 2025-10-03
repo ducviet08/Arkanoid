@@ -34,6 +34,9 @@ public class Main extends Application {
 
     private Renderer renderer;
 
+    @Override
+    public void start(Stage primaryStage) {}
+
     public static void main(String[] args) {
         //gọi javaFX để runtime
         launch(args);

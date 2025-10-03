@@ -1,6 +1,6 @@
 // Arkanoid/view/Renderer.java
 
-package view;
+package Arkanoid.view;
 
 import model.GameObject;
 import model.Ball;

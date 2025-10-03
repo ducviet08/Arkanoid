@@ -2,8 +2,8 @@
 
 package controller;
 
-import model.*;
-import view.Renderer;
+import Arkanoid.model.*;
+import Arkanoid.view.Renderer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
