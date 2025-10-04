@@ -12,6 +12,12 @@ import model.FastBallPowerUp;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.ArrayList;

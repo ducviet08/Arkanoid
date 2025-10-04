@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 public class StartScreen {
 
-    public void show(Stage stage) {
+    public Scene getScene(Stage stage) {
         // Tạo Image từ file ảnh
         Image img = new Image(getClass().getResource("BG.jpg").toExternalForm());
         // nhớ đúng đường dẫn file ảnh nhé
@@ -34,7 +34,7 @@ public class StartScreen {
 
         Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
-        stage.setTitle("Background with Image");
         stage.show();
+        return scene;
     }
 }
