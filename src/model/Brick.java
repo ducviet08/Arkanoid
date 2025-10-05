@@ -6,6 +6,9 @@ public abstract class Brick extends GameObject {
     protected String type; // "Normal", "Strong"
 
     public Brick(double x, double y, double width, double height, int health, String type) {
+        super(x, y, width, height);
+        this.health = health;
+        this.type = type;
     }
 
     public int getHealth() {
