@@ -1,8 +1,9 @@
 // Arkanoid/Main.java
 package Arkanoid;
 
+
 import controller.GameManager;
-import view.Renderer;
+import Arkanoid.view.Renderer;
 import model.GameObject;
 import model.Ball;
 import model.Paddle;
@@ -11,6 +12,7 @@ import model.StrongBrick;
 import model.ExpandPaddlePowerUp;
 import model.FastBallPowerUp;
 
+import Arkanoid.view.StartScreen;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -35,7 +37,13 @@ public class Main extends Application {
     private Renderer renderer;
 
     @Override
-    public void start(Stage primaryStage) {}
+    public void start(Stage primaryStage) {
+        StartScreen startScreen = new StartScreen();
+        Scene scene = startScreen.getScene(primaryStage);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
 
     public static void main(String[] args) {
         //gọi javaFX để runtime
