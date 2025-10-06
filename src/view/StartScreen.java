@@ -1,9 +1,11 @@
 package Arkanoid.view;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -12,8 +14,6 @@ public class StartScreen {
     public Scene getScene(Stage stage) {
         // Tạo Image từ file ảnh
         Image img = new Image(getClass().getResource("BG.jpg").toExternalForm());
-        // nhớ đúng đường dẫn file ảnh nhé
-        // Tạo BackgroundImage từ img
         BackgroundImage bg = new BackgroundImage(
                 img,
                 BackgroundRepeat.NO_REPEAT,
@@ -21,30 +21,43 @@ public class StartScreen {
                 BackgroundPosition.CENTER,
                 new BackgroundSize(100, 100, true, true, true, false)
         );
-        Button StartGame = new Button("Start Game");
-        StartGame.setPrefSize(200, 60);
-        StartGame.setLayoutX(300);
-        StartGame.setLayoutY(50);
 
-        Button exit = new Button("exit");
-        exit.setLayoutX(300);
-        exit.setLayoutY(300);
+        // Nút Start
+        Button StartGame = new Button("Tap SPACE to start the game...");
+        StartGame.setStyle("-fx-font-size: 25; -fx-text-fill: gray; -fx-background-color: transparent;");
+        StartGame.setLayoutX(200);
+        StartGame.setLayoutY(450);
 
-        // Gắn background vào Pane
+        // Nút Exit
+        Button exit = new Button("Exit");
+        exit.setStyle("-fx-background-color: transparent;");
+
+
+        // Pane gốc
         Pane root = new Pane();
         root.setBackground(new Background(bg));
-        root.getChildren().addAll(StartGame,exit);
+        root.getChildren().addAll(StartGame, exit);
 
+        // Action cho nút Start
         StartGame.setOnAction(e -> {
-            MenuScreen menuScreen = new MenuScreen();
-            stage.setScene(menuScreen.getScene(stage));
+            Round round = new Round();
+            stage.setScene(round.getScene(stage));
         });
+
+        // Action cho nút Exit
         exit.setOnAction(e -> {
-            stage.close();
+            Platform.exit(); // thoát hẳn JavaFX
         });
 
         Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+        // Nhấn ESC = Exit
+        scene.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                exit.fire();
+            }
+        });
+
         stage.setScene(scene);
         stage.show();
         return scene;

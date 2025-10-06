@@ -1,19 +1,18 @@
 package Arkanoid.view;
 
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.geometry.Pos;
+import javafx.application.Platform;
 
-public class EndScreen {
+public class PauseScreen {
     public Scene getScene(Stage stage) {
+        // Tạo Image từ file ảnh
         Image img = new Image(getClass().getResource("BG.jpg").toExternalForm());
-        // nhớ đúng đường dẫn file ảnh nhé
-
-        // Tạo BackgroundImage từ img
         BackgroundImage bg = new BackgroundImage(
                 img,
                 BackgroundRepeat.NO_REPEAT,
@@ -21,32 +20,34 @@ public class EndScreen {
                 BackgroundPosition.CENTER,
                 new BackgroundSize(100, 100, true, true, true, false)
         );
-        Button Restart = new Button("Restart");
-        Restart.setStyle("-fx-font-size: 25; -fx-text-fill: gray; -fx-background-color: transparent;");
-        Restart.setLayoutX(330);
-        Restart.setLayoutY(350);
+        Button remuse = new Button("Remuse");
+        remuse.setStyle("-fx-font-size: 25; -fx-text-fill: gray; -fx-background-color: transparent;");
+        remuse.setLayoutX(330);
+        remuse.setLayoutY(350);
+
+        remuse.setOnAction(e -> {
+            Round round = new Round();
+            stage.setScene(round.getScene(stage));
+        });
+
         Button exit = new Button("Exit");
         exit.setStyle("-fx-font-size: 25; -fx-text-fill: gray; -fx-background-color: transparent;");
         exit.setLayoutX(350);
         exit.setLayoutY(450);
-
-        Restart.setOnAction(e -> {
-            StartScreen start = new StartScreen();
-            stage.setScene(start.getScene(stage));
-        });
 
         exit.setOnAction(e -> {
             stage.close();
         });
 
         Pane root = new Pane();
-        root.getChildren().addAll(Restart, exit);
         root.setBackground(new Background(bg));
-
-
+        root.getChildren().addAll(remuse, exit);
         Scene scene = new Scene(root, 800, 600);
-        stage.setScene(scene);
-        stage.show();
+        scene.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.SPACE) {
+                remuse.fire();
+            }
+        });
         return scene;
     }
 }
