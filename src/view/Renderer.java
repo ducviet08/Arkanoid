@@ -46,7 +46,7 @@ public class Renderer {
     }
 
     /**
-     * Thực hiện vẽ tất cả các đối tượng lên GraphicsContext.
+     * Thực hiện vẽ tất cả các đối tượng lên GraphicsContext
      */
     private void renderAll() {
         // Xóa toàn bộ Canvas trước khi vẽ lại
