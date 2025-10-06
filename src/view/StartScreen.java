@@ -21,18 +21,30 @@ public class StartScreen {
                 BackgroundPosition.CENTER,
                 new BackgroundSize(100, 100, true, true, true, false)
         );
-        Button button = new Button("Start Game");
-        button.setStyle("-fx-font-size: 30px;");
-        button.setPrefSize(200, 60);
-        button.setLayoutX(300);
-        button.setLayoutY(50);
+        Button StartGame = new Button("Start Game");
+        StartGame.setPrefSize(200, 60);
+        StartGame.setLayoutX(300);
+        StartGame.setLayoutY(50);
+
+        Button exit = new Button("exit");
+        exit.setLayoutX(300);
+        exit.setLayoutY(300);
 
         // Gắn background vào Pane
         Pane root = new Pane();
         root.setBackground(new Background(bg));
-        root.getChildren().add(button);
+        root.getChildren().addAll(StartGame,exit);
+
+        StartGame.setOnAction(e -> {
+            MenuScreen menuScreen = new MenuScreen();
+            stage.setScene(menuScreen.getScene(stage));
+        });
+        exit.setOnAction(e -> {
+            stage.close();
+        });
 
         Scene scene = new Scene(root, 800, 600);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
         return scene;

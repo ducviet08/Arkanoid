@@ -89,7 +89,7 @@ public class Main extends Application {
         StartScreen startScreen = new StartScreen();
         Scene scene = startScreen.getScene(primaryStage);
         primaryStage.setScene(scene);
-        primaryStage.show();
+        primaryStage.show();//hiển thị màn hình startscreen
     }
 
 
