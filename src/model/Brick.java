@@ -4,13 +4,16 @@ package model;
 public abstract class Brick extends GameObject {
     protected int health;
     protected String type; // "Normal", "Strong"
+    protected boolean destroyable;
 
-    public Brick(double x, double y, double width, double height, int health, String type) {
+    public Brick(double x, double y, double width, double height, int health, String type, boolean destroyable) {
         super(x, y, width, height);
         this.health = health;
         this.type = type;
+        this.destroyable = destroyable;
     }
 
+    /** getter function. */
     public int getHealth() {
         return health;
     }
@@ -20,6 +23,7 @@ public abstract class Brick extends GameObject {
     }
 
     public void takeHit() {
+        if (!destroyable) return;
         health--;
         System.out.println(type + " Brick hit! Health: " + health);
     }
