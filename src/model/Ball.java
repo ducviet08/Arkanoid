@@ -2,11 +2,18 @@
 package model;
 
 public class Ball extends MovableObject {
-
+    private double originalSpeed;
+    private double originalHeight;
+    private double originalWidth;
     private final double MAX_ANGLE = Math.toRadians(75);
 
     public Ball(double x, double y, double width, double height, double speed, double directionX, double directionY) {
         super(x, y, width, height, speed);
+
+        originalSpeed = speed;
+        originalHeight = height;
+        originalWidth = width;
+
         this.directionX = directionX;
         this.directionY = directionY;
     }
@@ -16,6 +23,18 @@ public class Ball extends MovableObject {
         super.update();
         // Giới hạn bóng trong các cạnh màn hình
         // Xảy ra ở GameManager, nhưng có thể thêm logic ở đây nếu muốn Ball tự quản lý biên
+    }
+
+    public double getOriginalSpeed() {
+        return originalSpeed;
+    }
+
+    public double getOriginalHeight() {
+        return originalHeight;
+    }
+
+    public double getOriginalWidth() {
+        return originalWidth;
     }
 
     public void bounceOff(GameObject obj) {

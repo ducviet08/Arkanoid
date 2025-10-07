@@ -22,6 +22,10 @@ public class Paddle extends MovableObject {
         this.directionX = 0;
     }
 
+    public double getOriginalWidth() {
+        return originalWidth;
+    }
+
     @Override
     public void update() {
         super.update();

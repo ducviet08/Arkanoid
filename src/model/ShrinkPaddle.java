@@ -11,13 +11,13 @@ public class ShrinkPaddle extends PowerUp {
 
     @Override
     public void applyEffect(Paddle paddle, Ball ball) {
-        ball.setSpeed(ball.getSpeed() * BUFF_SPEED_OF_BALL);
-        paddle.setWidth(paddle.getWidth() - SHRINK_AMOUNT);
+        ball.setSpeed(ball.getOriginalSpeed() * BUFF_SPEED_OF_BALL);
+        paddle.setWidth(paddle.getOriginalWidth() - SHRINK_AMOUNT);
     }
 
     @Override
     public void removeEffect(Paddle paddle, Ball ball) {
-        ball.setSpeed(ball.getSpeed() / BUFF_SPEED_OF_BALL);
-        paddle.setWidth(paddle.getWidth() - SHRINK_AMOUNT);
+        ball.setSpeed(ball.getOriginalSpeed());
+        paddle.setWidth(paddle.getOriginalWidth());
     }
 }
