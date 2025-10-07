@@ -40,10 +40,14 @@ public class GameManager {
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         score = 0;
-        lives = 0;
+        lives = 3;
         gameState = GameState.START;
         lastPowerUpTime = 0;
         activePowerUp = null;
+        for (int i = 0; i < 5; i++) {
+            bricks.add(new NormalBrick(100 + i * 80, 50, 70, 20));
+            bricks.add(new StrongBrick(100 + i * 80, 80, 70, 20));
+        }
     }
 
     public void startGame() {
@@ -117,9 +121,9 @@ public class GameManager {
         if (ball.getY() <= 0) {
             ball.setDirectionY(-ball.getDirectionY());
         }
-        if (ball.getY() + ball.getHeight() >= 800) {
+        if (ball.getY() + ball.getHeight() >= 600) {
             lives--;
-            if (lives == 0) {
+            if (lives <= 0) {
                 gameOver();
             }
             ball.setX(395);
@@ -133,7 +137,7 @@ public class GameManager {
             ball.bounceOff(paddle);
         }
         Iterator<Brick> brickIterator = bricks.iterator();
-        if (brickIterator.hasNext()) {
+        while (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
             if (ball.checkCollision(brick)) {
                 ball.bounceOff(brick);
