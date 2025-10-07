@@ -6,7 +6,7 @@ public abstract class PowerUp extends MovableObject {
     protected static final double FALL_SPEED = 2;
 
     public PowerUp(double x, double y, double width, double height, double speed, long duration) {
-        super(x, y, width, height, speed);
+        super(x, y, width, height, FALL_SPEED);
         this.directionY = 1; // PowerUp luôn rơi xuống
         this.duration = duration;
     }

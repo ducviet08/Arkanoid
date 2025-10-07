@@ -6,7 +6,7 @@ public class SlowBall extends PowerUp {
 
     private Ball gameBall; // Tham chiếu đến quả bóng chính của game
 
-    public SlowBall(double x, double y, double width, double height, double speed, long duration) {
+    public SlowBall(double x, double y, double width, double height, long duration) {
         super(x, y, width, height, FALL_SPEED, duration);
     }
 
