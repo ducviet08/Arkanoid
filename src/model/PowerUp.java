@@ -15,8 +15,9 @@ public abstract class PowerUp extends MovableObject {
         return duration;
     }
 
-    public abstract void applyEffect(Paddle paddle, Ball ball);
-    public abstract void removeEffect(Paddle paddle, Ball ball);
+    public abstract void applyEffect(Paddle paddle);
+
+    public abstract void removeEffect(Paddle paddle);
 
 
     @Override

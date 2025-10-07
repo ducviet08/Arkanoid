@@ -35,14 +35,14 @@ public class GameManager {
     }
 
     private void initializeGame() {
-        paddle =new Paddle(350,550,100,20,5);
-        ball = new Ball(395,530,10,10,2,1,-1);
+        paddle = new Paddle(350, 550, 100, 20, 5);
+        ball = new Ball(395, 530, 10, 10, 2, 1, -1);
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         score = 0;
         lives = 0;
         gameState = GameState.START;
-        lastPowerUpTime =0;
+        lastPowerUpTime = 0;
         activePowerUp = null;
     }
 
@@ -52,14 +52,14 @@ public class GameManager {
     }
 
     public void updateGame() {
-        if(gameState != GameState.PLAYING) {
+        if (gameState != GameState.PLAYING) {
             return;
         }
         paddle.update();
         ball.update();
 
-        if(activePowerUp != null) {
-            if(System.currentTimeMillis() - lastPowerUpTime > activePowerUp.getDuration()) {
+        if (activePowerUp != null) {
+            if (System.currentTimeMillis() - lastPowerUpTime > activePowerUp.getDuration()) {
                 activePowerUp.removeEffect(paddle);
                 activePowerUp = null;
             }
@@ -68,24 +68,23 @@ public class GameManager {
         while (powerUpIterator.hasNext()) {
             PowerUp pu = powerUpIterator.next();
             pu.update();
-            if(pu.getY()>600) {
+            if (pu.getY() > 600) {
                 powerUpIterator.remove();
-            }
-            else if(paddle.checkCollision(pu)) {
+            } else if (paddle.checkCollision(pu)) {
                 paddle.applyPowerUp(pu);
-                if(pu instanceof FastBallPowerUp) {
+                if (pu instanceof FastBallPowerUp) {
                     ((FastBallPowerUp) pu).setGameBall(ball);
                 }
-                activePowerUp=pu;
+                activePowerUp = pu;
                 lastPowerUpTime = System.currentTimeMillis();
                 powerUpIterator.remove();
             }
         }
         checkCollisions();
-        if(lives == 0) {
+        if (lives == 0) {
             gameOver();
         }
-        if(bricks.isEmpty()) {
+        if (bricks.isEmpty()) {
             levelComplete();
         }
     }
@@ -94,10 +93,9 @@ public class GameManager {
      * Xử lý đầu vào từ người chơi (sử dụng KeyCode.ordinal() từ JavaFX).
      */
     public void handleInput(int keyCodeOrdinal) {
-        if(keyCodeOrdinal==KeyCode.LEFT.ordinal()){
+        if (keyCodeOrdinal == KeyCode.LEFT.ordinal()) {
             paddle.moveLeft();
-        }
-        else if(keyCodeOrdinal==KeyCode.RIGHT.ordinal()){
+        } else if (keyCodeOrdinal == KeyCode.RIGHT.ordinal()) {
             paddle.moveRight();
         }
     }
@@ -113,15 +111,15 @@ public class GameManager {
 
 
     private void checkCollisions() {
-        if(ball.getX()<=0||ball.getX()+ball.getWidth()>=800){
+        if (ball.getX() <= 0 || ball.getX() + ball.getWidth() >= 800) {
             ball.setDirectionX(-ball.getDirectionX());
         }
-        if(ball.getY()<=0) {
+        if (ball.getY() <= 0) {
             ball.setDirectionY(-ball.getDirectionY());
         }
-        if(ball.getY()+ball.getHeight()>=800) {
+        if (ball.getY() + ball.getHeight() >= 800) {
             lives--;
-            if(lives==0) {
+            if (lives == 0) {
                 gameOver();
             }
             ball.setX(395);
@@ -131,25 +129,24 @@ public class GameManager {
             paddle.setX(350);
         }
 
-        if(ball.checkCollision(paddle)){
+        if (ball.checkCollision(paddle)) {
             ball.bounceOff(paddle);
         }
         Iterator<Brick> brickIterator = bricks.iterator();
-        if(brickIterator.hasNext()){
+        if (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
-            if(ball.checkCollision(brick)){
+            if (ball.checkCollision(brick)) {
                 ball.bounceOff(brick);
                 brick.takeHit();
-                if(brick.isDestroyed()){
+                if (brick.isDestroyed()) {
                     score++;
                     brickIterator.remove();
-                    if(Math.random()<0.2) {
+                    if (Math.random() < 0.2) {
                         PowerUp newPowerup;
-                        if(Math.random()<0.5) {
-                            newPowerup=new ExpandPaddlePowerUp(brick.getX(),brick.getY(),20,20,5000);
-                        }
-                        else{
-                            newPowerup=new FastBallPowerUp(brick.getX(),brick.getY(),20,20,5000,ball);
+                        if (Math.random() < 0.5) {
+                            newPowerup = new ExpandPaddlePowerUp(brick.getX(), brick.getY(), 20, 20, 5000);
+                        } else {
+                            newPowerup = new FastBallPowerUp(brick.getX(), brick.getY(), 20, 20, 5000, ball);
                         }
                         powerUps.add(newPowerup);
                     }
@@ -170,14 +167,15 @@ public class GameManager {
     public void renderAll() {
         paddle.render();
         ball.render();
-        for(Brick brick : bricks) {
+        for (Brick brick : bricks) {
             brick.render();
         }
-        for(PowerUp powerUp : powerUps) {
+        for (PowerUp powerUp : powerUps) {
             powerUp.render();
         }
         renderer.drawScoreAndLives(score, lives);
     }
+
     public GameState getGameState() {
         return gameState;
     }

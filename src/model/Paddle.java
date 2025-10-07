@@ -26,6 +26,10 @@ public class Paddle extends MovableObject {
         return originalWidth;
     }
 
+    public void applyPowerUp(PowerUp powerUp) {
+        powerUp.applyEffect(this);
+    }
+
     @Override
     public void update() {
         super.update();
