@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Main extends Application {
+public abstract class Main extends Application {
 
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;

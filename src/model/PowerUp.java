@@ -3,6 +3,7 @@ package model;
 
 public abstract class PowerUp extends MovableObject {
     protected long duration; // Thời gian hiệu lực của PowerUp (miligiây)
+    protected static final double FALL_SPEED = 2.0;
 
     public PowerUp(double x, double y, double width, double height, double speed, long duration) {
         super(x, y, width, height, speed);

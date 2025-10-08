@@ -21,8 +21,19 @@ public class Paddle extends MovableObject {
         this.directionX = 0;
     }
 
+    public double getOriginalWidth() {
+        return originalWidth;
+    }
+
     @Override
     public void update() {
+        super.update();
+        if (x < 0) {
+            x = 0;
+        }
+        if (x + width > 800) {
+            x = 800 - width;
+        }
     }
 
     public void applyPowerUp(PowerUp powerUp) {
