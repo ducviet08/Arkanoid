@@ -22,6 +22,15 @@ public abstract class Brick extends GameObject {
         return type;
     }
 
+    public boolean getDestroyable() {
+        return destroyable;
+    }
+
+    // Sets whether this object can be destroyed
+    public void setDestroyable(boolean destroyable) {
+        this.destroyable = destroyable;
+    }
+
     public void takeHit() {
         if (!destroyable) return;
         health--;

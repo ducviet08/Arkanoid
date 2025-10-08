@@ -17,11 +17,15 @@ public class FastBallPowerUp extends PowerUp {
 
     @Override
     public void applyEffect(Paddle paddle) {
-        ball.setSpeed(ball.getOriginalSpeed() * SPEED_MULTIPLIER);
+        if (ball != null) {
+            ball.setSpeed(ball.getOriginalSpeed() * SPEED_MULTIPLIER);
+        }
     }
 
     @Override
     public void removeEffect(Paddle paddle) {
-        ball.setSpeed(ball.getOriginalSpeed());
+        if (ball != null) {
+            ball.setSpeed(ball.getOriginalSpeed());
+        }
     }
 }
