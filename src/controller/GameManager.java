@@ -47,6 +47,8 @@ public class GameManager {
         for (int i = 0; i < 5; i++) {
             bricks.add(new NormalBrick(100 + i * 80, 50, 70, 20));
             bricks.add(new StrongBrick(100 + i * 80, 80, 70, 20));
+            bricks.add(new Steel(100 + i * 80, 110, 70, 20));
+            bricks.add(new InvisibleBrick(100 + i * 80, 140, 70, 20));
         }
     }
 
