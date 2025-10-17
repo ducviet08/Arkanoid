@@ -36,7 +36,7 @@ public class GameManager {
 
     private void initializeGame() {
         paddle = new Paddle(350, 550, 100, 20, 5);
-        ball = new Ball(395, 530, 10, 10, 2, 1, -1);
+        ball = new Ball(395, 530, 10, 10, 4, 1, -1);
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         score = 0;
@@ -44,11 +44,11 @@ public class GameManager {
         gameState = GameState.START;
         lastPowerUpTime = 0;
         activePowerUp = null;
-        for (int i = 0; i < 5; i++) {
-            bricks.add(new NormalBrick(100 + i * 80, 50, 70, 20));
-            bricks.add(new StrongBrick(100 + i * 80, 80, 70, 20));
-            bricks.add(new Steel(100 + i * 80, 110, 70, 20));
-            bricks.add(new InvisibleBrick(100 + i * 80, 140, 70, 20));
+        for (int i = 0; i < 16; i++) {
+            bricks.add(new NormalBrick(i * 50, 50, 50, 30));
+            bricks.add(new StrongBrick(i * 50, 80, 50, 30));
+            // bricks.add(new Steel(i * 50, 110, 50, 30));
+            bricks.add(new InvisibleBrick(i * 50, 140, 50, 30));
         }
     }
 
@@ -151,8 +151,10 @@ public class GameManager {
                         PowerUp newPowerup;
                         if (Math.random() < 0.5) {
                             newPowerup = new ExpandPaddlePowerUp(brick.getX(), brick.getY(), 20, 20, 5000);
-                        } else {
+                        } else if (Math.random() < 0.8) {
                             newPowerup = new FastBallPowerUp(brick.getX(), brick.getY(), 20, 20, 5000, ball);
+                        } else {
+                            newPowerup = new ExtraLifePowerUp(brick.getX(), brick.getY(), 20, 20);
                         }
                         powerUps.add(newPowerup);
                     }

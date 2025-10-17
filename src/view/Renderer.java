@@ -11,6 +11,7 @@ import model.Steel;
 import model.InvisibleBrick;
 import model.ExpandPaddlePowerUp;
 import model.FastBallPowerUp;
+import model.ExtraLifePowerUp;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -102,6 +103,9 @@ public class Renderer {
                 gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
             } else if (obj instanceof FastBallPowerUp) {
                 gc.setFill(Color.CYAN);
+                gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+            } else if (obj instanceof ExtraLifePowerUp) {
+                gc.setFill(Color.PINK);
                 gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
             }
         }
