@@ -21,8 +21,8 @@ import java.util.*;
 
 public class Main extends Application {
 
-    private static final int WIDTH = 800;
-    private static final int HEIGHT = 600;
+    public static final int WIDTH = 800;
+    public static final int HEIGHT = 600;
 
     private Stage primaryStage;
     private Scene menuScene, gameScene, endScene, pauseScene;
