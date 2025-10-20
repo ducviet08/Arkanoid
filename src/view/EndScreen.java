@@ -1,5 +1,5 @@
 // view/EndGameScreen.java
-package Arkanoid.view;
+package view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

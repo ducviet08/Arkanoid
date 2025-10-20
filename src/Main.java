@@ -1,6 +1,9 @@
 package Arkanoid;
 
 import controller.GameManager;
+import view.StartScreen;
+import view.PauseScreen;
+import view.EndScreen;
 import view.Renderer;
 import model.GameObject;
 import javafx.animation.AnimationTimer;
@@ -27,6 +30,9 @@ public class Main extends Application {
     private Stage primaryStage;
     private Scene menuScene, gameScene, endScene, pauseScene;
 
+    private StartScreen startScreen =  new StartScreen();
+    private EndScreen endScreen = new EndScreen();
+    private PauseScreen pauseScreen = new PauseScreen();
     private Renderer renderer;
     private GameManager gameManager;
     private AnimationTimer gameLoop;
@@ -47,18 +53,10 @@ public class Main extends Application {
 
     // ------------------ MENU ------------------
     private void showMenu() {
-        Button startButton = new Button("Start Game");
-        startButton.setOnAction(e -> startGame());
-
-        Button exitButton = new Button("Exit");
-        exitButton.setOnAction(e -> System.exit(0));
-
-        VBox menuLayout = new VBox(20, startButton, exitButton);
-        menuLayout.setAlignment(Pos.CENTER);
-        menuLayout.setStyle("-fx-background-color: black;");
-
-        menuScene = new Scene(menuLayout, WIDTH, HEIGHT);
-        primaryStage.setScene(menuScene);
+        Scene menuSceneFromStartScreen = startScreen.getScene(primaryStage, WIDTH, HEIGHT);
+        startScreen.getStartGameButton().setOnAction(e -> startGame());
+        startScreen.getExitButton().setOnAction(e -> System.exit(0));
+        primaryStage.setScene(menuSceneFromStartScreen);
     }
 
     // ------------------ GAME ------------------
@@ -135,52 +133,41 @@ public class Main extends Application {
     }
 
     private void showPauseScreen() {
-        Label pausedLabel = new Label("⏸ Game Paused");
-        pausedLabel.setStyle("-fx-text-fill: white; -fx-font-size: 24px;");
+        Scene pauseScene = pauseScreen.getScene(primaryStage, WIDTH, HEIGHT);
 
-        Button resumeButton = new Button("Resume");
-        resumeButton.setOnAction(e -> togglePause());
-
-        Button backButton = new Button("Back to Menu");
-        backButton.setOnAction(e -> {
+        pauseScreen.getContinueButton().setOnAction(e -> togglePause());
+        pauseScreen.getExitToMenuButton().setOnAction(e -> {
             gameLoop.stop();
+            isPaused = false; // Đảm bảo trạng thái không bị pause khi về menu
+            currentLevel = 1;
             showMenu();
         });
 
-        VBox pauseLayout = new VBox(15, pausedLabel, resumeButton, backButton);
-        pauseLayout.setAlignment(Pos.CENTER);
-        pauseLayout.setStyle("-fx-background-color: black;");
-
-        pauseScene = new Scene(pauseLayout, WIDTH, HEIGHT);
         primaryStage.setScene(pauseScene);
     }
 
     // ------------------ END GAME ------------------
     private void showEndScreen(int score, boolean win) {
-        Label message = new Label(win ? "🎉 LEVEL COMPLETE!" : "💀 GAME OVER!");
-        message.setStyle("-fx-text-fill: white; -fx-font-size: 24px;");
-        Label scoreLabel = new Label("Your Score: " + score);
-        scoreLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+        endScreen.setMessage(win ? "🎉 LEVEL COMPLETE!" : "💀 GAME OVER!");
+        endScreen.setScore(score);
 
-        Button retryButton = new Button("Retry");
-        retryButton.setOnAction(e -> startGame());
+        Scene endScene = endScreen.getScene(primaryStage, WIDTH, HEIGHT, win);
 
-        Button backToMenu = new Button("Back to Menu");
-        backToMenu.setOnAction(e -> showMenu());
+        endScreen.getRestartButton().setOnAction(e -> {
+            currentLevel = 1;
+            startGame();
+        });
 
-        VBox layout;
+        endScreen.getExitToMenuButton().setOnAction(e -> {
+            currentLevel = 1;
+            showMenu();
+        });
+
+        // Chỉ gắn hành động cho Next Level khi có nút này
         if (win) {
-            Button nextLevelButton = new Button("Next Level");
-            nextLevelButton.setOnAction(e -> startNextLevel());
-            layout = new VBox(15, message, scoreLabel, nextLevelButton, retryButton, backToMenu);
-        } else {
-            layout = new VBox(15, message, scoreLabel, retryButton, backToMenu);
+            endScreen.getNextLevelButton().setOnAction(e -> startNextLevel());
         }
 
-        layout.setAlignment(Pos.CENTER);
-        layout.setStyle("-fx-background-color: black;");
-
-        endScene = new Scene(layout, WIDTH, HEIGHT);
         primaryStage.setScene(endScene);
     }
 
