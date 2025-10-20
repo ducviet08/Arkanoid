@@ -93,6 +93,7 @@ public class Main extends Application {
                 objectsToRender.add(gameManager.getPaddle());
                 objectsToRender.add(gameManager.getBall());
                 objectsToRender.addAll(gameManager.getBricks());
+                objectsToRender.addAll(gameManager.getSteels());
                 objectsToRender.addAll(gameManager.getPowerUps());
 
                 // 3. Yêu cầu Renderer vẽ lại màn hình

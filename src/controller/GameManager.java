@@ -3,8 +3,12 @@
 package controller;
 
 import model.*;
+import model.Steel;
 import view.Renderer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +22,7 @@ public class GameManager {
     private Ball ball;
     private List<Brick> bricks;
     private List<PowerUp> powerUps;
+    private List<Steel> steels;
     private int score;
     private int lives;
     private GameState gameState;
@@ -34,22 +39,60 @@ public class GameManager {
         initializeGame();
     }
 
+    public void loadLevel(String filename) {
+        bricks.clear();
+        try {
+            List<String> lines = Files.readAllLines(Paths.get("src/levels/" + filename));
+            int numRows = lines.size();
+            int numCols = lines.get(0).length();
+
+            double brickWidth = 80;
+            double brickHeight = 25;
+            double gap = 5;
+
+            // Căn giữa map theo chiều ngang
+            double totalWidth = numCols * brickWidth + (numCols - 1) * gap;
+            double marginLeft = (800 - totalWidth) / 2;
+            double marginTop = 50;
+
+            int rowIndex = 0;
+            for (String line : lines) {
+                int colIndex = 0;
+                for (char c : line.toCharArray()) {
+                    double x = marginLeft + colIndex * (brickWidth + gap);
+                    double y = marginTop + rowIndex * (brickHeight + gap);
+
+                    if (c == '1') {
+                        bricks.add(new NormalBrick(x, y, brickWidth, brickHeight));
+                    } else if (c == '2') {
+                        bricks.add(new StrongBrick(x, y, brickWidth, brickHeight));
+                    } else if (c == '4') {
+                        bricks.add(new InvisibleBrick(x, y, brickWidth, brickHeight));
+                    } else if (c == '9') {
+                        steels.add((new Steel(x, y, brickWidth, brickHeight)));
+                    }
+                    colIndex++;
+                }
+                rowIndex++;
+            }
+            System.out.println("✅ Loaded " + filename);
+        } catch (IOException e) {
+            System.out.println("❌ Could not load level: " + filename);
+        }
+    }
+
     private void initializeGame() {
-        paddle = new Paddle(350, 550, 100, 20, 5);
-        ball = new Ball(395, 530, 10, 10, 4, 1, -1);
+        paddle = new Paddle(350, 550, 100, 20, 2);
+        ball = new Ball(395, 530, 10, 10, 2, 1, -1);
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
+        steels = new ArrayList<>();
         score = 0;
         lives = 3;
         gameState = GameState.START;
         lastPowerUpTime = 0;
         activePowerUp = null;
-        for (int i = 0; i < 16; i++) {
-            bricks.add(new NormalBrick(i * 50, 50, 50, 30));
-            bricks.add(new StrongBrick(i * 50, 80, 50, 30));
-            // bricks.add(new Steel(i * 50, 110, 50, 30));
-            bricks.add(new InvisibleBrick(i * 50, 140, 50, 30));
-        }
+        loadLevel("level2.txt");
     }
 
     public void startGame() {
@@ -138,6 +181,15 @@ public class GameManager {
         if (ball.checkCollision(paddle)) {
             ball.bounceOff(paddle);
         }
+
+        Iterator<Steel> steelIterator = steels.iterator();
+        while (steelIterator.hasNext()) {
+            Steel steel = steelIterator.next();
+            if (ball.checkCollision(steel)) {
+                ball.bounceOff(steel);
+            }
+        }
+
         Iterator<Brick> brickIterator = bricks.iterator();
         while (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
@@ -178,6 +230,9 @@ public class GameManager {
         for (Brick brick : bricks) {
             brick.render();
         }
+        for (Steel steel : steels) {
+            steel.render();
+        }
         for (PowerUp powerUp : powerUps) {
             powerUp.render();
         }
@@ -206,6 +261,10 @@ public class GameManager {
 
     public List<PowerUp> getPowerUps() {
         return powerUps;
+    }
+
+    public List<Steel> getSteels() {
+        return steels;
     }
 
     public int getScore() {

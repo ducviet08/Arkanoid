@@ -79,7 +79,7 @@ public class Renderer {
                 gc.setLineWidth(1);
                 gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
             }  else if (obj instanceof Steel) {
-                gc.setFill(Color.GRAY);
+                gc.setFill(Color.RED);
                 gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
                 gc.setStroke(Color.DARKGRAY);
                 gc.setLineWidth(1);

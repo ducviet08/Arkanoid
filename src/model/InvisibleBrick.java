@@ -4,7 +4,7 @@ public class InvisibleBrick extends Brick{
     private boolean visible;
 
     public InvisibleBrick(double x, double y, double width, double height) {
-        super(x, y, width, height, 2, "Invisible", true);
+        super(x, y, width, height, 2, "Invisible");
         this.visible = false;
     }
 
