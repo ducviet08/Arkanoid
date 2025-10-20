@@ -1,7 +1,8 @@
-package Arkanoid.view;
+package view;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Skin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
@@ -30,10 +31,10 @@ public class Menu {
         button3.setLayoutX(500);
         button3.setLayoutY(450);
         //action pick skin
-        button1.setOnAction(e -> {
-            Skin skin = new Skin();
-            stage.setScene(skin.getScene(stage));
-        });
+//        button1.setOnAction(e -> {
+//            Skin skin = new Skin();
+//            stage.setScene(skin.getScene(stage));
+//        });
 
         root.getStyleClass().add("bg-with-border");
         root.getChildren().add(button1);
