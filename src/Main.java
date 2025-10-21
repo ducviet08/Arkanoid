@@ -86,6 +86,8 @@ public class Main extends Application {
         });
 
         primaryStage.setScene(gameScene);
+        gameManager.loadLevel("level" + currentLevel + ".txt");
+        gameManager.enterTheGame();
         gameManager.startGame();
 
 
@@ -176,6 +178,8 @@ public class Main extends Application {
         currentLevel++;
         System.out.println("Starting level " + currentLevel);
         // Ở đây bạn có thể gọi gameManager.loadLevel("level" + currentLevel + ".txt");
+        gameManager.loadLevel("level" + currentLevel + ".txt");
+        gameManager.enterTheGame();
         gameManager.startGame();
         startGame();
 
