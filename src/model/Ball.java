@@ -1,42 +1,32 @@
 // Arkanoid/model/Ball.java
 package model;
 
-import Arkanoid.Main;
-
 public class Ball extends MovableObject {
-    private double originalSpeed;
-    private double originalHeight;
-    private double originalWidth;
+
+    private boolean active;
     private final double MAX_ANGLE = Math.toRadians(75);
-
-    public Ball(double x, double y, double width, double height, double speed, double directionX, double directionY) {
-        super(x, y, width, height, speed);
-
-        originalSpeed = speed;
-        originalHeight = height;
-        originalWidth = width;
-
+    private final double originalSpeed=2.5;
+    public Ball(String imagePath, double x, double y, double width, double height, double speed, double directionX, double directionY) {
+        super(imagePath, x, y, width, height, speed);
         this.directionX = directionX;
         this.directionY = directionY;
+        active = false;
     }
 
     @Override
     public void update() {
-        super.update();
+            super.update();
         // Giới hạn bóng trong các cạnh màn hình
         // Xảy ra ở GameManager, nhưng có thể thêm logic ở đây nếu muốn Ball tự quản lý biên
     }
 
-    public double getOriginalSpeed() {
-        return originalSpeed;
-    }
-
-    public double getOriginalHeight() {
-        return originalHeight;
-    }
-
-    public double getOriginalWidth() {
-        return originalWidth;
+    public void move(Paddle paddle) {
+        if (active) {
+            update();
+        } else {
+            x = paddle.getX() + paddle.getWidth() / 2 - getWidth() / 2;
+            y = paddle.getY() - paddle.getHeight() / 2;
+        }
     }
 
     public void bounceOff(GameObject obj) {
@@ -62,8 +52,8 @@ public class Ball extends MovableObject {
                     }
                 } else { // Va chạm từ phải
                     this.x = obj.getX() + obj.getWidth();
-                    if (this.x + this.width > Main.WIDTH) {
-                        this.x = Main.WIDTH - this.width;
+                    if (this.x + this.width > 800) {
+                        this.x = 800 - this.width;
                         this.directionX = 0;
                         this.directionY = Math.abs(this.directionY);
                     }
@@ -99,6 +89,18 @@ public class Ball extends MovableObject {
         }
     }
 
+    public boolean isActive() {
+        return active;
+    }
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    public double getOriginalSpeed() {
+        return originalSpeed;
+    }
+    public void setOriginalSpeed() {
+        this.speed = originalSpeed;
+    }
     @Override
     public void render() {
         // Logic render đồ họa đã được chuyển sang Renderer.draw()

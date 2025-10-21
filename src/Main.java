@@ -24,15 +24,12 @@ import java.util.*;
 
 public class Main extends Application {
 
-    public static final int WIDTH = 800;
-    public static final int HEIGHT = 600;
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 600;
 
     private Stage primaryStage;
     private Scene menuScene, gameScene, endScene, pauseScene;
 
-    private StartScreen startScreen =  new StartScreen();
-    private EndScreen endScreen = new EndScreen();
-    private PauseScreen pauseScreen = new PauseScreen();
     private Renderer renderer;
     private GameManager gameManager;
     private AnimationTimer gameLoop;
@@ -40,6 +37,10 @@ public class Main extends Application {
 
     private boolean isPaused = false;
     private int currentLevel = 1;
+
+    private StartScreen startScreen=new StartScreen();
+    private EndScreen endScreen=new EndScreen();
+    private PauseScreen pauseScreen=new PauseScreen();
 
     @Override
     public void start(Stage primaryStage) {
@@ -127,9 +128,11 @@ public class Main extends Application {
     private void togglePause() {
         if (isPaused) {
             isPaused = false;
-            primaryStage.setScene(gameScene);
+            primaryStage.setScene(gameScene); // Quay lại scene game
+            gameLoop.start(); // Khởi động lại game loop
         } else {
             isPaused = true;
+            gameLoop.stop(); // Dừng game loop khi pause
             showPauseScreen();
         }
     }

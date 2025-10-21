@@ -57,9 +57,8 @@ public class Renderer {
         for (GameObject obj : gameObjectsToRender) {
             // Đây là một cách đơn giản, trong thực tế bạn có thể cần kiểm tra loại đối tượng
             // để vẽ hình dạng hoặc ảnh tương ứng
-            if (obj instanceof Paddle) {
-                gc.setFill(Color.BLUE);
-                gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+            /*if (obj instanceof Paddle) {
+                gc.drawImage(obj.getImage(),obj.getX(),obj.getY(),obj.getWidth(),obj.getHeight());
             } else if (obj instanceof Ball) {
                 gc.setFill(Color.RED);
                 gc.fillOval(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
@@ -81,7 +80,8 @@ public class Renderer {
             } else if (obj instanceof FastBallPowerUp) {
                 gc.setFill(Color.CYAN);
                 gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-            }
+            }*/
+            gc.drawImage(obj.getImage(),obj.getX(),obj.getY(),obj.getWidth(),obj.getHeight());
         }
 
         // Vẽ điểm số và mạng
