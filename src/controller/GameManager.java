@@ -5,6 +5,9 @@ package controller;
 import model.*;
 import view.Renderer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +28,7 @@ public class GameManager {
     private long lastPowerUpTime;
     private PowerUp activePowerUp;
 
+
     public enum GameState {
         START, PLAYING, PAUSED, GAME_OVER, LEVEL_COMPLETE
     }
@@ -44,11 +48,51 @@ public class GameManager {
         gameState = GameState.START;
         lastPowerUpTime = 0;
         activePowerUp = null;
-        for (int i = 0; i < 5; i++) {
-            bricks.add(new NormalBrick(100 + i * 80, 50, 70, 20));
-            bricks.add(new StrongBrick(100 + i * 80, 80, 70, 20));
+    }
+
+    public void loadLevel(String filename) {
+        bricks.clear();
+        try {
+            List<String> lines = Files.readAllLines(Paths.get("src/levels/" + filename));
+            int numRows = lines.size();
+            int numCols = lines.get(0).length();
+
+            double brickWidth = 80;      // chiều rộng cố định
+            double brickHeight = 25;     // chiều cao
+            double gap = 5;              // khoảng cách giữa các gạch
+
+            // Căn giữa map theo chiều ngang
+            double totalWidth = numCols * brickWidth + (numCols - 1) * gap;
+            double marginLeft = (800 - totalWidth) / 2;
+            double marginTop = 50;       // lề trên
+
+            int rowIndex = 0;
+            for (String line : lines) {
+                int colIndex = 0;
+                for (char c : line.toCharArray()) {
+                    double x = marginLeft + colIndex * (brickWidth + gap);
+                    double y = marginTop + rowIndex * (brickHeight + gap);
+                    if(c == '1'){
+                        bricks.add(new NormalBrick( x, y, brickWidth, brickHeight));
+                    } else if(c == '2'){
+                        bricks.add(new StrongBrick( x, y, brickWidth, brickHeight));
+                    }
+                    colIndex++;
+                }
+                rowIndex++;
+            }
+            System.out.println("✅ Loaded " + filename);
+        } catch (IOException e) {
+            System.out.println("❌ Could not load level: " + filename);
         }
     }
+
+
+    public void enterTheGame() {
+        System.out.println("Game Started!");
+        gameState = GameState.START;
+    }
+
 
     public void startGame() {
         System.out.println("Game Started!");
