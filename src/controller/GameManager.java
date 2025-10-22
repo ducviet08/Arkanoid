@@ -73,9 +73,9 @@ public class GameManager {
                     double x = marginLeft + colIndex * (brickWidth + gap);
                     double y = marginTop + rowIndex * (brickHeight + gap);
                     if(c == '1'){
-                        bricks.add(new NormalBrick( x, y, brickWidth, brickHeight));
+                        bricks.add(new NormalBrick(x, y, brickWidth, brickHeight));
                     } else if(c == '2'){
-                        bricks.add(new StrongBrick( x, y, brickWidth, brickHeight));
+                        bricks.add(new StrongBrick(x, y, brickWidth, brickHeight));
                     }
                     colIndex++;
                 }
@@ -254,5 +254,29 @@ public class GameManager {
 
     public int getLives() {
         return lives;
+    }
+
+    public PowerUp getActivePowerUp() {
+        return activePowerUp;
+    }
+
+    public long getLastPowerUpTime() {
+        return lastPowerUpTime;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public void setLastPowerUpTime(long lastPowerUpTime) {
+        this.lastPowerUpTime = lastPowerUpTime;
+    }
+
+    public void setActivePowerUp(PowerUp activePowerUp) {
+        this.activePowerUp = activePowerUp;
     }
 }
