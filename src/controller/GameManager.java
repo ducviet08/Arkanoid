@@ -67,7 +67,7 @@ public class GameManager {
                     } else if (c == '2') {
                         bricks.add(new StrongBrick(x, y, brickWidth, brickHeight));
                     } else if (c == '4') {
-                        bricks.add(new InvisibleBrick(x, y, brickWidth, brickHeight));
+                        bricks.add(new GlassBrick(x, y, brickWidth, brickHeight));
                     } else if (c == '9') {
                         steels.add((new Steel(x, y, brickWidth, brickHeight)));
                     }

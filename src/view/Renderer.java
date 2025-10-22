@@ -8,7 +8,7 @@ import model.Paddle;
 import model.NormalBrick;
 import model.StrongBrick;
 import model.Steel;
-import model.InvisibleBrick;
+import model.GlassBrick;
 import model.ExpandPaddlePowerUp;
 import model.FastBallPowerUp;
 import model.ExtraLifePowerUp;
@@ -84,21 +84,13 @@ public class Renderer {
                 gc.setStroke(Color.DARKGRAY);
                 gc.setLineWidth(1);
                 gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-            } else if (obj instanceof InvisibleBrick) {
-                if (!((InvisibleBrick) obj).getVisible()) {
-                    gc.setFill(Color.color(0, 0, 0, 0));
-                    gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-                    gc.setStroke(Color.color(0, 0, 0, 0));
-                    gc.setLineWidth(1);
-                    gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-                } else {
-                    gc.setFill(Color.WHITE);
-                    gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-                    gc.setStroke(Color.DARKGRAY);
-                    gc.setLineWidth(1);
-                    gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-                }
-            }else if (obj instanceof ExpandPaddlePowerUp) {
+            } else if (obj instanceof GlassBrick) {
+                gc.setFill(Color.WHITE);
+                gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+                gc.setStroke(Color.DARKGRAY);
+                gc.setLineWidth(1);
+                gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+            } else if (obj instanceof ExpandPaddlePowerUp) {
                 gc.setFill(Color.YELLOW);
                 gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
             } else if (obj instanceof FastBallPowerUp) {
