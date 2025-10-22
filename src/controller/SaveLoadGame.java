@@ -150,7 +150,7 @@ public class SaveLoadGame {
                             } else if (parts[i].equals("StickyPaddle")) {
                                 gameManager.getPowerUps().add(new StickyPaddle(x, y, 20, 20, 5000));
                             } else if (parts[i].equals("FastBallPowerUp")) {
-                                gameManager.getPowerUps().add(new FastBallPowerUp(brick.getX(), brick.getY(), 20, 20, 5000, gameManager.getBall()));
+                                gameManager.getPowerUps().add(new FastBallPowerUp(x, y, 20, 20, 5000, gameManager.getBall()));
                             } else if (parts[i].equals("SlowBall")) {
 
                             } else if (parts[i].equals("TinyBall")) {
