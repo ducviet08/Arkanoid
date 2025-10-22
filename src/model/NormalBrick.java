@@ -7,6 +7,10 @@ public class NormalBrick extends Brick {
         super(x, y, width, height, 1, "Normal"); // Gạch thường có 1 máu
     }
 
+    public NormalBrick(double x, double y, double width, double height, int health) {
+        super(x, y, width, height, health, "Normal"); // Gạch thường có 1 máu
+    }
+
     // Có thể override takeHit() hoặc update() nếu có hành vi đặc biệt
     // Ví dụ: nổ tung, thay đổi màu sắc khi bị đánh
 }

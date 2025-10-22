@@ -1,9 +1,10 @@
 package controller;
 
 import java.io.*;
-import data.*;
 import java.util.List;
+import java.lang.String;
 import model.*;
+import controller.*;
 
 public class SaveLoadGame {
 
@@ -11,9 +12,9 @@ public class SaveLoadGame {
      * This method is used when player wants to save the game and play it next time.
      * @param gameManager
      */
-    public static void saveGame(GameManager gameManager) {
+    public static void saveGame(controller.GameManager gameManager) {
         try {
-            BufferedWriter writer = new BufferedWriter((new FileWriter("save.txt")));
+            BufferedWriter writer = new BufferedWriter((new FileWriter("src/data/save.txt")));
             writer.write("paddle " + gameManager.getPaddle().getX());
             writer.newLine();
 
@@ -32,31 +33,37 @@ public class SaveLoadGame {
             writer.write("lastPowerUpTime " + gameManager.getLastPowerUpTime());
             writer.newLine();
 
-            writer.write("activePowerUp " + gameManager.getActivePowerUp());
+            String activePowerUpType = "null";
+            if (gameManager.getActivePowerUp() != null) {
+                activePowerUpType = gameManager.getActivePowerUp().getClass().getSimpleName();
+            }
+            writer.write("activePowerUp " + activePowerUpType);
             writer.newLine();
 
             writer.write("bricks");
             List<Brick> saveBricks = gameManager.getBricks();
             for (Brick brick : saveBricks) {
                 if (brick instanceof NormalBrick) {
-                    writer.write(" NormalBrick " + brick.getX() + " " + brick.getY());
+                    writer.write(" NormalBrick " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
                 } else if (brick instanceof StrongBrick) {
-                    writer.write(" StrongBrick " + brick.getX() + " " + brick.getY());
+                    writer.write(" StrongBrick " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
                 }
             }
             writer.newLine();
 
-            writer.write("steels");
-            List<Steel> steels = gameManager.getSteels();
-            for (Steel steel : steels) {
-                writer.write(" " + steel.getX() + " " + steel.getY());
-            }
-            writer.newLine();
+//            writer.write("steels");
+//            List<Steel> steels = gameManager.getSteels();
+//            for (Steel steel : steels) {
+//                writer.write(" " + steel.getX() + " " + steel.getY());
+//            }
+//            writer.newLine();
 
             writer.write("powerUps");
             List<PowerUp> powerUps = gameManager.getPowerUps();
             for (PowerUp powerUp : powerUps) {
-                if (powerUp instanceof ExpandPaddlePowerUp) {
+                String type = powerUp.getClass().getSimpleName();
+                writer.write(" " + type + " " + powerUp.getX() + " " + powerUp.getY());
+                /*if (powerUp instanceof ExpandPaddlePowerUp) {
                     writer.write(" ExpandPaddlePowerUp " + powerUp.getX() + " " + powerUp.getY());
                 } else if (powerUp instanceof ShrinkPaddle) {
                     writer.write(" ShrinkPaddle " + powerUp.getX() + " " + powerUp.getY());
@@ -68,7 +75,7 @@ public class SaveLoadGame {
                     writer.write(" SlowBall " + powerUp.getX() + " " + powerUp.getY());
                 } else if (powerUp instanceof TinyBall) {
                     writer.write(" TinyBall " + powerUp.getX() + " " + powerUp.getY());
-                }
+                }*/
             }
             writer.newLine();
 
@@ -85,7 +92,7 @@ public class SaveLoadGame {
      */
     public static void loadGame(GameManager gameManager) {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("save.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("src/data/save.txt"));
             String line;
 
             while ((line = reader.readLine()) != null) {
@@ -95,7 +102,7 @@ public class SaveLoadGame {
                 switch (key) {
                     case "paddle":
                         gameManager.getPaddle().setX(Double.parseDouble(parts[1]));
-                        gameManager.getPaddle().sety(550);
+                        gameManager.getPaddle().setY(550);
                         break;
                     case "ball":
                         gameManager.getBall().setX(Double.parseDouble(parts[1]));
@@ -113,30 +120,31 @@ public class SaveLoadGame {
                         gameManager.setLastPowerUpTime(Long.parseLong(parts[1]));
                         break;
                     case "activePowerUp":
-                        gameManager.setActivePowerUp(PowerUp.valueOf(parts[1]));
+                        // gameManager.setActivePowerUp(PowerUp.valueOf(parts[1]));
                         break;
                     case "bricks":
                         int n = parts.length;
-                        for (int i = 1; i < n; i += 3) {
+                        for (int i = 1; i < n; i += 4) {
                             double x = Double.parseDouble(parts[i + 1]);
                             double y = Double.parseDouble(parts[i + 2]);
+                            int health = Integer.parseInt(parts[i + 3]);
 
                             if (parts[i].equals("NormalBrick")) {
-                                gameManager.getBrisks().add(new NormalBrick(x, y, 80, 25));
+                                gameManager.getBricks().add(new NormalBrick(x, y, 80, 25, health));
                             } else if (parts[i].equals("StrongBrick")) {
-                                gameManager.getBrisks().add(new StrongBrick(x, y, 80, 25));
+                                gameManager.getBricks().add(new StrongBrick(x, y, 80, 25, health));
                             }
                         }
                         break;
-                    case "steels":
-                        int n1 = parts.length;
-                        for (int i = 1; i < n1; i += 2) {
-                            double x = Double.parseDouble(parts[i]);
-                            double y = Double.parseDouble(parts[i + 1]);
-
-                            gameManager.getSteels().add(new Steel(x, y, 80, 25));
-                        }
-                        break;
+//                    case "steels":
+//                        int n1 = parts.length;
+//                        for (int i = 1; i < n1; i += 2) {
+//                            double x = Double.parseDouble(parts[i]);
+//                            double y = Double.parseDouble(parts[i + 1]);
+//
+//                            gameManager.getSteels().add(new Steel(x, y, 80, 25));
+//                        }
+//                        break;
                     case "powerUps":
                         int n2 = parts.length;
                         for (int i = 1; i < n2; i+=3) {
@@ -147,9 +155,7 @@ public class SaveLoadGame {
                                 gameManager.getPowerUps().add(new ExpandPaddlePowerUp(x, y, 20, 20, 5000));
                             } else if (parts[i].equals("ShrinkPaddle")) {
                                 gameManager.getPowerUps().add(new ShrinkPaddle(x, y, 20, 20, 5000));
-                            } else if (parts[i].equals("StickyPaddle")) {
-                                gameManager.getPowerUps().add(new StickyPaddle(x, y, 20, 20, 5000));
-                            } else if (parts[i].equals("FastBallPowerUp")) {
+                            }  else if (parts[i].equals("FastBallPowerUp")) {
                                 gameManager.getPowerUps().add(new FastBallPowerUp(x, y, 20, 20, 5000, gameManager.getBall()));
                             } else if (parts[i].equals("SlowBall")) {
 
@@ -160,7 +166,7 @@ public class SaveLoadGame {
                         break;
                 }
             }
-            gameManager.setGameState(GameState.PLAYING);
+            gameManager.setGameState(GameManager.GameState.PLAYING);
             reader.close();
         } catch (Exception e) {
             System.out.println("Can't read the save.txt file!");
