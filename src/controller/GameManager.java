@@ -208,9 +208,9 @@ public class GameManager {
                         if (Math.random() < 0.5) {
                             newPowerup = new ExpandPaddlePowerUp(brick.getX(), brick.getY(), 20, 20, 5000);
                         } else if (Math.random() < 0.8) {
-                            newPowerup = new ExtraLifePowerUp(brick.getX(), brick.getY(), 20, 20);
-                        } else {
                             newPowerup = new FastBallPowerUp(brick.getX(), brick.getY(), 20, 20, 5000, ball);
+                        } else {
+                            newPowerup = new ExtraLifePowerUp(brick.getX(), brick.getY(), 20, 20);
                         }
                         powerUps.add(newPowerup);
                     }
@@ -277,5 +277,40 @@ public class GameManager {
 
     public int getLives() {
         return lives;
+    }
+
+    public PowerUp getActivePowerUp() {
+        return activePowerUp;
+    }
+
+    public long getLastPowerUpTime() {
+        return lastPowerUpTime;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public void setLastPowerUpTime(long lastPowerUpTime) {
+        this.lastPowerUpTime = lastPowerUpTime;
+    }
+
+    public void setActivePowerUp(PowerUp activePowerUp) {
+        this.activePowerUp = activePowerUp;
+    }
+
+    public void setActivePowerUpByName(String className) {
+        if (className.equals("ExpandPaddlePowerUp")) {
+            this.activePowerUp = new ExpandPaddlePowerUp(paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
+            activePowerUp.applyEffect(paddle);
+        } else if (className.equals("FastBallPowerUp")) {
+            this.activePowerUp = new FastBallPowerUp(ball.getX(), ball.getY(), 0, 0, 5000, ball);
+            activePowerUp.applyEffect(paddle);
+        }
+        // Thêm các power-up khác...
     }
 }
