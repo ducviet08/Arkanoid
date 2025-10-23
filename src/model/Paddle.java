@@ -2,11 +2,12 @@
 package model;
 
 public class Paddle extends MovableObject {
-    private double originalWidth; // Kích thước ban đầu của paddle
+    public static final double ORIGINAL_WIDTH = 100;// Kích thước ban đầu của paddle
+    public static final double ORIGINAL_HEIGHT = 20;
+    public static final double ORIGINAL_SPEED = 5;
 
-    public Paddle(String imagePath, double x, double y, double width, double height, double speed) {
-        super(imagePath, x, y, width, height, speed);
-        this.originalWidth = width;
+    public Paddle(String imagePath, double x, double y) {
+        super(imagePath, x, y, ORIGINAL_WIDTH, ORIGINAL_HEIGHT, ORIGINAL_SPEED);
     }
 
     public void moveLeft() {
@@ -38,11 +39,7 @@ public class Paddle extends MovableObject {
     }
 
     public void resetWidth() {
-        this.width = originalWidth;
-    }
-
-    public double getOriginalWidth() {
-        return originalWidth;
+        super.setWidth(ORIGINAL_WIDTH);
     }
 
     @Override
