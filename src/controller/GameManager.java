@@ -38,8 +38,8 @@ public class GameManager {
     }
 
     private void initializeGame() {
-        paddle = new Paddle("/images/paddle2.png",350, 550, 100, 20, 5);
-        ball = new Ball("/images/normal_ball.png",395, 530, 15, 15, 2.5, 1, -1);
+        paddle = new Paddle("/images/paddle2.png",350, 550);
+        ball = new Ball("/images/normal_ball.png",395, 530, 1, -1);
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         score = 0;
