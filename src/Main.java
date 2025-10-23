@@ -2,6 +2,7 @@
 package Arkanoid;
 
 import controller.GameManager;
+import controller.SaveLoadGame;
 import view.Renderer;
 import model.GameObject;
 import model.Ball;
@@ -74,6 +75,23 @@ public class Main extends Application {
             }
         });
 
+        // Xử lý sự kiện đóng cửa sổ - Lưu game trước khi thoát
+        primaryStage.setOnCloseRequest(event -> {
+            // Dừng game loop trước
+            if (gameLoopTimer != null) {
+                gameLoopTimer.stop();
+            }
+
+            // Lưu game
+            try {
+                SaveLoadGame.saveGame(gameManager);
+                System.out.println("Game đã được lưu vào save.txt");
+            } catch (Exception e) {
+                System.err.println("Lỗi khi lưu game: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+
         //hiển thị cửa sổ
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -103,6 +121,15 @@ public class Main extends Application {
                 if (gameManager.getGameState() == GameManager.GameState.GAME_OVER ||
                         gameManager.getGameState() == GameManager.GameState.LEVEL_COMPLETE) {
                     this.stop();
+
+                    // Lưu game trước khi hiển thị thông báo kết thúc
+                    try {
+                        SaveLoadGame.saveGame(gameManager);
+                        System.out.println("Game đã được lưu vào save.txt");
+                    } catch (Exception e) {
+                        System.err.println("Lỗi khi lưu game: " + e.getMessage());
+                    }
+
                     String message = (gameManager.getGameState() == GameManager.GameState.GAME_OVER) ?
                             "GAME OVER! Score: " + gameManager.getScore() :
                             "LEVEL COMPLETE! Score: " + gameManager.getScore();
@@ -110,7 +137,7 @@ public class Main extends Application {
                     javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
                     alert.setTitle("Game Ended");
                     alert.setHeaderText(null);
-                    alert.setContentText(message);
+                    alert.setContentText(message + "\n\nGame đã được lưu!");
                     alert.showAndWait();
                     primaryStage.close();
                 }
