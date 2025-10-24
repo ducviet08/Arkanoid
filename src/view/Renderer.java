@@ -9,6 +9,7 @@ import model.NormalBrick;
 import model.StrongBrick;
 import model.Steel;
 import model.GlassBrick;
+import model.ExplosiveBrick;
 import model.ExpandPaddlePowerUp;
 import model.FastBallPowerUp;
 import model.ExtraLifePowerUp;
@@ -79,6 +80,12 @@ public class Renderer {
                 gc.setLineWidth(1);
                 gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
             }  else if (obj instanceof Steel) {
+                gc.setFill(Color.RED);
+                gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+                gc.setStroke(Color.DARKGRAY);
+                gc.setLineWidth(1);
+                gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+            } else if (obj instanceof ExplosiveBrick) {
                 gc.setFill(Color.RED);
                 gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
                 gc.setStroke(Color.DARKGRAY);

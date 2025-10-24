@@ -1,0 +1,9 @@
+paddle 495.0
+ball 625.0839162313762 157.18568586815965 0.109261284489726 0.994013064155424
+score 65
+lives 3
+lastPowerUpTime 7281
+activePowerUp null
+bricks StrongBrick 487.5 50.0 1 NormalBrick 657.5 50.0 1 StrongBrick 572.5 80.0 1 StrongBrick 657.5 110.0 2 StrongBrick 62.5 140.0 2 StrongBrick 232.5 200.0 1
+steels
+powerUps

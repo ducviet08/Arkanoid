@@ -209,7 +209,7 @@ public class GameManager {
                     // brickIterator.remove();
                     if (brick instanceof ExplosiveBrick) {
                         ExplosiveBrick temp = (ExplosiveBrick) brick;
-                        temp.explode(bricks);
+                        temp.explode(bricks, brick);
                     }
                     if (Math.random() < 0.2) {
                         PowerUp newPowerup;

@@ -98,7 +98,8 @@ public class Main extends Application {
 
         //bắt đầu game
         try {
-            SaveLoadGame.loadGame(gameManager);
+            gameManager.startGame();
+            //SaveLoadGame.loadGame(gameManager);
             System.out.println("Đã load game từ save.txt thành công!");
         } catch (Exception e) {
             System.err.println("Lỗi khi load game từ save.txt: " + e.getMessage());

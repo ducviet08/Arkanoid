@@ -62,8 +62,8 @@ public class Ball extends MovableObject {
                     }
                 } else { // Va chạm từ phải
                     this.x = obj.getX() + obj.getWidth();
-                    if (this.x + this.width > Main.WIDTH) {
-                        this.x = Main.WIDTH - this.width;
+                    if (this.x + this.width > 800) {
+                        this.x = 800 - this.width;
                         this.directionX = 0;
                         this.directionY = Math.abs(this.directionY);
                     }
