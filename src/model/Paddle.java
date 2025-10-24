@@ -4,8 +4,8 @@ package model;
 public class Paddle extends MovableObject {
     private double originalWidth; // Kích thước ban đầu của paddle
 
-    public Paddle(double x, double y, double width, double height, double speed) {
-        super(x, y, width, height, speed);
+    public Paddle(String imagePath, double x, double y, double width, double height, double speed) {
+        super(imagePath, x, y, width, height, speed);
         this.originalWidth = width;
     }
 
@@ -21,13 +21,10 @@ public class Paddle extends MovableObject {
         this.directionX = 0;
     }
 
-    public double getOriginalWidth() {
-        return originalWidth;
-    }
-
     @Override
     public void update() {
         super.update();
+        // Giới hạn Paddle trong các cạnh màn hình (800 là WIDTH của game)
         if (x < 0) {
             x = 0;
         }
@@ -42,6 +39,10 @@ public class Paddle extends MovableObject {
 
     public void resetWidth() {
         this.width = originalWidth;
+    }
+
+    public double getOriginalWidth() {
+        return originalWidth;
     }
 
     @Override

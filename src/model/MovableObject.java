@@ -1,12 +1,14 @@
 // Arkanoid/model/MovableObject.java
 package model;
 
+import java.awt.*;
+
 public abstract class MovableObject extends GameObject {
     protected double speed;
     protected double directionX, directionY; // -1 for left/up, 1 for right/down, 0 for stationary
 
-    public MovableObject(double x, double y, double width, double height, double speed) {
-        super(x, y, width, height);
+    public MovableObject(String imagePath, double x, double y, double width, double height, double speed) {
+        super(imagePath, x, y, width, height);
         this.speed = speed;
         this.directionX = 0;
         this.directionY = 0;

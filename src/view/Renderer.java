@@ -7,11 +7,8 @@ import model.Ball;
 import model.Paddle;
 import model.NormalBrick;
 import model.StrongBrick;
-import model.Steel;
-import model.GlassBrick;
 import model.ExpandPaddlePowerUp;
 import model.FastBallPowerUp;
-import model.ExtraLifePowerUp;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -60,9 +57,8 @@ public class Renderer {
         for (GameObject obj : gameObjectsToRender) {
             // Đây là một cách đơn giản, trong thực tế bạn có thể cần kiểm tra loại đối tượng
             // để vẽ hình dạng hoặc ảnh tương ứng
-            if (obj instanceof Paddle) {
-                gc.setFill(Color.BLUE);
-                gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+            /*if (obj instanceof Paddle) {
+                gc.drawImage(obj.getImage(),obj.getX(),obj.getY(),obj.getWidth(),obj.getHeight());
             } else if (obj instanceof Ball) {
                 gc.setFill(Color.RED);
                 gc.fillOval(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
@@ -78,28 +74,14 @@ public class Renderer {
                 gc.setStroke(Color.DARKGRAY);
                 gc.setLineWidth(1);
                 gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-            }  else if (obj instanceof Steel) {
-                gc.setFill(Color.RED);
-                gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-                gc.setStroke(Color.DARKGRAY);
-                gc.setLineWidth(1);
-                gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-            } else if (obj instanceof GlassBrick) {
-                gc.setFill(Color.WHITE);
-                gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-                gc.setStroke(Color.DARKGRAY);
-                gc.setLineWidth(1);
-                gc.strokeRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
             } else if (obj instanceof ExpandPaddlePowerUp) {
                 gc.setFill(Color.YELLOW);
                 gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
             } else if (obj instanceof FastBallPowerUp) {
                 gc.setFill(Color.CYAN);
                 gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-            } else if (obj instanceof ExtraLifePowerUp) {
-                gc.setFill(Color.PINK);
-                gc.fillRect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-            }
+            }*/
+            gc.drawImage(obj.getImage(),obj.getX(),obj.getY(),obj.getWidth(),obj.getHeight());
         }
 
         // Vẽ điểm số và mạng

@@ -3,8 +3,8 @@ package model;
 
 public class NormalBrick extends Brick {
 
-    public NormalBrick(double x, double y, double width, double height) {
-        super(x, y, width, height, 1, "Normal"); // Gạch thường có 1 máu
+    public NormalBrick(String imagePath, double x, double y, double width, double height) {
+        super(imagePath, x, y, width, height, 1, "Normal"); // Gạch thường có 1 máu
     }
 
     public NormalBrick(double x, double y, double width, double height, int health) {

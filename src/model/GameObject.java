@@ -1,14 +1,19 @@
 // Arkanoid/model/GameObject.java
 package model;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public abstract class GameObject {
     protected double x, y, width, height;
+    protected Image image;
 
-    public GameObject(double x, double y, double width, double height) {
+
+    public GameObject( String imagePath, double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        image = new Image(imagePath);
     }
 
     public double getX() {
@@ -41,6 +46,14 @@ public abstract class GameObject {
 
     public void setHeight(double height) {
         this.height = height;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(String path) {
+        image = new Image(path);
     }
 
     // Phương thức kiểm tra va chạm giữa hai GameObject
