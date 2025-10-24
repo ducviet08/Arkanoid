@@ -2,7 +2,9 @@
 
 package controller;
 
+import com.sun.prism.shader.DrawEllipse_ImagePattern_Loader;
 import model.*;
+import model.ExplosiveBrick;
 import model.Steel;
 import view.Renderer;
 
@@ -66,6 +68,8 @@ public class GameManager {
                         bricks.add(new NormalBrick(x, y, brickWidth, brickHeight));
                     } else if (c == '2') {
                         bricks.add(new StrongBrick(x, y, brickWidth, brickHeight));
+                    } else if (c == '3') {
+                        bricks.add(new ExplosiveBrick(x, y, brickWidth, brickHeight));
                     } else if (c == '4') {
                         bricks.add(new GlassBrick(x, y, brickWidth, brickHeight));
                     } else if (c == '9') {
@@ -202,7 +206,11 @@ public class GameManager {
                 brick.takeHit();
                 if (brick.isDestroyed()) {
                     score++;
-                    brickIterator.remove();
+                    // brickIterator.remove();
+                    if (brick instanceof ExplosiveBrick) {
+                        ExplosiveBrick temp = (ExplosiveBrick) brick;
+                        temp.explode(bricks);
+                    }
                     if (Math.random() < 0.2) {
                         PowerUp newPowerup;
                         if (Math.random() < 0.5) {
@@ -218,6 +226,14 @@ public class GameManager {
             }
 
         }
+
+        for (int i = 0; i < bricks.size(); i++) {
+            if (bricks.get(i).isDestroyed()) {
+                score++;
+                bricks.remove(i);
+            }
+        }
+
     }
 
     public void gameOver() {

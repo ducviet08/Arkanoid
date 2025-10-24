@@ -1,10 +1,12 @@
 package model;
 
+import java.util.List;
+
 public class ExplosiveBrick extends Brick {
     private int explosionDamage;
 
     public ExplosiveBrick(double x, double y, double width, double height) {
-        super(x, y, width, heighd, 1, "Explosive");
+        super(x, y, width, height, 1, "Explosive");
         this.explosionDamage = 1;
     }
 
@@ -13,27 +15,21 @@ public class ExplosiveBrick extends Brick {
         this.explosionDamage = 1;
     }
 
-    @Override
-    public void takeHit() {
-        health--;
-
+    public int getExplosionDamage() {
+        return explosionDamage;
     }
 
-    public void explode(List<Brick> allBricks) {
-        System.out.println("EXPLOSION at (" + (int)x + ", " + (int)y + ")!");
-
-        for (Brick brick : allBricks) {
+    public void explode(List<Brick> bricks) {
+        for (Brick brick : bricks) {
             if (brick == this || brick.isDestroyed()) {
                 continue;
             }
 
             if (isNeighbor(brick)) {
-                // Gây sát thương
                 for (int i = 0; i < explosionDamage; i++) {
                     brick.takeHit();
                 }
-                System.out.println("  → Damaged " + brick.getType() +
-                        " brick at (" + (int)brick.getX() + ", " + (int)brick.getY() + ")");
+                System.out.println(brick.getType() + " Brick hit! Health: " + brick.getHealth());
             }
         }
     }
@@ -42,7 +38,7 @@ public class ExplosiveBrick extends Brick {
      * Kiểm tra brick có phải là hàng xóm (xung quanh) không.
      */
     private boolean isNeighbor(Brick other) {
-        double gap = 5; // Khoảng cách giữa các brick
+        double gap = 5;
         double brickWidth = 80;
         double brickHeight = 25;
 
@@ -50,28 +46,26 @@ public class ExplosiveBrick extends Brick {
         double dx = Math.abs(this.x - other.getX());
         double dy = Math.abs(this.y - other.getY());
 
-        // Khoảng cách ngang giữa 2 brick liền kề = width + gap
-        double horizontalDistance = brickWidth + gap; // 80 + 5 = 85
+        // Khoảng cách ngang giữa 2 brick liền kề
+        double horizontalDistance = brickWidth + gap;
 
-        // Khoảng cách dọc giữa 2 brick liền kề = height + gap
-        double verticalDistance = brickHeight + gap; // 25 + 5 = 30
+        // Khoảng cách dọc giữa 2 brick liền kề
+        double verticalDistance = brickHeight + gap;
 
-        // Cho phép sai số nhỏ (0.1) để tránh lỗi floating point
+        // Sai số rất nhỏ
         double tolerance = 0.1;
 
-        // Kiểm tra các trường hợp:
-
-        // 1. Brick cùng hàng (trái hoặc phải)
-        if (Math.abs(dy) < tolerance && Math.abs(dx - horizontalDistance) < tolerance) {
+        // trái hoặc phải
+        if (dy < tolerance && Math.abs(dx - horizontalDistance) < tolerance) {
             return true;
         }
 
-        // 2. Brick cùng cột (trên hoặc dưới)
-        if (Math.abs(dx) < tolerance && Math.abs(dy - verticalDistance) < tolerance) {
+        // trên hoặc dưới
+        if (dx < tolerance && Math.abs(dy - verticalDistance) < tolerance) {
             return true;
         }
 
-        // 3. Brick ở góc chéo (4 góc)
+        // 4 góc
         if (Math.abs(dx - horizontalDistance) < tolerance &&
                 Math.abs(dy - verticalDistance) < tolerance) {
             return true;
