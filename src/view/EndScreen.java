@@ -63,13 +63,15 @@ public class EndScreen {
 
     public Scene getScene(Stage stage, int width, int height, boolean win) {
         // --- Thêm phần code tải và thiết lập BackgroundImage ---
-        Image img = new Image(getClass().getResource("/images/BG.jpg").toExternalForm());
-        BackgroundImage bg = new BackgroundImage(
-                img,
+        Image bgImage = new Image("/images/background.png");
+        BackgroundImage backgroundImage = new BackgroundImage(
+                bgImage,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
-                new BackgroundSize(100, 100, true, true, true, false)
+                new BackgroundSize(
+                        BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, false
+                )
         );
         // --------------------------------------------------------
 
@@ -86,7 +88,7 @@ public class EndScreen {
         buttonLayout.setMaxHeight(Region.USE_PREF_SIZE);
 
         StackPane root = new StackPane(buttonLayout);
-        root.setBackground(new Background(bg)); // Gắn background vào root StackPane
+        root.setBackground(new Background(backgroundImage)); // Gắn background vào root StackPane
         // root.setStyle("-fx-background-color: black;"); // Bỏ dòng này để ảnh nền hiển thị
 
         Scene scene = new Scene(root, width, height);
