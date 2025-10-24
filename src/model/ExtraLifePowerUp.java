@@ -3,8 +3,8 @@ package model;
 
 public class ExtraLifePowerUp extends PowerUp {
 
-    public ExtraLifePowerUp(double x, double y, double width, double height) {
-        super(x, y, width, height, FALL_SPEED, 0);
+    public ExtraLifePowerUp(String filePath,double x, double y, double width, double height) {
+        super(filePath,x, y, width, height, FALL_SPEED, 0);
     }
 
     @Override

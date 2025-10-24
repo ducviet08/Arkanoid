@@ -107,7 +107,7 @@ public class GameManager {
             return;
         }
         paddle.update();
-        ball.update();
+        ball.move(paddle);
 
         if (activePowerUp != null) {
             if (System.currentTimeMillis() - lastPowerUpTime > activePowerUp.getDuration()) {
@@ -148,6 +148,9 @@ public class GameManager {
      * Xử lý đầu vào từ người chơi (sử dụng KeyCode.ordinal() từ JavaFX).
      */
     public void handleInput(int keyCodeOrdinal) {
+        if (!ball.isActive() && keyCodeOrdinal == KeyCode.ENTER.ordinal()) {
+            ball.setActive(true);
+        }
         if (keyCodeOrdinal == KeyCode.LEFT.ordinal()) {
             paddle.moveLeft();
         } else if (keyCodeOrdinal == KeyCode.RIGHT.ordinal()) {
@@ -212,11 +215,11 @@ public class GameManager {
                     if (Math.random() < 0.2) {
                         PowerUp newPowerup;
                         if (Math.random() < 0.5) {
-                            newPowerup = new ExpandPaddlePowerUp(brick.getX(), brick.getY(), 20, 20, 5000);
+                            newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000);
                         } else if (Math.random() < 0.8) {
-                            newPowerup = new FastBallPowerUp(brick.getX(), brick.getY(), 20, 20, 5000, ball);
+                            newPowerup = new FastBallPowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000, ball);
                         } else {
-                            newPowerup = new ExtraLifePowerUp(brick.getX(), brick.getY(), 20, 20);
+                            newPowerup = new ExtraLifePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20);
                         }
                         powerUps.add(newPowerup);
                     }
@@ -319,10 +322,10 @@ public class GameManager {
 
     public void setActivePowerUpByName(String className) {
         if (className.equals("ExpandPaddlePowerUp")) {
-            this.activePowerUp = new ExpandPaddlePowerUp(paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
+            this.activePowerUp = new ExpandPaddlePowerUp("/images/slow_ball.png",paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
             activePowerUp.applyEffect(paddle);
         } else if (className.equals("FastBallPowerUp")) {
-            this.activePowerUp = new FastBallPowerUp(ball.getX(), ball.getY(), 0, 0, 5000, ball);
+            this.activePowerUp = new FastBallPowerUp("/images/slow_ball.png",ball.getX(), ball.getY(), 0, 0, 5000, ball);
             activePowerUp.applyEffect(paddle);
         }
         // Thêm các power-up khác...

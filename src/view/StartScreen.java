@@ -1,5 +1,6 @@
 package view;
 
+import Arkanoid.Main;
 import javafx.geometry.Insets; // Import lớp Insets
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,7 +17,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class StartScreen {
-    public Scene getScene(Stage stage) {
+    public Scene getScene(Stage stage,Main main) {
         Pane root = new Pane();
         Image bgImage = new Image("/images/background.png");
         BackgroundImage backgroundImage = new BackgroundImage(
@@ -43,7 +44,7 @@ public class StartScreen {
         //action cho pressStart
         PressStart.setOnAction(e -> {
             Menu menu = new Menu();
-            stage.setScene(menu.getScene(stage));
+            stage.setScene(menu.getScene(stage,main));
         });
 
         root.setBackground(new Background(backgroundImage));

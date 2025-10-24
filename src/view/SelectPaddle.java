@@ -1,8 +1,12 @@
 package view;
 
+import Arkanoid.Main;
+import controller.GameManager;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,7 +29,7 @@ public class SelectPaddle {
         return btn;
     }
 
-    public Scene getScene(Stage stage) {
+    public Scene getScene(Stage stage,Main main) {
         Pane root = new Pane();
 
         Image bgImage = new Image("/images/background.png");
@@ -40,10 +44,12 @@ public class SelectPaddle {
         );
         // round là cái bàm hình gameplay nhá
 
-        Button paddle1 = createpaddleButton("/images/paddle1.png", 350, 350);
+        Button paddle1 = createpaddleButton("/images/paddle.png", 350, 350);
+        EventHandler<ActionEvent> handler = event -> {
+           main.startGame();
+        };
 
-
-
+        paddle1.setOnAction(handler);
         Scene scene = new Scene(root, 800, 600);
         root.setBackground(new Background(backgroundImage));
         root.getChildren().addAll(paddle1);

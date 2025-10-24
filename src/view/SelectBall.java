@@ -1,5 +1,6 @@
 package view;
 
+import Arkanoid.Main;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -40,7 +41,7 @@ public class SelectBall {
         return btn;
     }
 
-    public Scene getScene(Stage stage) {
+    public Scene getScene(Stage stage,Main main) {
 
         //button ball
         Button ball1 = createBallButton("/images/ball1.png", 200, 300);
@@ -49,7 +50,7 @@ public class SelectBall {
 
         EventHandler<ActionEvent> handler = event -> {
             SelectPaddle select_paddle = new SelectPaddle();
-            stage.setScene(select_paddle.getScene(stage));
+            stage.setScene(select_paddle.getScene(stage,main));
         };
         ball1.setOnAction(handler);
         ball2.setOnAction(handler);
