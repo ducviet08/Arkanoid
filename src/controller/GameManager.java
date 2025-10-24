@@ -248,6 +248,7 @@ public class GameManager {
             }
         }
 
+        // Xóa những gạch bị hết máu.
         for (int i = 0; i < bricks.size(); i++) {
             if (bricks.get(i).isDestroyed()) {
                 score++;
