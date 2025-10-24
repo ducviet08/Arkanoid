@@ -39,6 +39,18 @@ public class GameManager {
         initializeGame();
     }
 
+    private void initializeGame() {
+        paddle = new Paddle("/images/paddle2.png",350, 550);
+        ball = new Ball("/images/normal_ball.png",395, 530, 1, -1);
+        bricks = new ArrayList<>();
+        powerUps = new ArrayList<>();
+        score = 0;
+        lives = 3;
+        gameState = GameState.START;
+        lastPowerUpTime = 0;
+        activePowerUp = null;
+
+    }
     public void loadLevel(String filename) {
         bricks.clear();
         try {

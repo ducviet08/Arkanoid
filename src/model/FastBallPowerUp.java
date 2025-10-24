@@ -20,7 +20,7 @@ public class FastBallPowerUp extends PowerUp {
         System.out.println("FastBall PowerUp activated!");
         gameBall.setImage("/images/fast_ball.png");
         if (gameBall != null) {
-            gameBall.setSpeed(gameBall.getOriginalSpeed() * SPEED_MULTIPLIER);
+            gameBall.setSpeed(Ball.ORIGINAL_SPEED * SPEED_MULTIPLIER);
         }
     }
 

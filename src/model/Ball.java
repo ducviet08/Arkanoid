@@ -2,12 +2,14 @@
 package model;
 
 public class Ball extends MovableObject {
-
     private boolean active;
     private final double MAX_ANGLE = Math.toRadians(75);
-    private final double originalSpeed=2.5;
-    public Ball(String imagePath, double x, double y, double width, double height, double speed, double directionX, double directionY) {
-        super(imagePath, x, y, width, height, speed);
+    public static final double ORIGINAL_SPEED = 3.5;
+    public static final double ORIGINAL_HEIGHT = 15;
+    public static final double ORIGINAL_WIDTH = 15;
+
+    public Ball(String imagePath, double x, double y, double directionX, double directionY) {
+        super(imagePath, x, y, ORIGINAL_WIDTH, ORIGINAL_HEIGHT, ORIGINAL_SPEED);
         this.directionX = directionX;
         this.directionY = directionY;
         active = false;
@@ -90,18 +92,25 @@ public class Ball extends MovableObject {
         }
     }
 
+    public void setOriginalSpeed() {
+        super.setSpeed(ORIGINAL_SPEED);
+    }
+
+    public void setOriginalHeight() {
+        super.setHeight(ORIGINAL_HEIGHT);
+    }
+
+    public void setOriginalWidth() {
+        super.setWidth(ORIGINAL_WIDTH);
+    }
+
     public boolean isActive() {
         return active;
     }
     public void setActive(boolean active) {
         this.active = active;
     }
-    public double getOriginalSpeed() {
-        return originalSpeed;
-    }
-    public void setOriginalSpeed() {
-        this.speed = originalSpeed;
-    }
+
     @Override
     public void render() {
         // Logic render đồ họa đã được chuyển sang Renderer.draw()
