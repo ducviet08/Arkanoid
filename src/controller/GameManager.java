@@ -229,6 +229,9 @@ public class GameManager {
                 if (brick.isDestroyed()) {
                     System.out.println(brick.getType() + " Brick destroyed!");
                     score += 10;
+                    if (brick instanceof ExplosiveBrick) {
+                        brick.explode(bricks, brick);
+                    }
                     // brickIterator.remove();
                     if (Math.random() < 0.2) {
                         PowerUp newPowerUp;
