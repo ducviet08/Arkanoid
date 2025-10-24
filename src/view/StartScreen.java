@@ -8,53 +8,51 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+
 public class StartScreen {
-
-    private Button startGameButton;
-    private Button exitButton;
-
-    public StartScreen() {
-        startGameButton = new Button("Start Game");
-        startGameButton.setPrefSize(200, 60);
-        startGameButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 24px;");
-
-        exitButton = new Button("Exit");
-        exitButton.setPrefSize(200, 60);
-        exitButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 24px;");
-    }
-
-    public Button getStartGameButton() {
-        return startGameButton;
-    }
-
-    public Button getExitButton() {
-        return exitButton;
-    }
-
-    public Scene getScene(Stage stage, int width, int height) {
-        Image img = new Image(getClass().getResource("/images/BG.jpg").toExternalForm());
-        BackgroundImage bg = new BackgroundImage(
-                img,
+    public Scene getScene(Stage stage) {
+        Pane root = new Pane();
+        Image bgImage = new Image("/images/background.png");
+        BackgroundImage backgroundImage = new BackgroundImage(
+                bgImage,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
-                new BackgroundSize(100, 100, true, true, true, false)
+                new BackgroundSize(
+                        BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, false
+                )
         );
+        // button press start
+        Button PressStart =  new Button("Press Start");
+        PressStart.setStyle("-fx-font-size: 30;" +
+                " -fx-text-fill: black;" +
+                " -fx-background-color: lightblue;" +
+                "-fx-borfer-color : transparent;" +
+                "-fx-focus-color: transparent;" +
+                "-fx-background-radius:30;" +
+                "-fx-border-radius:30;"
+        );
+        PressStart.setLayoutX(300);
+        PressStart.setLayoutY(300);
+        //action cho pressStart
+        PressStart.setOnAction(e -> {
+            Menu menu = new Menu();
+            stage.setScene(menu.getScene(stage));
+        });
 
-        VBox buttonLayout = new VBox(20); // Khoảng cách giữa các nút
-        buttonLayout.getChildren().addAll(startGameButton, exitButton);
-        buttonLayout.setAlignment(javafx.geometry.Pos.CENTER);
-        buttonLayout.setMaxWidth(Region.USE_PREF_SIZE);
-        buttonLayout.setMaxHeight(Region.USE_PREF_SIZE);
+        root.setBackground(new Background(backgroundImage));
+        root.getChildren().addAll(PressStart);
+        Scene scene = new Scene(root, 800, 600);
 
-        // THÊM DÒNG NÀY ĐỂ ĐẨY NÚT XUỐNG DƯỚI
-        buttonLayout.setPadding(new Insets(150, 0, 0, 0)); // Đẩy xuống 150 pixels từ phía trên (top)
+        // Load CSS đúng cách
+        scene.getStylesheets().add(getClass().getResource("/screen/style.css").toExternalForm());
 
-        StackPane root = new StackPane();
-        root.setBackground(new Background(bg));
-        root.getChildren().add(buttonLayout);
-
-        Scene scene = new Scene(root, width, height);
         return scene;
     }
 }
