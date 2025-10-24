@@ -3,7 +3,7 @@ package model;
 
 public abstract class Brick extends GameObject {
     protected int health;
-    protected String type; // "Normal", "Strong"
+    protected String type; // Normal, Strong, Invisible
 
     public Brick(String imagePath, double x, double y, double width, double height, int health, String type) {
         super(imagePath, x, y, width, height);
@@ -11,6 +11,7 @@ public abstract class Brick extends GameObject {
         this.type = type;
     }
 
+    /** getter function. */
     public int getHealth() {
         return health;
     }
