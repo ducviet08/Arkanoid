@@ -4,12 +4,26 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-public class SelectBall {
+public class Select_ball {
+
+    Pane root = new Pane();
+
+    Image bgImage = new Image("/images/background.png");
+    BackgroundImage backgroundImage = new BackgroundImage(
+            bgImage,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.CENTER,
+            new BackgroundSize(
+                    BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, false
+            )
+    );
+
     // tạo button
     private Button createBallButton(String path, double x, double y) {
         Image image = new Image(getClass().getResourceAsStream(path));
@@ -25,25 +39,27 @@ public class SelectBall {
         btn.setLayoutY(y);
         return btn;
     }
+
     public Scene getScene(Stage stage) {
 
         //button ball
-        Button ball1 = createBallButton("/images/ball1.png", 200, 50);
-        Button ball2 = createBallButton("/images/ball2.png", 300, 50);
-        Button ball3 = createBallButton("/images/ball3.png", 400, 50);
+        Button ball1 = createBallButton("/images/ball1.png", 200, 300);
+        Button ball2 = createBallButton("/images/ball2.png", 350, 300);
+        Button ball3 = createBallButton("/images/ball3.png", 500, 300);
 
-        EventHandler<ActionEvent> handler = event ->{
+        EventHandler<ActionEvent> handler = event -> {
             Select_paddle select_paddle = new Select_paddle();
             stage.setScene(select_paddle.getScene(stage));
         };
-
+        ball1.setOnAction(handler);
+        ball2.setOnAction(handler);
+        ball3.setOnAction(handler);
 
         //root
-        Pane root = new Pane();
-        root.getStyleClass().add("bg-with-border");
         root.getChildren().addAll(ball1, ball2, ball3);
+        root.setBackground(new Background(backgroundImage));
 
-        Scene scene = new Scene(root,800,600);
+        Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/screen/style.css").toExternalForm());
         return scene;
     }
