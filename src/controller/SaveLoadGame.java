@@ -19,9 +19,9 @@ public class SaveLoadGame {
             writer.newLine();
 
             writer.write("ball " + gameManager.getBall().getX()
-                            + " " + gameManager.getBall().getY()
-                            + " " + gameManager.getBall().getDirectionX()
-                            + " " + gameManager.getBall().getDirectionY());
+                    + " " + gameManager.getBall().getY()
+                    + " " + gameManager.getBall().getDirectionX()
+                    + " " + gameManager.getBall().getDirectionY());
             writer.newLine();
 
             writer.write("score " + gameManager.getScore());
@@ -30,7 +30,7 @@ public class SaveLoadGame {
             writer.write("lives " + gameManager.getLives());
             writer.newLine();
 
-            writer.write("lastPowerUpTime " + gameManager.getLastPowerUpTime());
+            writer.write("lastPowerUpTime " + (System.currentTimeMillis() - gameManager.getLastPowerUpTime()));
             writer.newLine();
 
             String activePowerUpType = "null";
@@ -51,12 +51,12 @@ public class SaveLoadGame {
             }
             writer.newLine();
 
-//            writer.write("steels");
-//            List<Steel> steels = gameManager.getSteels();
-//            for (Steel steel : steels) {
-//                writer.write(" " + steel.getX() + " " + steel.getY());
-//            }
-//            writer.newLine();
+            writer.write("steels");
+            List<Steel> steels = gameManager.getSteels();
+            for (Steel steel : steels) {
+                writer.write(" " + steel.getX() + " " + steel.getY());
+            }
+            writer.newLine();
 
             writer.write("powerUps");
             List<PowerUp> powerUps = gameManager.getPowerUps();
@@ -117,12 +117,13 @@ public class SaveLoadGame {
                         gameManager.setLives(Integer.parseInt(parts[1]));
                         break;
                     case "lastPowerUpTime":
-                        gameManager.setLastPowerUpTime(Long.parseLong(parts[1]));
+                        gameManager.setLastPowerUpTime(System.currentTimeMillis() + Long.parseLong(parts[1]));
                         break;
                     case "activePowerUp":
-                        // gameManager.setActivePowerUp(PowerUp.valueOf(parts[1]));
+                        gameManager.setActivePowerUpByName(parts[1]);
                         break;
                     case "bricks":
+                        gameManager.getBricks().clear();
                         int n = parts.length;
                         for (int i = 1; i < n; i += 4) {
                             double x = Double.parseDouble(parts[i + 1]);
@@ -136,16 +137,17 @@ public class SaveLoadGame {
                             }
                         }
                         break;
-//                    case "steels":
-//                        int n1 = parts.length;
-//                        for (int i = 1; i < n1; i += 2) {
-//                            double x = Double.parseDouble(parts[i]);
-//                            double y = Double.parseDouble(parts[i + 1]);
-//
-//                            gameManager.getSteels().add(new Steel(x, y, 80, 25));
-//                        }
-//                        break;
+                    case "steels":
+                        int n1 = parts.length;
+                        for (int i = 1; i < n1; i += 2) {
+                            double x = Double.parseDouble(parts[i]);
+                            double y = Double.parseDouble(parts[i + 1]);
+
+                            gameManager.getSteels().add(new Steel(x, y, 80, 25));
+                        }
+                        break;
                     case "powerUps":
+                        gameManager.getPowerUps().clear();
                         int n2 = parts.length;
                         for (int i = 1; i < n2; i+=3) {
                             double x = Double.parseDouble(parts[i + 1]);
@@ -154,7 +156,7 @@ public class SaveLoadGame {
                             if (parts[i].equals("ExpandPaddlePowerUp")) {
                                 gameManager.getPowerUps().add(new ExpandPaddlePowerUp(x, y, 20, 20, 5000));
                             } else if (parts[i].equals("ShrinkPaddle")) {
-                                gameManager.getPowerUps().add(new ShrinkPaddle(x, y, 20, 20, 5000));
+                                // gameManager.getPowerUps().add(new ShrinkPaddle(x, y, 20, 20, 5000));
                             }  else if (parts[i].equals("FastBallPowerUp")) {
                                 gameManager.getPowerUps().add(new FastBallPowerUp(x, y, 20, 20, 5000, gameManager.getBall()));
                             } else if (parts[i].equals("SlowBall")) {

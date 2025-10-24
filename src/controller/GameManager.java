@@ -2,7 +2,10 @@
 
 package controller;
 
+import com.sun.prism.shader.DrawEllipse_ImagePattern_Loader;
 import model.*;
+import model.ExplosiveBrick;
+import model.Steel;
 import view.Renderer;
 
 import java.io.IOException;
@@ -21,13 +24,13 @@ public class GameManager {
     private Ball ball;
     private List<Brick> bricks;
     private List<PowerUp> powerUps;
+    private List<Steel> steels;
     private int score;
     private int lives;
     private GameState gameState;
     private Renderer renderer;
     private long lastPowerUpTime;
     private PowerUp activePowerUp;
-
 
     public enum GameState {
         START, PLAYING, PAUSED, GAME_OVER, LEVEL_COMPLETE
@@ -38,18 +41,6 @@ public class GameManager {
         initializeGame();
     }
 
-    private void initializeGame() {
-        paddle = new Paddle(350, 550, 100, 20, 5);
-        ball = new Ball(395, 530, 10, 10, 2, 1, -1);
-        bricks = new ArrayList<>();
-        powerUps = new ArrayList<>();
-        score = 0;
-        lives = 3;
-        gameState = GameState.START;
-        lastPowerUpTime = 0;
-        activePowerUp = null;
-    }
-
     public void loadLevel(String filename) {
         bricks.clear();
         try {
@@ -57,14 +48,14 @@ public class GameManager {
             int numRows = lines.size();
             int numCols = lines.get(0).length();
 
-            double brickWidth = 80;      // chiều rộng cố định
-            double brickHeight = 25;     // chiều cao
-            double gap = 5;              // khoảng cách giữa các gạch
+            double brickWidth = 80;
+            double brickHeight = 25;
+            double gap = 5;
 
             // Căn giữa map theo chiều ngang
             double totalWidth = numCols * brickWidth + (numCols - 1) * gap;
             double marginLeft = (800 - totalWidth) / 2;
-            double marginTop = 50;       // lề trên
+            double marginTop = 50;
 
             int rowIndex = 0;
             for (String line : lines) {
@@ -72,10 +63,17 @@ public class GameManager {
                 for (char c : line.toCharArray()) {
                     double x = marginLeft + colIndex * (brickWidth + gap);
                     double y = marginTop + rowIndex * (brickHeight + gap);
-                    if(c == '1'){
+
+                    if (c == '1') {
                         bricks.add(new NormalBrick(x, y, brickWidth, brickHeight));
-                    } else if(c == '2'){
+                    } else if (c == '2') {
                         bricks.add(new StrongBrick(x, y, brickWidth, brickHeight));
+                    } else if (c == '3') {
+                        bricks.add(new ExplosiveBrick(x, y, brickWidth, brickHeight));
+                    } else if (c == '4') {
+                        bricks.add(new GlassBrick(x, y, brickWidth, brickHeight));
+                    } else if (c == '9') {
+                        steels.add((new Steel(x, y, brickWidth, brickHeight)));
                     }
                     colIndex++;
                 }
@@ -87,12 +85,19 @@ public class GameManager {
         }
     }
 
-
-    public void enterTheGame() {
-        System.out.println("Game Started!");
+    private void initializeGame() {
+        paddle = new Paddle(350, 550, 100, 20, 5);
+        ball = new Ball(395, 530, 10, 10, 2.5, 1, -1);
+        bricks = new ArrayList<>();
+        powerUps = new ArrayList<>();
+        steels = new ArrayList<>();
+        score = 0;
+        lives = 3;
         gameState = GameState.START;
+        lastPowerUpTime = 0;
+        activePowerUp = null;
+        loadLevel("level1.txt");
     }
-
 
     public void startGame() {
         System.out.println("Game Started!");
@@ -122,6 +127,10 @@ public class GameManager {
                 paddle.applyPowerUp(pu);
                 if (pu instanceof FastBallPowerUp) {
                     ((FastBallPowerUp) pu).setGameBall(ball);
+                } else if (pu instanceof ExtraLifePowerUp) {
+                    if (lives < 5) {
+                        this.lives ++;
+                    }
                 }
                 activePowerUp = pu;
                 lastPowerUpTime = System.currentTimeMillis();
@@ -180,6 +189,15 @@ public class GameManager {
         if (ball.checkCollision(paddle)) {
             ball.bounceOff(paddle);
         }
+
+        Iterator<Steel> steelIterator = steels.iterator();
+        while (steelIterator.hasNext()) {
+            Steel steel = steelIterator.next();
+            if (ball.checkCollision(steel)) {
+                ball.bounceOff(steel);
+            }
+        }
+
         Iterator<Brick> brickIterator = bricks.iterator();
         while (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
@@ -188,13 +206,19 @@ public class GameManager {
                 brick.takeHit();
                 if (brick.isDestroyed()) {
                     score++;
-                    brickIterator.remove();
+                    // brickIterator.remove();
+                    if (brick instanceof ExplosiveBrick) {
+                        ExplosiveBrick temp = (ExplosiveBrick) brick;
+                        temp.explode(bricks);
+                    }
                     if (Math.random() < 0.2) {
                         PowerUp newPowerup;
                         if (Math.random() < 0.5) {
                             newPowerup = new ExpandPaddlePowerUp(brick.getX(), brick.getY(), 20, 20, 5000);
-                        } else {
+                        } else if (Math.random() < 0.8) {
                             newPowerup = new FastBallPowerUp(brick.getX(), brick.getY(), 20, 20, 5000, ball);
+                        } else {
+                            newPowerup = new ExtraLifePowerUp(brick.getX(), brick.getY(), 20, 20);
                         }
                         powerUps.add(newPowerup);
                     }
@@ -202,6 +226,14 @@ public class GameManager {
             }
 
         }
+
+        for (int i = 0; i < bricks.size(); i++) {
+            if (bricks.get(i).isDestroyed()) {
+                score++;
+                bricks.remove(i);
+            }
+        }
+
     }
 
     public void gameOver() {
@@ -217,6 +249,9 @@ public class GameManager {
         ball.render();
         for (Brick brick : bricks) {
             brick.render();
+        }
+        for (Steel steel : steels) {
+            steel.render();
         }
         for (PowerUp powerUp : powerUps) {
             powerUp.render();
@@ -246,6 +281,10 @@ public class GameManager {
 
     public List<PowerUp> getPowerUps() {
         return powerUps;
+    }
+
+    public List<Steel> getSteels() {
+        return steels;
     }
 
     public int getScore() {
@@ -278,5 +317,16 @@ public class GameManager {
 
     public void setActivePowerUp(PowerUp activePowerUp) {
         this.activePowerUp = activePowerUp;
+    }
+
+    public void setActivePowerUpByName(String className) {
+        if (className.equals("ExpandPaddlePowerUp")) {
+            this.activePowerUp = new ExpandPaddlePowerUp(paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
+            activePowerUp.applyEffect(paddle);
+        } else if (className.equals("FastBallPowerUp")) {
+            this.activePowerUp = new FastBallPowerUp(ball.getX(), ball.getY(), 0, 0, 5000, ball);
+            activePowerUp.applyEffect(paddle);
+        }
+        // Thêm các power-up khác...
     }
 }

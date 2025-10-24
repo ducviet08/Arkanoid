@@ -10,7 +10,7 @@ public class ExpandPaddlePowerUp extends PowerUp {
 
     @Override
     public void applyEffect(Paddle paddle) {
-        paddle.setWidth(paddle.getOriginalWidth() + EXPAND_AMOUNT);
+        paddle.setWidth(paddle.getOriginalWidth() + 50);
     }
 
     @Override

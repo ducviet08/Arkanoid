@@ -1,191 +1,160 @@
+// Arkanoid/Main.java
 package Arkanoid;
 
 import controller.GameManager;
-import view.StartScreen;
-import view.PauseScreen;
-import view.EndScreen;
+import controller.SaveLoadGame;
 import view.Renderer;
 import model.GameObject;
+import model.Ball;
+import model.Paddle;
+import model.NormalBrick;
+import model.StrongBrick;
+import model.ExpandPaddlePowerUp;
+import model.FastBallPowerUp;
+
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.scene.paint.Color;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Main extends Application {
 
-    public static final int WIDTH = 800;
-    public static final int HEIGHT = 600;
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 600;
 
-    private Stage primaryStage;
-    private Scene menuScene, gameScene, endScene, pauseScene;
-
-    private StartScreen startScreen =  new StartScreen();
-    private EndScreen endScreen = new EndScreen();
-    private PauseScreen pauseScreen = new PauseScreen();
     private Renderer renderer;
     private GameManager gameManager;
-    private AnimationTimer gameLoop;
-    private Set<KeyCode> activeKeys = new HashSet<>();
+    private AnimationTimer gameLoopTimer;
 
-    private boolean isPaused = false;
-    private int currentLevel = 1;
+    // Sử dụng Set để theo dõi các phím đang được nhấn
+    private Set<KeyCode> activeKeys = new HashSet<>();
 
     @Override
     public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
+        //Cửa sổ chính của canvas
         primaryStage.setTitle("Arkanoid Clone (JavaFX)");
         primaryStage.setResizable(false);
 
-        showMenu();
-        primaryStage.show();
-    }
+        //Mặt phẳng canvas
+        Canvas gameCanvas = new Canvas(WIDTH, HEIGHT);
+        //đối tượng để vẽ
+        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
 
-    // ------------------ MENU ------------------
-    private void showMenu() {
-        Scene menuSceneFromStartScreen = startScreen.getScene(primaryStage, WIDTH, HEIGHT);
-        startScreen.getStartGameButton().setOnAction(e -> startGame());
-        startScreen.getExitButton().setOnAction(e -> System.exit(0));
-        primaryStage.setScene(menuSceneFromStartScreen);
-    }
-
-    // ------------------ GAME ------------------
-    private void startGame() {
-        Canvas canvas = new Canvas(WIDTH, HEIGHT);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
         renderer = new Renderer(gc);
         gameManager = new GameManager(renderer);
 
-        Pane root = new Pane(canvas);
-        gameScene = new Scene(root, WIDTH, HEIGHT, Color.BLACK);
+        //thành phần giao diện bên trong
+        Pane root = new Pane(gameCanvas);
+        //bối cảnh chính cảu game
+        Scene scene = new Scene(root, WIDTH, HEIGHT);
+        scene.setFill(Color.BLACK);
 
-        // Xử lý phím
-        gameScene.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                togglePause();
-                return;
-            }
+        // Xử lý sự kiện bàn phím
+        scene.setOnKeyPressed(event -> {
             activeKeys.add(event.getCode());
             gameManager.handleInput(event.getCode().ordinal());
         });
-        gameScene.setOnKeyReleased(event -> {
+
+        scene.setOnKeyReleased(event -> {
             activeKeys.remove(event.getCode());
             gameManager.handleKeyReleased(event.getCode().ordinal());
-            if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.RIGHT)
+            // Đảm bảo dừng paddle khi nhả phím
+            if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.RIGHT) {
                 gameManager.getPaddle().stop();
+            }
         });
 
-        primaryStage.setScene(gameScene);
-        gameManager.loadLevel("level" + currentLevel + ".txt");
-        gameManager.enterTheGame();
-        gameManager.startGame();
+        // Xử lý sự kiện đóng cửa sổ - Lưu game trước khi thoát
+        primaryStage.setOnCloseRequest(event -> {
+            // Dừng game loop trước
+            if (gameLoopTimer != null) {
+                gameLoopTimer.stop();
+            }
 
+            // Lưu game
+            try {
+                SaveLoadGame.saveGame(gameManager);
+                System.out.println("Game đã được lưu vào save.txt");
+            } catch (Exception e) {
+                System.err.println("Lỗi khi lưu game: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
 
-        // Vòng lặp game
-        gameLoop = new AnimationTimer() {
+        //hiển thị cửa sổ
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        //bắt đầu game
+        try {
+            SaveLoadGame.loadGame(gameManager);
+            System.out.println("Đã load game từ save.txt thành công!");
+        } catch (Exception e) {
+            System.err.println("Lỗi khi load game từ save.txt: " + e.getMessage());
+            System.out.println("Bắt đầu game mới từ level1.txt...");
+            gameManager.startGame(); // Fallback về cách cũ nếu load thất bại
+        }
+
+        // Vòng lặp game sử dụng AnimationTimer
+        gameLoopTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (isPaused) return; // Dừng cập nhật khi pause
-
-                gc.setFill(Color.BLACK);
-                gc.fillRect(0, 0, WIDTH, HEIGHT);
-
+                // 1. Cập nhật logic game
                 gameManager.updateGame();
 
-                // Thu thập và vẽ
-                List<GameObject> objects = new ArrayList<>();
-                objects.add(gameManager.getPaddle());
-                objects.add(gameManager.getBall());
-                objects.addAll(gameManager.getBricks());
-                objects.addAll(gameManager.getPowerUps());
-                renderer.draw(objects, gameManager.getScore(), gameManager.getLives());
+                // 2. Thu thập tất cả các GameObject cần vẽ từ GameManager
+                List<GameObject> objectsToRender = new ArrayList<>();
+                objectsToRender.add(gameManager.getPaddle());
+                objectsToRender.add(gameManager.getBall());
+                objectsToRender.addAll(gameManager.getBricks());
+                objectsToRender.addAll(gameManager.getSteels());
+                objectsToRender.addAll(gameManager.getPowerUps());
 
-                // Kiểm tra kết thúc
+                // 3. Yêu cầu Renderer vẽ lại màn hình
+                renderer.draw(objectsToRender, gameManager.getScore(), gameManager.getLives());
+
+                // Nếu game kết thúc, dừng timer
                 if (gameManager.getGameState() == GameManager.GameState.GAME_OVER ||
                         gameManager.getGameState() == GameManager.GameState.LEVEL_COMPLETE) {
-                    stop();
-                    boolean win = (gameManager.getGameState() == GameManager.GameState.LEVEL_COMPLETE);
-                    showEndScreen(gameManager.getScore(), win);
+                    this.stop();
+
+                    // Lưu game trước khi hiển thị thông báo kết thúc
+                    try {
+                        SaveLoadGame.saveGame(gameManager);
+                        System.out.println("Game đã được lưu vào save.txt");
+                    } catch (Exception e) {
+                        System.err.println("Lỗi khi lưu game: " + e.getMessage());
+                    }
+
+                    String message = (gameManager.getGameState() == GameManager.GameState.GAME_OVER) ?
+                            "GAME OVER! Score: " + gameManager.getScore() :
+                            "LEVEL COMPLETE! Score: " + gameManager.getScore();
+                    // Trong JavaFX, bạn có thể dùng Alert hoặc Stage mới để hiển thị kết quả
+                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                    alert.setTitle("Game Ended");
+                    alert.setHeaderText(null);
+                    alert.setContentText(message + "\n\nGame đã được lưu!");
+                    alert.showAndWait();
+                    primaryStage.close();
                 }
             }
         };
-
-        gameLoop.start();
-    }
-
-    // ------------------ PAUSE ------------------
-    private void togglePause() {
-        if (isPaused) {
-            isPaused = false;
-            primaryStage.setScene(gameScene);
-        } else {
-            isPaused = true;
-            showPauseScreen();
-        }
-    }
-
-    private void showPauseScreen() {
-        Scene pauseScene = pauseScreen.getScene(primaryStage, WIDTH, HEIGHT);
-
-        pauseScreen.getContinueButton().setOnAction(e -> togglePause());
-        pauseScreen.getExitToMenuButton().setOnAction(e -> {
-            gameLoop.stop();
-            isPaused = false; // Đảm bảo trạng thái không bị pause khi về menu
-            currentLevel = 1;
-            showMenu();
-        });
-
-        primaryStage.setScene(pauseScene);
-    }
-
-    // ------------------ END GAME ------------------
-    private void showEndScreen(int score, boolean win) {
-        endScreen.setMessage(win ? "🎉 LEVEL COMPLETE!" : "💀 GAME OVER!");
-        endScreen.setScore(score);
-
-        Scene endScene = endScreen.getScene(primaryStage, WIDTH, HEIGHT, win);
-
-        endScreen.getRestartButton().setOnAction(e -> {
-            currentLevel = 1;
-            startGame();
-        });
-
-        endScreen.getExitToMenuButton().setOnAction(e -> {
-            currentLevel = 1;
-            showMenu();
-        });
-
-        // Chỉ gắn hành động cho Next Level khi có nút này
-        if (win) {
-            endScreen.getNextLevelButton().setOnAction(e -> startNextLevel());
-        }
-
-        primaryStage.setScene(endScene);
-    }
-
-    // ------------------ NEXT LEVEL ------------------
-    private void startNextLevel() {
-        currentLevel++;
-        System.out.println("Starting level " + currentLevel);
-        // Ở đây bạn có thể gọi gameManager.loadLevel("level" + currentLevel + ".txt");
-        gameManager.loadLevel("level" + currentLevel + ".txt");
-        gameManager.enterTheGame();
-        gameManager.startGame();
-        startGame();
-
+        gameLoopTimer.start();
     }
 
     public static void main(String[] args) {
+        //gọi javaFX để runtime
         launch(args);
     }
 }

@@ -12,5 +12,8 @@ public class NormalBrick extends Brick {
     }
 
     // Có thể override takeHit() hoặc update() nếu có hành vi đặc biệt
-    // Ví dụ: nổ tung, thay đổi màu sắc khi bị đánh
+    @Override
+    public void update() {
+        
+    }
 }
