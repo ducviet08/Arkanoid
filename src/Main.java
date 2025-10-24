@@ -97,7 +97,14 @@ public class Main extends Application {
         primaryStage.show();
 
         //bắt đầu game
-        gameManager.startGame();
+        try {
+            SaveLoadGame.loadGame(gameManager);
+            System.out.println("Đã load game từ save.txt thành công!");
+        } catch (Exception e) {
+            System.err.println("Lỗi khi load game từ save.txt: " + e.getMessage());
+            System.out.println("Bắt đầu game mới từ level1.txt...");
+            gameManager.startGame(); // Fallback về cách cũ nếu load thất bại
+        }
 
         // Vòng lặp game sử dụng AnimationTimer
         gameLoopTimer = new AnimationTimer() {
