@@ -85,7 +85,8 @@ public class Ball extends MovableObject {
                         // Tính lại hướng bóng
                         directionX = Math.sin(bounceAngle);
                         directionY = -Math.cos(bounceAngle);
-                    }
+
+                   }
                 }
             }
         }
