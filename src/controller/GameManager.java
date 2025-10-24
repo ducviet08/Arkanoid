@@ -4,8 +4,6 @@ package controller;
 
 import com.sun.prism.shader.DrawEllipse_ImagePattern_Loader;
 import model.*;
-import model.ExplosiveBrick;
-import model.Steel;
 import view.Renderer;
 
 import java.io.IOException;
@@ -65,15 +63,15 @@ public class GameManager {
                     double y = marginTop + rowIndex * (brickHeight + gap);
 
                     if (c == '1') {
-                        bricks.add(new NormalBrick(x, y, brickWidth, brickHeight));
+                        bricks.add(new NormalBrick("/images/brick 1.png", x, y, brickWidth, brickHeight));
                     } else if (c == '2') {
-                        bricks.add(new StrongBrick(x, y, brickWidth, brickHeight));
+                        bricks.add(new StrongBrick("/images/brick 6.png", x, y, brickWidth, brickHeight));
                     } else if (c == '3') {
-                        bricks.add(new ExplosiveBrick(x, y, brickWidth, brickHeight));
+                        bricks.add(new ExplosiveBrick("/images/brick 2.png", x, y, brickWidth, brickHeight));
                     } else if (c == '4') {
-                        bricks.add(new GlassBrick(x, y, brickWidth, brickHeight));
+                        bricks.add(new GlassBrick("/images/brick 2.png", x, y, brickWidth, brickHeight));
                     } else if (c == '9') {
-                        steels.add((new Steel(x, y, brickWidth, brickHeight)));
+                        steels.add((new Steel("/images/brick 2.png", x, y, brickWidth, brickHeight)));
                     }
                     colIndex++;
                 }
@@ -86,8 +84,8 @@ public class GameManager {
     }
 
     private void initializeGame() {
-        paddle = new Paddle(350, 550, 100, 20, 5);
-        ball = new Ball(395, 530, 10, 10, 2.5, 1, -1);
+        paddle = new Paddle("/images/paddle2.png",350, 550, 100, 20, 5);
+        ball = new Ball("/images/normal_ball.png",395, 530, 15, 15, 2.5, 1, -1);
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         steels = new ArrayList<>();

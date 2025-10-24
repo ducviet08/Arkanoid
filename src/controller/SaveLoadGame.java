@@ -131,9 +131,9 @@ public class SaveLoadGame {
                             int health = Integer.parseInt(parts[i + 3]);
 
                             if (parts[i].equals("NormalBrick")) {
-                                gameManager.getBricks().add(new NormalBrick(x, y, 80, 25, health));
+                                gameManager.getBricks().add(new NormalBrick("/images/brick 1.png", x, y, 80, 25, health));
                             } else if (parts[i].equals("StrongBrick")) {
-                                gameManager.getBricks().add(new StrongBrick(x, y, 80, 25, health));
+                                gameManager.getBricks().add(new StrongBrick("/images/brick 6.png", x, y, 80, 25, health));
                             }
                         }
                         break;
@@ -154,11 +154,11 @@ public class SaveLoadGame {
                             double y = Double.parseDouble(parts[i + 2]);
 
                             if (parts[i].equals("ExpandPaddlePowerUp")) {
-                                gameManager.getPowerUps().add(new ExpandPaddlePowerUp(x, y, 20, 20, 5000));
+                                gameManager.getPowerUps().add(new ExpandPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 5000));
                             } else if (parts[i].equals("ShrinkPaddle")) {
                                 // gameManager.getPowerUps().add(new ShrinkPaddle(x, y, 20, 20, 5000));
                             }  else if (parts[i].equals("FastBallPowerUp")) {
-                                gameManager.getPowerUps().add(new FastBallPowerUp(x, y, 20, 20, 5000, gameManager.getBall()));
+                                gameManager.getPowerUps().add(new FastBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 5000, gameManager.getBall()));
                             } else if (parts[i].equals("SlowBall")) {
 
                             } else if (parts[i].equals("TinyBall")) {

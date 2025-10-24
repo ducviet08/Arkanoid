@@ -5,14 +5,19 @@ import java.util.List;
 public class ExplosiveBrick extends Brick {
     private int explosionDamage;
 
-    public ExplosiveBrick(double x, double y, double width, double height) {
-        super(x, y, width, height, 1, "Explosive");
+    public ExplosiveBrick(String imagePath, double x, double y, double width, double height) {
+        super(imagePath, x, y, width, height, 1, "Explosive");
         this.explosionDamage = 1;
     }
 
-    public ExplosiveBrick(double x, double y, double width, double height, int health) {
-        super(x, y, width, height, health, "Explosive");
+    public ExplosiveBrick(String imagePath, double x, double y, double width, double height, int health) {
+        super(imagePath, x, y, width, height, health, "Explosive");
         this.explosionDamage = 1;
+    }
+
+    public ExplosiveBrick(String imagePath, double x, double y, double width, double height, int health, int explosionDamage) {
+        super(imagePath, x, y, width, height, health, "Explosive");
+        this.explosionDamage = explosionDamage;
     }
 
     public int getExplosionDamage() {
