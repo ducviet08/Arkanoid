@@ -143,7 +143,7 @@ public class SaveLoadGame {
                             double x = Double.parseDouble(parts[i]);
                             double y = Double.parseDouble(parts[i + 1]);
 
-                            gameManager.getSteels().add(new Steel(x, y, 80, 25));
+                            gameManager.getSteels().add(new Steel("", x, y, 80, 25));
                         }
                         break;
                     case "powerUps":
