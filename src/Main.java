@@ -54,14 +54,14 @@ public class Main extends Application {
 
     // ------------------ MENU ------------------
     private void showMenu() {
-        Scene menuSceneFromStartScreen = startScreen.getScene(primaryStage, WIDTH, HEIGHT);
-        startScreen.getStartGameButton().setOnAction(e -> startGame());
-        startScreen.getExitButton().setOnAction(e -> System.exit(0));
+        Scene menuSceneFromStartScreen = startScreen.getScene(primaryStage,this);
+        //startScreen.getStartGameButton().setOnAction(e -> startGame());
+        //startScreen.getExitButton().setOnAction(e -> System.exit(0));
         primaryStage.setScene(menuSceneFromStartScreen);
     }
 
     // ------------------ GAME ------------------
-    private void startGame() {
+    public void startGame() {
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         renderer = new Renderer(gc);
@@ -88,7 +88,7 @@ public class Main extends Application {
 
         primaryStage.setScene(gameScene);
         gameManager.loadLevel("level" + currentLevel + ".txt");
-        gameManager.enterTheGame();
+        gameManager.startGame();
         gameManager.startGame();
 
 
@@ -182,7 +182,7 @@ public class Main extends Application {
         System.out.println("Starting level " + currentLevel);
         // Ở đây bạn có thể gọi gameManager.loadLevel("level" + currentLevel + ".txt");
         gameManager.loadLevel("level" + currentLevel + ".txt");
-        gameManager.enterTheGame();
+        gameManager.startGame();
         gameManager.startGame();
         startGame();
 

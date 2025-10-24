@@ -1,5 +1,6 @@
 package view;
 
+import Arkanoid.Main;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -9,7 +10,7 @@ import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-public class Select_ball {
+public class SelectBall {
 
     Pane root = new Pane();
 
@@ -40,7 +41,7 @@ public class Select_ball {
         return btn;
     }
 
-    public Scene getScene(Stage stage) {
+    public Scene getScene(Stage stage,Main main) {
 
         //button ball
         Button ball1 = createBallButton("/images/ball1.png", 200, 300);
@@ -48,8 +49,8 @@ public class Select_ball {
         Button ball3 = createBallButton("/images/ball3.png", 500, 300);
 
         EventHandler<ActionEvent> handler = event -> {
-            Select_paddle select_paddle = new Select_paddle();
-            stage.setScene(select_paddle.getScene(stage));
+            SelectPaddle select_paddle = new SelectPaddle();
+            stage.setScene(select_paddle.getScene(stage,main));
         };
         ball1.setOnAction(handler);
         ball2.setOnAction(handler);
@@ -60,7 +61,6 @@ public class Select_ball {
         root.setBackground(new Background(backgroundImage));
 
         Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("/screen/style.css").toExternalForm());
         return scene;
     }
 }

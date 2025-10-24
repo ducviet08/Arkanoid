@@ -1,5 +1,6 @@
 package view;
 
+import Arkanoid.Main;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -28,7 +29,7 @@ import javafx.stage.Stage;
 
         }
 
-        public Scene getScene(Stage stage) {
+        public Scene getScene(Stage stage,Main main) {
 
             Pane root = new Pane();
 
@@ -53,7 +54,7 @@ import javafx.stage.Stage;
             //action pick skin
             button1.setOnAction(e -> {
                 SelectBall selectBall = new SelectBall(); // tạo đối tượng mới
-                stage.setScene(selectBall.getScene(stage)); // gọi phương thức thông qua đối tượng
+                stage.setScene(selectBall.getScene(stage,main)); // gọi phương thức thông qua đối tượng
             });
 
             root.getChildren().addAll(button1, button2, button3);
@@ -63,7 +64,6 @@ import javafx.stage.Stage;
             Scene scene = new Scene(root, 800, 600);
 
             // Load CSS đúng cách
-            scene.getStylesheets().add(getClass().getResource("/screen/style.css").toExternalForm());
 
             return scene;
         }
