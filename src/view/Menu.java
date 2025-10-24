@@ -63,7 +63,6 @@ import javafx.stage.Stage;
             Scene scene = new Scene(root, 800, 600);
 
             // Load CSS đúng cách
-            scene.getStylesheets().add(getClass().getResource("/screen/style.css").toExternalForm());
 
             return scene;
         }

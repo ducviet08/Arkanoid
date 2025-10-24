@@ -9,7 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-public class Select_paddle {
+public class SelectPaddle {
     private Button createpaddleButton(String path, double x, double y) {
         Image image = new Image(getClass().getResourceAsStream(path));
         ImageView view = new ImageView(image);
@@ -50,7 +50,6 @@ public class Select_paddle {
         Scene scene = new Scene(root, 800, 600);
         root.setBackground(new Background(backgroundImage));
         root.getChildren().addAll(paddle1);
-        scene.getStylesheets().add(getClass().getResource("/screen/style.css").toExternalForm());
         return scene;
 
     }
