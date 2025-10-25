@@ -1,10 +1,9 @@
 package Arkanoid;
 
 import controller.GameManager;
-import view.StartScreen;
-import view.PauseScreen;
-import view.EndScreen;
-import view.Renderer;
+import controller.SaveLoadGame;
+import javafx.scene.image.Image;
+import view.*;
 import model.GameObject;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -24,6 +23,10 @@ import java.util.*;
 
 public class Main extends Application {
 
+    public boolean Continue = false;
+    private SaveLoadGame saveLoadGame = new SaveLoadGame();
+    public static String ballImage;
+    public static String paddleImage;
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
 
@@ -36,11 +39,11 @@ public class Main extends Application {
     private Set<KeyCode> activeKeys = new HashSet<>();
 
     private boolean isPaused = false;
-    private int currentLevel = 1;
+    public static int currentLevel = 1;
 
-    private StartScreen startScreen=new StartScreen();
-    private EndScreen endScreen=new EndScreen();
-    private PauseScreen pauseScreen=new PauseScreen();
+    private StartScreen startScreen = new StartScreen();
+    private EndScreen endScreen = new EndScreen();
+    private PauseScreen pauseScreen = new PauseScreen();
 
     @Override
     public void start(Stage primaryStage) {
@@ -54,11 +57,12 @@ public class Main extends Application {
 
     // ------------------ MENU ------------------
     private void showMenu() {
-        Scene menuSceneFromStartScreen = startScreen.getScene(primaryStage,this);
+        Scene menuSceneFromStartScreen = startScreen.getScene(primaryStage, this);
         //startScreen.getStartGameButton().setOnAction(e -> startGame());
         //startScreen.getExitButton().setOnAction(e -> System.exit(0));
         primaryStage.setScene(menuSceneFromStartScreen);
     }
+
 
     // ------------------ GAME ------------------
     public void startGame() {
@@ -66,9 +70,18 @@ public class Main extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         renderer = new Renderer(gc);
         gameManager = new GameManager(renderer);
-
         Pane root = new Pane(canvas);
         gameScene = new Scene(root, WIDTH, HEIGHT, Color.BLACK);
+        gameManager.initializeGame();
+        primaryStage.setScene(gameScene);
+        if (Continue) {
+            saveLoadGame.loadGame(gameManager);
+            System.out.println(gameManager.getLives());
+        } else {
+            gameManager.loadLevel("level" + currentLevel + ".txt");
+            gameManager.getBall().setImage(ballImage);
+            gameManager.getPaddle().setImage(paddleImage);
+        }
 
         // Xử lý phím
         gameScene.setOnKeyPressed(event -> {
@@ -86,11 +99,8 @@ public class Main extends Application {
                 gameManager.getPaddle().stop();
         });
 
-        primaryStage.setScene(gameScene);
-        gameManager.loadLevel("level" + currentLevel + ".txt");
-        gameManager.startGame();
-        gameManager.startGame();
 
+        gameManager.startGame();
 
         // Vòng lặp game
         gameLoop = new AnimationTimer() {
@@ -114,6 +124,7 @@ public class Main extends Application {
                 // Kiểm tra kết thúc
                 if (gameManager.getGameState() == GameManager.GameState.GAME_OVER ||
                         gameManager.getGameState() == GameManager.GameState.LEVEL_COMPLETE) {
+                    saveLoadGame.saveGame(gameManager);
                     stop();
                     boolean win = (gameManager.getGameState() == GameManager.GameState.LEVEL_COMPLETE);
                     showEndScreen(gameManager.getScore(), win);
@@ -123,6 +134,7 @@ public class Main extends Application {
 
         gameLoop.start();
     }
+
 
     // ------------------ PAUSE ------------------
     private void togglePause() {
@@ -140,6 +152,7 @@ public class Main extends Application {
     private void showPauseScreen() {
         Scene pauseScene = pauseScreen.getScene(primaryStage, WIDTH, HEIGHT);
 
+        saveLoadGame.saveGame(gameManager);
         pauseScreen.getContinueButton().setOnAction(e -> togglePause());
         pauseScreen.getExitToMenuButton().setOnAction(e -> {
             gameLoop.stop();
@@ -160,7 +173,7 @@ public class Main extends Application {
 
         endScreen.getRestartButton().setOnAction(e -> {
             currentLevel = 1;
-            startGame();
+            showMenu();
         });
 
         endScreen.getExitToMenuButton().setOnAction(e -> {
@@ -170,6 +183,7 @@ public class Main extends Application {
 
         // Chỉ gắn hành động cho Next Level khi có nút này
         if (win) {
+            saveLoadGame.saveGame(gameManager);
             endScreen.getNextLevelButton().setOnAction(e -> startNextLevel());
         }
 
@@ -181,8 +195,8 @@ public class Main extends Application {
         currentLevel++;
         System.out.println("Starting level " + currentLevel);
         // Ở đây bạn có thể gọi gameManager.loadLevel("level" + currentLevel + ".txt");
-        gameManager.loadLevel("level" + currentLevel + ".txt");
-        gameManager.startGame();
+        //gameManager.loadLevel("level" + currentLevel + ".txt");
+        Continue = false;
         gameManager.startGame();
         startGame();
 

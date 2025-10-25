@@ -1,24 +1,34 @@
 package controller;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.lang.String;
+
 import model.*;
 import controller.*;
+
+import static Arkanoid.Main.*;
 
 public class SaveLoadGame {
 
     /**
      * This method is used when player wants to save the game and play it next time.
+     *
      * @param gameManager
      */
     public static void saveGame(controller.GameManager gameManager) {
         try {
             BufferedWriter writer = new BufferedWriter((new FileWriter("src/data/save.txt")));
-            writer.write("paddle " + gameManager.getPaddle().getX());
+
+            writer.write("level " + currentLevel );
             writer.newLine();
 
-            writer.write("ball " + gameManager.getBall().getX()
+            writer.write("paddle " + paddleImage + " " + gameManager.getPaddle().getX());
+            writer.newLine();
+
+            writer.write("ball " + ballImage
+                    + " " + gameManager.getBall().getX()
                     + " " + gameManager.getBall().getY()
                     + " " + gameManager.getBall().getDirectionX()
                     + " " + gameManager.getBall().getDirectionY());
@@ -30,31 +40,43 @@ public class SaveLoadGame {
             writer.write("lives " + gameManager.getLives());
             writer.newLine();
 
-            writer.write("lastPowerUpTime " + (System.currentTimeMillis() - gameManager.getLastPowerUpTime()));
+            writer.write("lastBallPowerUpTime " + (System.currentTimeMillis() - gameManager.getBallLastPowerUpTime()));
             writer.newLine();
 
-            String activePowerUpType = "null";
-            if (gameManager.getActivePowerUp() != null) {
-                activePowerUpType = gameManager.getActivePowerUp().getClass().getSimpleName();
+            String activeBallPowerUpType = "null";
+            if (gameManager.getBallActivePowerUp() != null) {
+                activeBallPowerUpType = gameManager.getBallActivePowerUp().getClass().getSimpleName();
             }
-            writer.write("activePowerUp " + activePowerUpType);
+            writer.write("activeBallPowerUp " + activeBallPowerUpType);
+            writer.newLine();
+
+            writer.write("lastPaddlePowerUpTime " + (System.currentTimeMillis() - gameManager.getPaddleLastPowerUpTime()));
+            writer.newLine();
+
+            String activePaddlePowerUpType = "null";
+            if (gameManager.getPaddleActivePowerUp() != null) {
+                activePaddlePowerUpType = gameManager.getPaddleActivePowerUp().getClass().getSimpleName();
+            }
+            writer.write("activePaddlePowerUp " + activePaddlePowerUpType);
             writer.newLine();
 
             writer.write("bricks");
+            writer.newLine();
             List<Brick> saveBricks = gameManager.getBricks();
             for (Brick brick : saveBricks) {
                 if (brick instanceof NormalBrick) {
-                    writer.write(" NormalBrick " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
+                    writer.write("NormalBrick " + brick.getPath() + " " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
                 } else if (brick instanceof StrongBrick) {
-                    writer.write(" StrongBrick " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
+                    writer.write("StrongBrick " + brick.getPath() + " " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
                 }
+                writer.newLine(); // <- thêm dòng mới cho mỗi viên
             }
-            writer.newLine();
 
             writer.write("steels");
             List<Steel> steels = gameManager.getSteels();
             for (Steel steel : steels) {
-                writer.write(" " + steel.getX() + " " + steel.getY());
+                writer.write(" " + steel.getPath() + " "
+                        + steel.getX() + " " + steel.getY());
             }
             writer.newLine();
 
@@ -88,27 +110,30 @@ public class SaveLoadGame {
 
     /**
      * The loadGame method is used when the player selects CONTINUE in the game menu.
+     *
      * @param gameManager
      */
     public static void loadGame(GameManager gameManager) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("src/data/save.txt"));
             String line;
-
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\s+");
                 String key = parts[0];
 
                 switch (key) {
+                    case "level":
+                        currentLevel = Integer.parseInt(parts[1]);
+                        break;
                     case "paddle":
-                        gameManager.getPaddle().setX(Double.parseDouble(parts[1]));
-                        gameManager.getPaddle().setY(550);
+                        Paddle paddle = new Paddle(parts[1], Double.parseDouble(parts[2]), 550);
+                        gameManager.setPaddle(paddle);
                         break;
                     case "ball":
-                        gameManager.getBall().setX(Double.parseDouble(parts[1]));
-                        gameManager.getBall().setY(Double.parseDouble(parts[2]));
-                        gameManager.getBall().setDirectionX(Double.parseDouble(parts[3]));
-                        gameManager.getBall().setDirectionY(Double.parseDouble(parts[4]));
+                        Ball ball = new Ball(parts[1], Double.parseDouble(parts[2]),
+                                Double.parseDouble(parts[3]), Double.parseDouble(parts[4]), Double.parseDouble(parts[5]));
+                        gameManager.setBall(ball);
+                        gameManager.getBall().setActive(true);
                         break;
                     case "score":
                         gameManager.setScore(Integer.parseInt(parts[1]));
@@ -116,62 +141,86 @@ public class SaveLoadGame {
                     case "lives":
                         gameManager.setLives(Integer.parseInt(parts[1]));
                         break;
-                    case "lastPowerUpTime":
-                        gameManager.setLastPowerUpTime(System.currentTimeMillis() + Long.parseLong(parts[1]));
+                    case "lastBallPowerUpTime":
+                        gameManager.setBallLastPowerUpTime(System.currentTimeMillis() - Long.parseLong(parts[1]));
                         break;
-                    case "activePowerUp":
+                    case "activeBallPowerUp":
+                        gameManager.setActivePowerUpByName(parts[1]);
+                        break;
+                    case "lastPaddlePowerUpTime":
+                        gameManager.setPaddleLastPowerUpTime(System.currentTimeMillis() - Long.parseLong(parts[1]));
+                        break;
+                    case "activePaddlePowerUp":
                         gameManager.setActivePowerUpByName(parts[1]);
                         break;
                     case "bricks":
-                        gameManager.getBricks().clear();
-                        int n = parts.length;
-                        for (int i = 1; i < n; i += 4) {
-                            double x = Double.parseDouble(parts[i + 1]);
-                            double y = Double.parseDouble(parts[i + 2]);
-                            int health = Integer.parseInt(parts[i + 3]);
-
-                            if (parts[i].equals("NormalBrick")) {
-                                gameManager.getBricks().add(new NormalBrick("/images/brick 1.png", x, y, 80, 25, health));
-                            } else if (parts[i].equals("StrongBrick")) {
-                                gameManager.getBricks().add(new StrongBrick("/images/brick 6.png", x, y, 80, 25, health));
+                        List<Brick> bricks = new ArrayList<>();
+                        while ((line = reader.readLine()) != null && !line.startsWith("steels")) {
+                            String[] parts2 = line.split("\\s+");
+                            if (parts2[0].equals("NormalBrick")) {
+                                bricks.add(new NormalBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 20, Integer.parseInt(parts2[4])));
+                            } else if (parts2[0].equals("StrongBrick")) {
+                                bricks.add(new StrongBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 20, Integer.parseInt(parts2[4])));
                             }
                         }
+                        gameManager.setBricks(bricks);
                         break;
                     case "steels":
+                        List<Steel> steels = new ArrayList<>();
                         int n1 = parts.length;
-                        for (int i = 1; i < n1; i += 2) {
-                            double x = Double.parseDouble(parts[i]);
-                            double y = Double.parseDouble(parts[i + 1]);
-
-                            gameManager.getSteels().add(new Steel("", x, y, 80, 25));
-                        }
-                        break;
-                    case "powerUps":
-                        gameManager.getPowerUps().clear();
-                        int n2 = parts.length;
-                        for (int i = 1; i < n2; i+=3) {
+                        for (int i = 1; i < n1; i += 3) {
+                            String path = parts[i];
                             double x = Double.parseDouble(parts[i + 1]);
                             double y = Double.parseDouble(parts[i + 2]);
 
-                            if (parts[i].equals("ExpandPaddlePowerUp")) {
-                                gameManager.getPowerUps().add(new ExpandPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 5000));
-                            } else if (parts[i].equals("ShrinkPaddle")) {
-                                // gameManager.getPowerUps().add(new ShrinkPaddle(x, y, 20, 20, 5000));
-                            }  else if (parts[i].equals("FastBallPowerUp")) {
-                                gameManager.getPowerUps().add(new FastBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 5000, gameManager.getBall()));
-                            } else if (parts[i].equals("SlowBall")) {
-
-                            } else if (parts[i].equals("TinyBall")) {
-
-                            }
+                            steels.add(new Steel(path, x, y, 80, 20));
                         }
+                        gameManager.setSteels(steels);
                         break;
+//                    case "powerUps":
+//                        gameManager.getPowerUps().clear();
+//                        int n2 = parts.length;
+//                        for (int i = 1; i < n2; i+=3) {
+//                            double x = Double.parseDouble(parts[i + 1]);
+//                            double y = Double.parseDouble(parts[i + 2]);
+//
+//                            if (parts[i].equals("ExpandPaddlePowerUp")) {
+//                                gameManager.getPowerUps().add(new ExpandPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 5000));
+//                            } else if (parts[i].equals("ShrinkPaddle")) {
+//                                // gameManager.getPowerUps().add(new ShrinkPaddle(x, y, 20, 20, 5000));
+//                            }  else if (parts[i].equals("FastBallPowerUp")) {
+//                                gameManager.getPowerUps().add(new FastBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 5000, gameManager.getBall()));
+//                            } else if (parts[i].equals("SlowBall")) {
+//
+//                            } else if (parts[i].equals("TinyBall")) {
+//
+//                            }
+//                        }
+//                        break;
                 }
             }
+            List<PowerUp> powerUps = new ArrayList<>();
+            gameManager.setPowerUps(powerUps);
             gameManager.setGameState(GameManager.GameState.PLAYING);
             reader.close();
         } catch (Exception e) {
             System.out.println("Can't read the save.txt file!");
         }
     }
+
+    public int getLives() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/data/save.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\s+");
+                if (parts[0].equals("lives")) {
+                    return Integer.parseInt(parts[1]);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Can't read the save.txt file in getLives()");
+        }
+        return 0;
+    }
+
 }

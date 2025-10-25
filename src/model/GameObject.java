@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 public abstract class GameObject {
     protected double x, y, width, height;
     protected Image image;
-
+    protected String path;
 
     public GameObject( String imagePath, double x, double y, double width, double height) {
         this.x = x;
@@ -14,6 +14,7 @@ public abstract class GameObject {
         this.width = width;
         this.height = height;
         image = new Image(imagePath);
+        path = imagePath;
     }
 
     public double getX() {
@@ -54,6 +55,10 @@ public abstract class GameObject {
 
     public void setImage(String path) {
         image = new Image(path);
+    }
+
+    public String getPath() {
+        return path;
     }
 
     // Phương thức kiểm tra va chạm giữa hai GameObject

@@ -3,15 +3,16 @@
 package controller;
 
 import model.*;
-import model.ExplosiveBrick;
 import view.Renderer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.nio.file.*;
-import java.io.IOException;
-
+import java.util.HashSet;
+import java.util.Set;
 
 // Import JavaFX KeyCode để so sánh (nếu bạn muốn)
 import javafx.scene.input.KeyCode;
@@ -27,32 +28,34 @@ public class GameManager {
     private int lives;
     private GameState gameState;
     private Renderer renderer;
-    private long lastPowerUpTime;
-    private PowerUp activePowerUp;
-
+    private long lastBallPowerUpTime;
+    private long lastPaddlePowerUpTime;
+    private PowerUp activeBallPowerUp;
+    private PowerUp activePaddlePowerUp;
+    private final Set<KeyCode> pressedKeys = new HashSet<>();
     public enum GameState {
         START, PLAYING, PAUSED, GAME_OVER, LEVEL_COMPLETE
     }
 
     public GameManager(Renderer renderer) {
         this.renderer = renderer;
-        initializeGame();
     }
 
-    private void initializeGame() {
-        paddle = new Paddle("/images/paddle2.png",350, 550, 100, 20, 5);
-        ball = new Ball("/images/normal_ball.png",395, 530, 15, 15, 2.5, 1, -1);
+    public void initializeGame() {
+        paddle = new Paddle("/images/paddle2.png",350, 550);
+        ball = new Ball("/images/ball1.png",395, 530, 1, -1);
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         steels = new ArrayList<>();
         score = 0;
         lives = 3;
         gameState = GameState.START;
-        lastPowerUpTime = 0;
-        activePowerUp = null;
+        lastBallPowerUpTime = 0;
+        lastPaddlePowerUpTime = 0;
+        activeBallPowerUp = null;
+        activePaddlePowerUp = null;
 
     }
-
     public void loadLevel(String filename) {
         bricks.clear();
         try {
@@ -77,15 +80,15 @@ public class GameManager {
                     double y = marginTop + rowIndex * (brickHeight + gap);
 
                     if (c == '1') {
-                        bricks.add(new NormalBrick("/images/brick 1.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new NormalBrick("/images/brick1.png", x, y, brickWidth, brickHeight));
                     } else if (c == '2') {
-                        bricks.add(new StrongBrick("/images/brick 6.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new StrongBrick("/images/brick6.png", x, y, brickWidth, brickHeight));
                     } else if (c == '3') {
-                        bricks.add(new ExplosiveBrick("/images/brick 2.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new ExplosiveBrick("/images/brick2.png", x, y, brickWidth, brickHeight));
                     } else if (c == '4') {
-                        bricks.add(new GlassBrick("/images/brick 2.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new GlassBrick("/images/brick2.png", x, y, brickWidth, brickHeight));
                     } else if (c == '9') {
-                        steels.add((new Steel("/images/brick 2.png", x, y, brickWidth, brickHeight)));
+                        steels.add((new Steel("/images/brick2.png", x, y, brickWidth, brickHeight)));
                     }
                     colIndex++;
                 }
@@ -97,53 +100,82 @@ public class GameManager {
         }
     }
 
+//    private void initializeGame() {
+//        paddle = new Paddle("/images/paddle2.png",350, 550, 100, 20, 5);
+//        ball = new Ball("/images/normal_ball.png",395, 530, 15, 15, 2.5, 1, -1);
+//        bricks = new ArrayList<>();
+//        powerUps = new ArrayList<>();
+//        steels = new ArrayList<>();
+//        score = 0;
+//        lives = 3;
+//        gameState = GameState.START;
+//        lastPowerUpTime = 0;
+//        activePowerUp = null;
+//        loadLevel("level1.txt");
+//    }
 
-    public void enterTheGame() {
-        System.out.println("Game Started!");
-        gameState = GameState.START;
-    }
-
-    public  void startGame() {
+    public void startGame() {
         System.out.println("Game Started!");
         gameState = GameState.PLAYING;
     }
+
     public void updateGame() {
         if (gameState != GameState.PLAYING) {
             return;
         }
-
+        if (pressedKeys.contains(KeyCode.LEFT) && !pressedKeys.contains(KeyCode.RIGHT)) {
+            paddle.moveLeft();
+        } else if (pressedKeys.contains(KeyCode.RIGHT) && !pressedKeys.contains(KeyCode.LEFT)) {
+            paddle.moveRight();
+        } else {
+            paddle.stop();
+        }
+        ball.updateRotation();
         paddle.update();
         ball.move(paddle);
 
-        if (activePowerUp != null) {
-            if (System.currentTimeMillis() - lastPowerUpTime > activePowerUp.getDuration()) {
-                activePowerUp.removeEffect(paddle);
-                activePowerUp = null;
-                System.out.println("PowerUp effect ended.");
+
+        if (activeBallPowerUp != null) {
+            if (System.currentTimeMillis() - lastBallPowerUpTime > activeBallPowerUp.getDuration()) {
+                activeBallPowerUp.removeEffect(paddle);
+                activeBallPowerUp = null;
             }
         }
-
+        if (activePaddlePowerUp != null) {
+            if (System.currentTimeMillis() - lastPaddlePowerUpTime > activePaddlePowerUp.getDuration()) {
+                activePaddlePowerUp.removeEffect(paddle);
+                activePaddlePowerUp = null;
+            }
+        }
         Iterator<PowerUp> powerUpIterator = powerUps.iterator();
         while (powerUpIterator.hasNext()) {
             PowerUp pu = powerUpIterator.next();
             pu.update();
-            if (pu.getY() > 600) { // Nếu PowerUp rơi ra khỏi màn hình
+            if (pu.getY() > 600) {
                 powerUpIterator.remove();
-            } else if (paddle.checkCollision(pu)) { // Kiểm tra va chạm với paddle
+            } else if (paddle.checkCollision(pu)) {
                 paddle.applyPowerUp(pu);
-                // Với FastBallPowerUp, cần truyền ball vào cho nó biết để thay đổi speed
                 if (pu instanceof FastBallPowerUp) {
-                    ((FastBallPowerUp) pu).setGameBall(ball); // Đảm bảo ball được truyền
+                    ((FastBallPowerUp) pu).setGameBall(ball);
+                    activeBallPowerUp = pu;
+                    lastBallPowerUpTime = System.currentTimeMillis();
+                } else if (pu instanceof ExtraLifePowerUp) {
+                    if (lives < 5) {
+                        this.lives ++;
+                    }
+                } else if (pu instanceof FireBallPowerUp) {
+                    ((FireBallPowerUp) pu).setGameBall(ball);
+                    activeBallPowerUp = pu;
+                    lastBallPowerUpTime = System.currentTimeMillis();
+                } else {
+                    activePaddlePowerUp = pu;
+                    lastPaddlePowerUpTime = System.currentTimeMillis();
                 }
-                activePowerUp = pu;
-                lastPowerUpTime = System.currentTimeMillis();
                 powerUpIterator.remove();
             }
         }
-
         checkCollisions();
-
-        if (lives <= 0) {
+        if (lives == 0) {
             gameOver();
         }
         if (bricks.isEmpty()) {
@@ -158,28 +190,24 @@ public class GameManager {
         if (!ball.isActive() && keyCodeOrdinal == KeyCode.ENTER.ordinal()) {
             ball.setActive(true);
         }
-        if (keyCodeOrdinal == KeyCode.LEFT.ordinal()) { // Left arrow
-            paddle.moveLeft();
-        } else if (keyCodeOrdinal == KeyCode.RIGHT.ordinal()) { // Right arrow
-            paddle.moveRight();
-        } else if (keyCodeOrdinal == KeyCode.SPACE.ordinal()) { // Spacebar
-            if (gameState == GameState.PLAYING) {
-                gameState = GameState.PAUSED;
-                System.out.println("Game Paused!");
-            } else if (gameState == GameState.PAUSED) {
-                gameState = GameState.PLAYING;
-                System.out.println("Game Resumed!");
-            }
-        }
+//        if (keyCodeOrdinal == KeyCode.LEFT.ordinal()) {
+//            paddle.moveLeft();
+//        } else if (keyCodeOrdinal == KeyCode.RIGHT.ordinal()) {
+//            paddle.moveRight();
+//        }
+        KeyCode key = KeyCode.values()[keyCodeOrdinal];
+        pressedKeys.add(key);
     }
 
     /**
      * Dừng di chuyển Paddle khi nhả phím (sử dụng KeyCode.ordinal() từ JavaFX).
      */
     public void handleKeyReleased(int keyCodeOrdinal) {
-        if (keyCodeOrdinal == KeyCode.LEFT.ordinal() || keyCodeOrdinal == KeyCode.RIGHT.ordinal()) {
-            paddle.stop();
-        }
+//        if (keyCodeOrdinal == KeyCode.LEFT.ordinal() || keyCodeOrdinal == KeyCode.RIGHT.ordinal()) {
+//            paddle.stop();
+//        }
+        KeyCode key = KeyCode.values()[keyCodeOrdinal];
+        pressedKeys.remove(key);
     }
 
 
@@ -191,28 +219,30 @@ public class GameManager {
             ball.setDirectionY(-ball.getDirectionY());
         }
         if (ball.getY() + ball.getHeight() >= 600) {
-            if(activePowerUp != null) {
-                activePowerUp.removeEffect(paddle);
-            }
             ball.setActive(false);
+            if(activeBallPowerUp != null) {
+                activeBallPowerUp.removeEffect(paddle);
+                activeBallPowerUp = null;
+            }
+            if(activePaddlePowerUp != null) {
+                activePaddlePowerUp.removeEffect(paddle);
+                activePaddlePowerUp = null;
+            }
             lives--;
-            System.out.println("Ball fell! Lives remaining: " + lives);
-            ball.setX(395);
-            ball.setY(530);
-            ball.setDirectionY(-1);
-            ball.setDirectionX(1);
-            paddle.setX(350);
-            ball.setOriginalSpeed();
             if (lives <= 0) {
                 gameOver();
             }
+            ball.setX(395);
+            ball.setY(530);
+            ball.setDirectionX(1);
+            ball.setDirectionY(-1);
+            paddle.setX(350);
         }
 
         if (ball.checkCollision(paddle)) {
             ball.bounceOff(paddle);
         }
 
-        // kiểm tra va chạm của bóng và Steel để chuyển hướng của bóng;
         Iterator<Steel> steelIterator = steels.iterator();
         while (steelIterator.hasNext()) {
             Steel steel = steelIterator.next();
@@ -225,69 +255,72 @@ public class GameManager {
         while (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
             if (ball.checkCollision(brick)) {
-                ball.bounceOff(brick);
-                brick.takeHit();
+                if(activeBallPowerUp != null && activeBallPowerUp instanceof FireBallPowerUp) {
+                    brick.takeDestroy();
+                } else {
+                    ball.bounceOff(brick);
+                    brick.takeHit();
+                }
                 if (brick.isDestroyed()) {
-                    System.out.println(brick.getType() + " Brick destroyed!");
-                    score += 10;
-                    if (brick instanceof ExplosiveBrick) {
-                        ((ExplosiveBrick) brick).explode(bricks, brick);
-                    }
+                    score++;
                     // brickIterator.remove();
+                    if (brick instanceof ExplosiveBrick) {
+                        ExplosiveBrick temp = (ExplosiveBrick) brick;
+                        temp.explode(bricks);
+                    }
                     if (Math.random() < 0.2) {
-                        PowerUp newPowerUp;
-                        if (Math.random() < 0.5) {
-                            newPowerUp = new ExpandPaddlePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000);
+                        PowerUp newPowerup;
+                        double rand = Math.random();
+                        if (rand < 0.2) {
+                            newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000);
+                        } else if (rand < 0.4) {
+                            newPowerup = new FastBallPowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000, ball);
+                        } else if (rand < 0.6) {
+                            newPowerup = new ExtraLifePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20);
+                        }  else if (rand < 0.8) {
+                            newPowerup = new FireBallPowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000,ball);
                         } else {
-                            // Cần đảm bảo FastBallPowerUp có tham chiếu đến ball
-                            newPowerUp = new FastBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 7000, ball);
+                            newPowerup = new ShrinkPaddlePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000);
                         }
-                        powerUps.add(newPowerUp);
+                        powerUps.add(newPowerup);
                     }
                 }
             }
+
         }
 
-        // Xóa những gạch bị hết máu.
         for (int i = 0; i < bricks.size(); i++) {
             if (bricks.get(i).isDestroyed()) {
                 score++;
                 bricks.remove(i);
             }
         }
+
     }
 
     public void gameOver() {
         gameState = GameState.GAME_OVER;
-        System.out.println("GAME OVER! Final Score: " + score);
     }
 
     public void levelComplete() {
         gameState = GameState.LEVEL_COMPLETE;
-        System.out.println("LEVEL COMPLETE! Score: " + score);
     }
 
     public void renderAll() {
-        // Render logic đã được chuyển sang Renderer.draw()
-        // Các lời gọi .render() trong các đối tượng model chỉ dùng để debug console
         paddle.render();
         ball.render();
-
         for (Brick brick : bricks) {
             brick.render();
         }
-
         for (Steel steel : steels) {
             steel.render();
         }
-
         for (PowerUp powerUp : powerUps) {
             powerUp.render();
         }
-
-        System.out.println("Score: " + score + ", Lives: " + lives + ", GameState: " + gameState);
         renderer.drawScoreAndLives(score, lives);
     }
+
     public GameState getGameState() {
         return gameState;
     }
@@ -300,20 +333,40 @@ public class GameManager {
         return paddle;
     }
 
+    public void setPaddle(Paddle paddle) {
+        this.paddle = paddle;
+    }
+
     public Ball getBall() {
         return ball;
+    }
+
+    public void setBall(Ball ball) {
+        this.ball = ball;
     }
 
     public List<Brick> getBricks() {
         return bricks;
     }
 
+    public void setBricks(List<Brick> bricks) {
+        this.bricks = bricks;
+    }
+
     public List<PowerUp> getPowerUps() {
         return powerUps;
     }
 
+    public void setPowerUps(List<PowerUp> powerUps) {
+        this.powerUps = powerUps;
+    }
+
     public List<Steel> getSteels() {
         return steels;
+    }
+
+    public void setSteels(List<Steel> steels) {
+        this.steels = steels;
     }
 
     public int getScore() {
@@ -324,14 +377,21 @@ public class GameManager {
         return lives;
     }
 
-    public PowerUp getActivePowerUp() {
-        return activePowerUp;
+    public PowerUp getBallActivePowerUp() {
+        return activeBallPowerUp;
     }
 
-    public long getLastPowerUpTime() {
-        return lastPowerUpTime;
+    public PowerUp getPaddleActivePowerUp() {
+        return activePaddlePowerUp;
     }
 
+    public long getPaddleLastPowerUpTime() {
+        return lastPaddlePowerUpTime;
+    }
+
+    public long getBallLastPowerUpTime() {
+        return lastBallPowerUpTime;
+    }
     public void setScore(int score) {
         this.score = score;
     }
@@ -340,21 +400,38 @@ public class GameManager {
         this.lives = lives;
     }
 
-    public void setLastPowerUpTime(long lastPowerUpTime) {
-        this.lastPowerUpTime = lastPowerUpTime;
+    public void setBallLastPowerUpTime(long lastBallPowerUpTime) {
+        this.lastBallPowerUpTime = lastBallPowerUpTime;
     }
 
-    public void setActivePowerUp(PowerUp activePowerUp) {
-        this.activePowerUp = activePowerUp;
+    public void setPaddleLastPowerUpTime(long lastPaddlePowerUpTime) {
+        this.lastPaddlePowerUpTime = lastPaddlePowerUpTime;
+    }
+
+    public void setBallActivePowerUp(PowerUp activeBallPowerUp) {
+        this.activeBallPowerUp = activeBallPowerUp;
+    }
+
+    public void setPaddleActivePowerUp(PowerUp activePaddlePowerUp) {
+        this.activePaddlePowerUp = activePaddlePowerUp;
     }
 
     public void setActivePowerUpByName(String className) {
+        if(className.equals("null")){
+            return;
+        }
         if (className.equals("ExpandPaddlePowerUp")) {
-            this.activePowerUp = new ExpandPaddlePowerUp("/images/slow_ball.png", paddle.getX(), paddle.getY(), 0, 0, 5000);
-            activePowerUp.applyEffect(paddle);
+            this.activePaddlePowerUp = new ExpandPaddlePowerUp("/images/slow_ball.png",paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
+            activePaddlePowerUp.applyEffect(paddle);
         } else if (className.equals("FastBallPowerUp")) {
-            this.activePowerUp = new FastBallPowerUp("/images/slow_ball.png", ball.getX(), ball.getY(), 0, 0, 5000, ball);
-            activePowerUp.applyEffect(paddle);
+            this.activeBallPowerUp = new FastBallPowerUp("/images/slow_ball.png",ball.getX(), ball.getY(), 0, 0, 5000, ball);
+            activeBallPowerUp.applyEffect(paddle);
+        } else if (className.equals("FireBallPowerUp")) {
+            this.activeBallPowerUp = new FireBallPowerUp("/images/slow_ball.png",ball.getX(), ball.getY(), 0, 0, 5000, ball);
+            activeBallPowerUp.applyEffect(paddle);
+        } else if (className.equals("ShrinkPaddlePowerUp")) {
+            this.activePaddlePowerUp = new ShrinkPaddlePowerUp("/images/slow_ball.png",paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
+            activePaddlePowerUp.applyEffect(paddle);
         }
         // Thêm các power-up khác...
     }
