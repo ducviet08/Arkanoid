@@ -7,7 +7,7 @@ public class GlassBrick extends Brick{
     }
 
     public GlassBrick(String imagePath, double x, double y, double width, double height, int health) {
-        super(imagePath, x, y, width, height, health, "Glass");
+        super(imagePath, x, y, width, height, health);
     }
 
     @Override

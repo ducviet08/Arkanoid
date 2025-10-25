@@ -24,17 +24,20 @@ public class ExplosiveBrick extends Brick {
         return explosionDamage;
     }
 
-    public void explode(List<Brick> bricks) {
+    public void explode(List<Brick> bricks, Brick explosiveBrick) {
         for (Brick brick : bricks) {
-            if (brick == this || brick.isDestroyed()) {
+            if (brick == explosiveBrick || brick.isDestroyed()) {
                 continue;
             }
 
-            if (isNeighbor(brick)) {
+            if (isNeighbor(brick, explosiveBrick)) {
                 for (int i = 0; i < explosionDamage; i++) {
                     brick.takeHit();
                 }
-                System.out.println(" Brick hit! Health: " + brick.getHealth());
+                // System.out.println(brick.getType() + " Brick hit! Health: " + brick.getHealth());
+                if (brick.isDestroyed() && brick instanceof ExplosiveBrick) {
+                    explode(bricks, brick);
+                }
             }
         }
     }
@@ -42,14 +45,14 @@ public class ExplosiveBrick extends Brick {
     /**
      * Kiểm tra brick có phải là hàng xóm (xung quanh) không.
      */
-    private boolean isNeighbor(Brick other) {
+    private boolean isNeighbor(Brick other, Brick explosiveBrick) {
         double gap = 5;
         double brickWidth = 80;
         double brickHeight = 25;
 
         // Tính vị trí tương đối
-        double dx = Math.abs(this.x - other.getX());
-        double dy = Math.abs(this.y - other.getY());
+        double dx = Math.abs(explosiveBrick.getX() - other.getX());
+        double dy = Math.abs(explosiveBrick.getY() - other.getY());
 
         // Khoảng cách ngang giữa 2 brick liền kề
         double horizontalDistance = brickWidth + gap;
