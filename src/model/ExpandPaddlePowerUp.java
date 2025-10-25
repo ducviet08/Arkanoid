@@ -1,6 +1,8 @@
 // Arkanoid/model/ExpandPaddlePowerUp.java
 package model;
 
+import static Arkanoid.Main.paddleImage;
+
 public class ExpandPaddlePowerUp extends PowerUp {
     private static final double EXPAND_AMOUNT = 50; // Lượng mở rộng thêm cho paddle
 
@@ -21,7 +23,7 @@ public class ExpandPaddlePowerUp extends PowerUp {
 
     @Override
     public void removeEffect(Paddle paddle) {
-        paddle.setImage("/images/paddle2.png");
+        paddle.setImage(paddleImage);
         System.out.println("ExpandPaddle PowerUp deactivated!");
         paddle.resetWidth(); // Trở về kích thước ban đầu
     }

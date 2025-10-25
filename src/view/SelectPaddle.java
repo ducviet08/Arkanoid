@@ -13,7 +13,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import static Arkanoid.Main.paddleImage;
+
 public class SelectPaddle {
+    private String pathPaddle;
     private Button createpaddleButton(String path, double x, double y) {
         Image image = new Image(getClass().getResourceAsStream(path));
         ImageView view = new ImageView(image);
@@ -46,6 +49,14 @@ public class SelectPaddle {
 
         Button paddle1 = createpaddleButton("/images/paddle.png", 350, 350);
         EventHandler<ActionEvent> handler = event -> {
+            Button clicked = (Button) event.getSource(); // nút nào được nhấn
+            ImageView view = (ImageView) clicked.getGraphic();
+            Image img = view.getImage();
+            if(clicked == paddle1) {
+                pathPaddle = "/images/paddle.png";
+            }
+            paddleImage = pathPaddle;
+            main.Continue = false;
            main.startGame();
         };
 

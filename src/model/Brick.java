@@ -3,12 +3,10 @@ package model;
 
 public abstract class Brick extends GameObject {
     protected int health;
-    protected String type; // Normal, Strong, Invisible
 
-    public Brick(String imagePath, double x, double y, double width, double height, int health, String type) {
+    public Brick(String imagePath, double x, double y, double width, double height, int health) {
         super(imagePath, x, y, width, height);
         this.health = health;
-        this.type = type;
     }
 
     /** getter function. */
@@ -16,19 +14,23 @@ public abstract class Brick extends GameObject {
         return health;
     }
 
-    public String getType() {
-        return type;
-    }
+//    public String getType() {
+//        return type;
+//    }
 
     public void takeHit() {
         health--;
-        System.out.println(type + " Brick hit! Health: " + health);
+        System.out.println(" Brick hit! Health: " + health);
     }
 
     public boolean isDestroyed() {
         return health <= 0;
     }
 
+    public void takeDestroy() {
+        health = 0;
+        System.out.println(" Brick destroyed!");
+    }
     @Override
     public void update() {
         // Gạch không di chuyển, không có logic update đặc biệt

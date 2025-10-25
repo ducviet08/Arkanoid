@@ -1,10 +1,12 @@
 // Arkanoid/model/ExpandPaddlePowerUp.java
 package model;
 
-public class ShrinkPaddle extends PowerUp {
+import static Arkanoid.Main.paddleImage;
+
+public class ShrinkPaddlePowerUp extends PowerUp {
     private static final double SHRINK_AMOUNT = 50; // Lượng mở rộng thêm cho paddle
 
-    public ShrinkPaddle(String pathImage, double x, double y, double width, double height, long duration) {
+    public ShrinkPaddlePowerUp(String pathImage, double x, double y, double width, double height, long duration) {
         super(pathImage, x, y, width, height, FALL_SPEED, duration);
     }
 
@@ -16,5 +18,6 @@ public class ShrinkPaddle extends PowerUp {
     @Override
     public void removeEffect(Paddle paddle) {
         paddle.resetWidth();
+        paddle.setImage(paddleImage);
     }
 }

@@ -92,6 +92,16 @@ public class Ball extends MovableObject {
         }
     }
 
+    private double rotationAngle = 0;
+
+    public void updateRotation() {
+        rotationAngle += 5; // tốc độ xoay, có thể tăng/giảm
+        if (rotationAngle >= 360) rotationAngle -= 360;
+    }
+
+    public double getRotationAngle() {
+        return rotationAngle;
+    }
     public void setOriginalSpeed() {
         super.setSpeed(ORIGINAL_SPEED);
     }

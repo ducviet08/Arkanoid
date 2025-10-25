@@ -6,17 +6,17 @@ public class ExplosiveBrick extends Brick {
     private int explosionDamage;
 
     public ExplosiveBrick(String imagePath, double x, double y, double width, double height) {
-        super(imagePath, x, y, width, height, 1, "Explosive");
+        super(imagePath, x, y, width, height, 1);
         this.explosionDamage = 1;
     }
 
     public ExplosiveBrick(String imagePath, double x, double y, double width, double height, int health) {
-        super(imagePath, x, y, width, height, health, "Explosive");
+        super(imagePath, x, y, width, height, health);
         this.explosionDamage = 1;
     }
 
     public ExplosiveBrick(String imagePath, double x, double y, double width, double height, int health, int explosionDamage) {
-        super(imagePath, x, y, width, height, health, "Explosive");
+        super(imagePath, x, y, width, height, health);
         this.explosionDamage = explosionDamage;
     }
 
@@ -34,7 +34,7 @@ public class ExplosiveBrick extends Brick {
                 for (int i = 0; i < explosionDamage; i++) {
                     brick.takeHit();
                 }
-                System.out.println(brick.getType() + " Brick hit! Health: " + brick.getHealth());
+                System.out.println(" Brick hit! Health: " + brick.getHealth());
             }
         }
     }
