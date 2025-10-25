@@ -10,8 +10,11 @@ import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
+import static Arkanoid.Main.ballImage;
+
 public class SelectBall {
 
+    private String pathBall;
     Pane root = new Pane();
 
     Image bgImage = new Image("/images/background.png");
@@ -49,7 +52,16 @@ public class SelectBall {
         Button ball3 = createBallButton("/images/ball3.png", 500, 300);
 
         EventHandler<ActionEvent> handler = event -> {
+            Button clicked = (Button) event.getSource(); // nút nào được nhấn
+            ImageView view = (ImageView) clicked.getGraphic();
+            Image img = view.getImage();
+
+            // Lấy path tương ứng của nút đó
+            if (clicked == ball1) pathBall = "/images/ball1.png";
+            else if (clicked == ball2) pathBall = "/images/ball2.png";
+            else if (clicked == ball3) pathBall = "/images/ball3.png";
             SelectPaddle select_paddle = new SelectPaddle();
+            ballImage = pathBall;
             stage.setScene(select_paddle.getScene(stage,main));
         };
         ball1.setOnAction(handler);

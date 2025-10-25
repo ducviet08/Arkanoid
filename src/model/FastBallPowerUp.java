@@ -1,6 +1,8 @@
 // Arkanoid/model/FastBallPowerUp.java
 package model;
 
+import static Arkanoid.Main.ballImage;
+
 public class FastBallPowerUp extends PowerUp {
     private static final double SPEED_MULTIPLIER = 1.5; // Tăng tốc bóng lên 1.5 lần
     private Ball gameBall; // Tham chiếu đến quả bóng chính của game
@@ -29,7 +31,7 @@ public class FastBallPowerUp extends PowerUp {
         System.out.println("FastBall PowerUp deactivated!");
         if (gameBall != null) {
             gameBall.setOriginalSpeed();
-            gameBall.setImage("/images/normal_ball.png");
+            gameBall.setImage(ballImage);
         }
     }
 }
