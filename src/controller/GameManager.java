@@ -196,14 +196,14 @@ public class GameManager {
         }
 
         if (ball.checkCollision(paddle)) {
-            ball.bounceOff(paddle, activePowerUp, paddle);
+            ball.bounceOff(paddle, activePowerUp);
         }
 
         Iterator<Steel> steelIterator = steels.iterator();
         while (steelIterator.hasNext()) {
             Steel steel = steelIterator.next();
             if (ball.checkCollision(steel)) {
-                ball.bounceOff(steel, activePowerUp, paddle);
+                ball.bounceOff(steel, activePowerUp);
             }
         }
 
@@ -211,7 +211,7 @@ public class GameManager {
         while (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
             if (ball.checkCollision(brick)) {
-                ball.bounceOff(brick, activePowerUp, paddle);
+                ball.bounceOff(brick, activePowerUp);
                 brick.takeHit();
                 if (brick.isDestroyed()) {
                     score++;
@@ -222,7 +222,7 @@ public class GameManager {
                     }
                     if (Math.random() < 0.2) {
                         PowerUp newPowerup;
-                        if(Math.random() < 0.35) {
+                        if(Math.random() < 10) {
                             newPowerup = new StickyPaddle("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 50000, ball);
                         } else if (Math.random() < 0.5) {
                             newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000);
@@ -335,7 +335,7 @@ public class GameManager {
             this.activePowerUp = new ExpandPaddlePowerUp("/images/slow_ball.png",paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
             activePowerUp.applyEffect(paddle);
         } else if (className.equals("FastBallPowerUp")) {
-            this.activePowerUp = new FastBallPowerUp("/images/slow_ball.png",ball.getX(), ball.getY(), 0, 0, 5000, ball);
+            this.activePowerUp = new FastBallPowerUp("/images/slow_ball.png", ball.getX(), ball.getY(), 0, 0, 5000, ball);
             activePowerUp.applyEffect(paddle);
         }
         // Thêm các power-up khác...

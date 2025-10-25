@@ -3,8 +3,8 @@ package model;
 
 public class Ball extends MovableObject {
     private boolean active;
-    private final double MAX_ANGLE = Math.toRadians(75);
-    public static final double ORIGINAL_SPEED = 3.5;
+    public static final double MAX_ANGLE = Math.toRadians(75);
+    public static final double ORIGINAL_SPEED = 2;
     public static final double ORIGINAL_HEIGHT = 15;
     public static final double ORIGINAL_WIDTH = 15;
 
@@ -17,21 +17,26 @@ public class Ball extends MovableObject {
 
     @Override
     public void update() {
-            super.update();
+        super.update();
         // Giới hạn bóng trong các cạnh màn hình
         // Xảy ra ở GameManager, nhưng có thể thêm logic ở đây nếu muốn Ball tự quản lý biên
     }
 
-    public void move(Paddle paddle) {
+    public void move(Paddle paddle, PowerUp activePowerUp) {
         if (active) {
             update();
+        } else if (paddle.isSticky() && activePowerUp instanceof StickyPaddle stickyPaddle
+                && stickyPaddle.isStuck()) {
+            // kiểm tra nếu đang dính trên paddle trong StickyPaddle thì di chuyển theo vị trí của Paddle
+            x = paddle.getX() + stickyPaddle.getOffSetX();
+            y = paddle.getY() - height - 1;
         } else {
             x = paddle.getX() + paddle.getWidth() / 2 - getWidth() / 2;
             y = paddle.getY() - paddle.getHeight() / 2;
         }
     }
 
-    public void bounceOff(GameObject obj) {
+    public void bounceOff(GameObject obj, PowerUp activePowerUp) {
         // Xác định va chạm từ phía nào để thay đổi hướng cho phù hợp
         double ballCenterX = this.x + this.width / 2;
         double ballCenterY = this.y + this.height / 2;
@@ -71,22 +76,26 @@ public class Ball extends MovableObject {
 
                 // Nếu va chạm với Paddle, điều chỉnh hướng X dựa trên vị trí va chạm
                 if (obj instanceof Paddle) {
-                    if(this.y < obj.getY()) { // chỉ xử lý khi va chạm mặt trên của paddle
-                        ballCenterX = x + width / 2.0;
-                        double paddleCenterX = obj.getX() + obj.getWidth() / 2.0;
-                        double relativeIntersect = (ballCenterX - paddleCenterX) / (obj.getWidth() / 2.0);
+                    if (this.y < obj.getY()) { // chỉ xử lý khi va chạm mặt trên của paddle
+                        // xử lý trường hợp dính trên Paddle
+                        if (activePowerUp instanceof StickyPaddle stickyPaddle && ((Paddle)obj).isSticky()) {
+                            stickyPaddle.onBallHitPaddle(this, (Paddle) obj);
+                        } else {
+                            ballCenterX = x + width / 2.0;
+                            double paddleCenterX = obj.getX() + obj.getWidth() / 2.0;
+                            double relativeIntersect = (ballCenterX - paddleCenterX) / (obj.getWidth() / 2.0);
 
-                        // Giới hạn lại giá trị [-1, 1]
-                        relativeIntersect = Math.max(-1, Math.min(1, relativeIntersect));
+                            // Giới hạn lại giá trị [-1, 1]
+                            relativeIntersect = Math.max(-1, Math.min(1, relativeIntersect));
 
-                        // Góc bật (0 = giữa, ±MAX_ANGLE = hai mép)
-                        double bounceAngle = relativeIntersect * MAX_ANGLE;
+                            // Góc bật (0 = giữa, ±MAX_ANGLE = hai mép)
+                            double bounceAngle = relativeIntersect * MAX_ANGLE;
 
-                        // Tính lại hướng bóng
-                        directionX = Math.sin(bounceAngle);
-                        directionY = -Math.cos(bounceAngle);
-
-                   }
+                            // Tính lại hướng bóng
+                            directionX = Math.sin(bounceAngle);
+                            directionY = -Math.cos(bounceAngle);
+                        }
+                    }
                 }
             }
         }
@@ -107,6 +116,7 @@ public class Ball extends MovableObject {
     public boolean isActive() {
         return active;
     }
+
     public void setActive(boolean active) {
         this.active = active;
     }
