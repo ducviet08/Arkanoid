@@ -8,6 +8,8 @@ public class Ball extends MovableObject {
     public static final double ORIGINAL_HEIGHT = 15;
     public static final double ORIGINAL_WIDTH = 15;
 
+    private double offset;
+
     public Ball(String imagePath, double x, double y, double directionX, double directionY) {
         super(imagePath, x, y, ORIGINAL_WIDTH, ORIGINAL_HEIGHT, ORIGINAL_SPEED);
         this.directionX = directionX;
@@ -26,7 +28,7 @@ public class Ball extends MovableObject {
         if (active) {
             update();
         } else {
-            x = paddle.getX() + paddle.getWidth() / 2 - getWidth() / 2;
+            x = paddle.getX() + offset;
             y = paddle.getY() - paddle.getHeight() / 2;
         }
     }
@@ -119,6 +121,17 @@ public class Ball extends MovableObject {
     }
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public  double getOffset() {
+        return offset;
+    }
+    public void setOffset(double offsetX) {
+        this.offset = offsetX;
+    }
+
+    public void setOriginalOffset(Paddle paddle) {
+        this.offset = paddle.getWidth() / 2 - this.width / 2;
     }
 
     @Override
