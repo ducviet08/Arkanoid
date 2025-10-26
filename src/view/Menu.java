@@ -67,6 +67,12 @@ public class Menu {
                 main.startGame();
             }
         });
+
+        button3.setOnAction(e -> {
+            HighScoreScreen highScoreScreen = new HighScoreScreen();
+            stage.setScene(highScoreScreen.getScene(stage, main));
+        });
+
         root.getChildren().addAll(button1, button2, button3);
         root.setBackground(new Background(backgroundImage));
 
