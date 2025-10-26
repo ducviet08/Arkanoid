@@ -42,8 +42,8 @@ public class GameManager {
     }
 
     public void initializeGame() {
-        paddle = new Paddle("/images/paddle2.png",350, 550);
-        ball = new Ball("/images/ball1.png",395, 530, 1, -1);
+        paddle = new Paddle("file:src/images/paddle2.png",350, 550);
+        ball = new Ball("file:src/images/ball1.png",395, 530, 1, -1);
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         steels = new ArrayList<>();
@@ -80,15 +80,15 @@ public class GameManager {
                     double y = marginTop + rowIndex * (brickHeight + gap);
 
                     if (c == '1') {
-                        bricks.add(new NormalBrick("/images/brick1.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new NormalBrick("file:src/images/brick1.png", x, y, brickWidth, brickHeight));
                     } else if (c == '2') {
-                        bricks.add(new StrongBrick("/images/brick6.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new StrongBrick("file:src/images/brick6.png", x, y, brickWidth, brickHeight));
                     } else if (c == '3') {
-                        bricks.add(new ExplosiveBrick("/images/brick2.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new ExplosiveBrick("file:src/images/brick2.png", x, y, brickWidth, brickHeight));
                     } else if (c == '4') {
-                        bricks.add(new GlassBrick("/images/brick2.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new GlassBrick("file:src/images/brick2.png", x, y, brickWidth, brickHeight));
                     } else if (c == '9') {
-                        steels.add((new Steel("/images/brick2.png", x, y, brickWidth, brickHeight)));
+                        steels.add((new Steel("file:src/images/brick2.png", x, y, brickWidth, brickHeight)));
                     }
                     colIndex++;
                 }

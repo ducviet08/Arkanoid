@@ -8,7 +8,7 @@ public abstract class GameObject {
     protected Image image;
     protected String path;
 
-    public GameObject( String imagePath, double x, double y, double width, double height) {
+    public GameObject(String imagePath, double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;

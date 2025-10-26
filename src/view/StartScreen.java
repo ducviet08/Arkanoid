@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 public class StartScreen {
     public Scene getScene(Stage stage,Main main) {
         Pane root = new Pane();
-        Image bgImage = new Image("/images/background.png");
+        Image bgImage = new Image("file:src/images/background.png");
         BackgroundImage backgroundImage = new BackgroundImage(
                 bgImage,
                 BackgroundRepeat.NO_REPEAT,

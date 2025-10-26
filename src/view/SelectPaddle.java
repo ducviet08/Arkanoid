@@ -18,7 +18,7 @@ import static Arkanoid.Main.paddleImage;
 public class SelectPaddle {
     private String pathPaddle;
     private Button createpaddleButton(String path, double x, double y) {
-        Image image = new Image(getClass().getResourceAsStream(path));
+        Image image = new Image((path));
         ImageView view = new ImageView(image);
         view.setFitWidth(100);
         view.setFitHeight(30);
@@ -35,7 +35,7 @@ public class SelectPaddle {
     public Scene getScene(Stage stage,Main main) {
         Pane root = new Pane();
 
-        Image bgImage = new Image("/images/background.png");
+        Image bgImage = new Image("file:src/images/background.png");
         BackgroundImage backgroundImage = new BackgroundImage(
                 bgImage,
                 BackgroundRepeat.NO_REPEAT,
@@ -47,13 +47,13 @@ public class SelectPaddle {
         );
         // round là cái bàm hình gameplay nhá
 
-        Button paddle1 = createpaddleButton("/images/paddle.png", 350, 350);
+        Button paddle1 = createpaddleButton("file:src/images/paddle.png", 350, 350);
         EventHandler<ActionEvent> handler = event -> {
             Button clicked = (Button) event.getSource(); // nút nào được nhấn
             ImageView view = (ImageView) clicked.getGraphic();
             Image img = view.getImage();
             if(clicked == paddle1) {
-                pathPaddle = "/images/paddle.png";
+                pathPaddle = "file:src/images/paddle.png";
             }
             paddleImage = pathPaddle;
             main.Continue = false;

@@ -36,7 +36,7 @@ public class Menu {
 
         Pane root = new Pane();
 
-        Image bgImage = new Image("/images/background.png");
+        Image bgImage = new Image("file:src/images/background.png");
         BackgroundImage backgroundImage = new BackgroundImage(
                 bgImage,
                 BackgroundRepeat.NO_REPEAT,

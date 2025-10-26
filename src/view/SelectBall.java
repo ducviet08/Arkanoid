@@ -17,7 +17,7 @@ public class SelectBall {
     private String pathBall;
     Pane root = new Pane();
 
-    Image bgImage = new Image("/images/background.png");
+    Image bgImage = new Image("file:src/images/background.png");
     BackgroundImage backgroundImage = new BackgroundImage(
             bgImage,
             BackgroundRepeat.NO_REPEAT,
@@ -30,7 +30,7 @@ public class SelectBall {
 
     // tạo button
     private Button createBallButton(String path, double x, double y) {
-        Image image = new Image(getClass().getResourceAsStream(path));
+        Image image = new Image(path);
         ImageView view = new ImageView(image);
         view.setFitWidth(50);
         view.setFitHeight(50);
@@ -47,9 +47,9 @@ public class SelectBall {
     public Scene getScene(Stage stage,Main main) {
 
         //button ball
-        Button ball1 = createBallButton("/images/ball1.png", 200, 300);
-        Button ball2 = createBallButton("/images/ball2.png", 350, 300);
-        Button ball3 = createBallButton("/images/ball3.png", 500, 300);
+        Button ball1 = createBallButton("file:src/images/ball1.png", 200, 300);
+        Button ball2 = createBallButton("file:src/images/ball2.png", 350, 300);
+        Button ball3 = createBallButton("file:src/images/ball3.png", 500, 300);
 
         EventHandler<ActionEvent> handler = event -> {
             Button clicked = (Button) event.getSource(); // nút nào được nhấn
@@ -57,9 +57,9 @@ public class SelectBall {
             Image img = view.getImage();
 
             // Lấy path tương ứng của nút đó
-            if (clicked == ball1) pathBall = "/images/ball1.png";
-            else if (clicked == ball2) pathBall = "/images/ball2.png";
-            else if (clicked == ball3) pathBall = "/images/ball3.png";
+            if (clicked == ball1) pathBall = "file:src/images/ball1.png";
+            else if (clicked == ball2) pathBall = "file:src/images/ball2.png";
+            else if (clicked == ball3) pathBall = "file:src/images/ball3.png";
             SelectPaddle select_paddle = new SelectPaddle();
             ballImage = pathBall;
             stage.setScene(select_paddle.getScene(stage,main));
