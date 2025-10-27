@@ -87,6 +87,8 @@ public class GameManager {
                         bricks.add(new ExplosiveBrick("file:src/images/brick2.png", x, y, brickWidth, brickHeight));
                     } else if (c == '4') {
                         bricks.add(new GlassBrick("file:src/images/brick2.png", x, y, brickWidth, brickHeight));
+                    } else if (c == '5') {
+                        bricks.add(new TeleportBrick("file:src/images/brick1.png", x, y, brickWidth, brickHeight, bricks));
                     } else if (c == '9') {
                         steels.add((new Steel("file:src/images/brick2.png", x, y, brickWidth, brickHeight)));
                     }

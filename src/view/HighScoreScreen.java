@@ -41,8 +41,9 @@ public class HighScoreScreen {
             container.getChildren().add(noScoreLabel);
         } else {
             for (int i = 0; i < scores.size(); i++) {
-                int score = scores.get(i);
-                Label scoreLabel = new Label(String.format("%02d. %d", i + 1, score));
+                String name = scores.get(i).getPlayerName();
+                int score = scores.get(i).getPlayerScore();
+                Label scoreLabel = new Label(String.format("%02d. %s %d", i + 1, name, score));
                 scoreLabel.setFont(Font.font("Arial", 28));
                 scoreLabel.setTextFill(Color.WHITE);
                 container.getChildren().add(scoreLabel);

@@ -60,7 +60,7 @@ public class HighScoreManager {
 
             writer.close();
         } catch (Exception e) {
-            System.out.println("Can't read the highScore.txt file!");
+            System.out.println("Can't read the highScore.txt file");
         }
     }
 
