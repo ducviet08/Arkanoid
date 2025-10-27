@@ -59,7 +59,7 @@ public class GameManager {
         activePaddlePowerUp = null;
         lastMixPowerUpTime = 0;
         activeMixPowerUp = null;
-        ball.setOffset(paddle.getWidth() / 2 - ball.getWidth() / 2);
+        //ball.setOffset(paddle.getWidth() / 2 - ball.getWidth() / 2);
     }
 
     public void loadLevel(String filename) {
@@ -138,7 +138,7 @@ public class GameManager {
         }
         ball.updateRotation();
         paddle.update();
-        ball.move(paddle);
+        ball.move(paddle, activeMixPowerUp);
 
 
         if (activeBallPowerUp != null) {
@@ -156,7 +156,9 @@ public class GameManager {
         if (activeMixPowerUp != null) {
             if (System.currentTimeMillis() - lastMixPowerUpTime > activeMixPowerUp.getDuration()) {
                 activeMixPowerUp.removeEffect(paddle);
-                activeMixPowerUp = null;
+                if (!(activeMixPowerUp instanceof StickyPaddlePowerUp st && st.isStuck())) {
+                    activeMixPowerUp = null;
+                }
             }
         }
         Iterator<PowerUp> powerUpIterator = powerUps.iterator();
@@ -204,7 +206,11 @@ public class GameManager {
      */
     public void handleInput(int keyCodeOrdinal) {
         if (!ball.isActive() && keyCodeOrdinal == KeyCode.ENTER.ordinal()) {
-            ball.setActive(true);
+            if(activeMixPowerUp instanceof StickyPaddlePowerUp stickyPaddle && paddle.isSticky() && stickyPaddle.isStuck()) {
+                stickyPaddle.releaseBall(ball, paddle);
+            } else {
+                ball.setActive(true);
+            }
         }
 //        if (keyCodeOrdinal == KeyCode.LEFT.ordinal()) {
 //            paddle.moveLeft();
@@ -248,7 +254,7 @@ public class GameManager {
                 activeMixPowerUp.removeEffect(paddle);
                 activeMixPowerUp = null;
             }
-            ball.setOffset(paddle.getWidth() / 2 - ball.getWidth() / 2);
+            //ball.setOffset(paddle.getWidth() / 2 - ball.getWidth() / 2);
             lives--;
             if (lives <= 0) {
                 gameOver();
@@ -261,18 +267,19 @@ public class GameManager {
         }
 
         if (ball.checkCollision(paddle)) {
-            if ((activeMixPowerUp != null && activeMixPowerUp instanceof StickyPaddlePowerUp)||ball.isActive()) {
-                ball.setOffset(ball.getX() - paddle.getX());
-                ball.setActive(false);
-            }
-            ball.bounceOff(paddle);
+//            if (((activeMixPowerUp != null && activeMixPowerUp instanceof StickyPaddlePowerUp) || !ball.isActive())
+//                    && ball.getY() < paddle.getY()) {
+//                ball.setOffset(ball.getX() - paddle.getX());
+//                ball.setActive(false);
+//            }
+            ball.bounceOff(paddle, activeMixPowerUp);
         }
 
         Iterator<Steel> steelIterator = steels.iterator();
         while (steelIterator.hasNext()) {
             Steel steel = steelIterator.next();
             if (ball.checkCollision(steel)) {
-                ball.bounceOff(steel);
+                ball.bounceOff(steel, activeMixPowerUp);
             }
         }
 
@@ -283,7 +290,7 @@ public class GameManager {
                 if (activeBallPowerUp != null && activeBallPowerUp instanceof FireBallPowerUp) {
                     brick.takeDestroy();
                 } else {
-                    ball.bounceOff(brick);
+                    ball.bounceOff(brick, activeMixPowerUp);
                     brick.takeHit();
                 }
                 if (brick.isDestroyed()) {
@@ -294,21 +301,21 @@ public class GameManager {
                         temp.explode(bricks, brick);
                     }
 
-                    if (Math.random() < 0.2) {
+                    if (Math.random() < 0.5) {
                         PowerUp newPowerup;
                         double rand = Math.random();
                         if (rand < 0.15) {
                             newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000);
-                        } else if (rand < 0.3) {
+                        } else if (rand < 0.1) {
                             newPowerup = new FastBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000, ball);
-                        } else if (rand < 0.45) {
+                        } else if (rand < 0.2) {
                             newPowerup = new ExtraLifePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20);
-                        } else if (rand < 0.6) {
+                        } else if (rand < 0.1) {
                             newPowerup = new FireBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000, ball);
-                        } else if (rand < 0.8) {
+                        } else if (rand < 0.3) {
                             newPowerup = new ShrinkPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000);
                         } else {
-                            newPowerup = new StickyPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000, ball);
+                            newPowerup = new StickyPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, ball);
                         }
                         powerUps.add(newPowerup);
                     }
@@ -413,6 +420,10 @@ public class GameManager {
         return activePaddlePowerUp;
     }
 
+    public long getLastMixPowerUpTime() {
+        return lastMixPowerUpTime;
+    }
+
     public long getPaddleLastPowerUpTime() {
         return lastPaddlePowerUpTime;
     }
@@ -427,6 +438,10 @@ public class GameManager {
 
     public void setLives(int lives) {
         this.lives = lives;
+    }
+
+    public void setMixLastPowerTime(long ballMixPowerTime) {
+        this.lastMixPowerUpTime = ballMixPowerTime;
     }
 
     public void setBallLastPowerUpTime(long lastBallPowerUpTime) {

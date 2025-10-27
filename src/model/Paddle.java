@@ -6,6 +6,10 @@ public class Paddle extends MovableObject {
     public static final double ORIGINAL_HEIGHT = 20;
     public static final double ORIGINAL_SPEED = 5;
 
+    private double leftBoder = 0;   // Biên bên trái của Paddle
+    private double rightBoder = 800;
+    private boolean sticky = false;
+
     public Paddle(String imagePath, double x, double y) {
         super(imagePath, x, y, ORIGINAL_WIDTH, ORIGINAL_HEIGHT, ORIGINAL_SPEED);
     }
@@ -26,11 +30,11 @@ public class Paddle extends MovableObject {
     public void update() {
         super.update();
         // Giới hạn Paddle trong các cạnh màn hình (800 là WIDTH của game)
-        if (x < 0) {
-            x = 0;
+        if (x < leftBoder) {
+            x = leftBoder;
         }
-        if (x + width > 800) {
-            x = 800 - width;
+        if (x + width > rightBoder) {
+            x = rightBoder - width;
         }
     }
 
@@ -47,5 +51,29 @@ public class Paddle extends MovableObject {
         // Logic render đồ họa đã được chuyển sang Renderer.draw()
         // Đây chỉ là một placeholder cho debug console
         // System.out.println("Paddle at (" + (int)x + ", " + (int)y + "), width: " + (int)width + ", speed: " + speed + ", dirX: " + directionX);
+    }
+
+    public boolean isSticky() {
+        return sticky;
+    }
+
+    public void setSticky(boolean sticky) {
+        this.sticky = sticky;
+    }
+
+    public double getRightBoder() {
+        return rightBoder;
+    }
+
+    public double getLeftBoder() {
+        return leftBoder;
+    }
+
+    public void setLeftBoder(double leftBoder) {
+        this.leftBoder = leftBoder;
+    }
+
+    public void setRightBoder(double rightBoder) {
+        this.rightBoder = rightBoder;
     }
 }
