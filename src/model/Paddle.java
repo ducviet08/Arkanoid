@@ -7,8 +7,7 @@ public class Paddle extends MovableObject {
     public static final double ORIGINAL_SPEED = 5;
 
     private double leftBoder = 0;   // Biên bên trái của Paddle
-    private double rightBoder = 800;    // Biên bên phải của Paddle
-
+    private double rightBoder = 800;
     private boolean sticky = false;
 
     public Paddle(String imagePath, double x, double y) {
@@ -31,7 +30,6 @@ public class Paddle extends MovableObject {
     public void update() {
         super.update();
         // Giới hạn Paddle trong các cạnh màn hình (800 là WIDTH của game)
-        // Giới hạn nếu bóng ở các mép bên trái và bân phải paddle
         if (x < leftBoder) {
             x = leftBoder;
         }

@@ -18,6 +18,6 @@ public class ShrinkPaddlePowerUp extends PowerUp {
     @Override
     public void removeEffect(Paddle paddle) {
         paddle.resetWidth();
-        paddle.setImage(paddleImage);
+        //paddle.setImage(paddleImage);
     }
 }

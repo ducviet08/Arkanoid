@@ -20,16 +20,36 @@ public class Menu {
         Button btn = new Button(a);
         btn.setLayoutX(x);
         btn.setLayoutY(y);
-        btn.setStyle("-fx-font-size: 30;" +
+
+        // CSS mặc định
+        String defaultStyle = "-fx-font-size: 30;" +
                 " -fx-text-fill: black;" +
                 " -fx-background-color: lightblue;" +
-                "-fx-borfer-color : transparent;" +
-                "-fx-focus-color: transparent;" +
-                "-fx-background-radius:30;" +
-                "-fx-border-radius:30;"
-        );
-        return btn;
+                " -fx-border-color: transparent;" +
+                " -fx-focus-color: transparent;" +
+                " -fx-background-radius: 30;" +
+                " -fx-border-radius: 30;";
 
+        // CSS cho trạng thái HOVER (Phát sáng)
+        String hoverStyle = "-fx-background-color: #A0FFFF;" + // Màu sáng hơn
+                " -fx-scale-x: 1.05;" +             // Phóng to nhẹ
+                " -fx-scale-y: 1.05;" +
+                " -fx-effect: dropshadow(three-pass-box, yellow, 10, 0.5, 0, 0);"; // Hiệu ứng bóng (phát sáng)
+
+        // Áp dụng CSS mặc định
+        btn.setStyle(defaultStyle);
+
+        // Xử lý sự kiện di chuột vào (MOUSE_ENTERED)
+        btn.setOnMouseEntered(e -> {
+            btn.setStyle(defaultStyle + hoverStyle);
+        });
+
+        // Xử lý sự kiện di chuột ra (MOUSE_EXITED)
+        btn.setOnMouseExited(e -> {
+            btn.setStyle(defaultStyle); // Quay lại style mặc định
+        });
+
+        return btn;
     }
 
     public Scene getScene(Stage stage, Main main) {
