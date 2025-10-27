@@ -80,10 +80,6 @@ public class HighScoreManager {
         }
     }
 
-    public void deleteAllDataHighScore() {
-        highScores.clear();
-    }
-
     public int getMaxHighScore() {
         if (highScores.isEmpty()) {
             return 0;
