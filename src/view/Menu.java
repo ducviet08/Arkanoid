@@ -16,23 +16,28 @@ import javafx.stage.Stage;
 
 public class Menu {
     // tạo button
-    private Button createButton(String a, double x, double y) {
-        Button btn = new Button(a);
-        btn.setLayoutX(x);
-        btn.setLayoutY(y);
+    private Button createButton(String path, double x, double y,int a,int b) {
+        Image image = new Image(getClass().getResourceAsStream(path));
+        ImageView view = new ImageView(image);
+        view.setFitWidth(a);
+        view.setFitHeight(b);
+        view.setPreserveRatio(true);
+
+        Button btn = new Button();
+        btn.setGraphic(view);
         btn.setStyle("-fx-font-size: 30;" +
                 " -fx-text-fill: black;" +
-                " -fx-background-color: lightblue;" +
-                "-fx-borfer-color : transparent;" +
-                "-fx-focus-color: transparent;" +
-                "-fx-background-radius:30;" +
-                "-fx-border-radius:30;"
+                " -fx-background-color: transparent;" +
+                "-fx-border-color : transparent;" +
+                "-fx-focus-color: transparent;"
         );
+        btn.setLayoutX(x);
+        btn.setLayoutY(y);
         return btn;
-
     }
 
-    public Scene getScene(Stage stage, Main main) {
+
+    public Scene getScene(Stage stage) {
 
         Pane root = new Pane();
 
@@ -47,25 +52,25 @@ public class Menu {
                 )
         );
         //NewGame
-        Button button1 = createButton("NEW GAME", 305, 230);
+        Button button1 = createButton("/images/newgame.png", 60, 250,450,120);
         //Continue
-        Button button2 = createButton("CONTINUE", 310, 350);
+        Button button2 = createButton("/images/continue.png", 460, 250,450,120);
         //HighScore
-        Button button3 = createButton("HIGH SCORES", 295, 470);
+        Button button3 = createButton("/images/highscorebutton.png", 260, 350,450,117);
 
 
         //action pick skin
         button1.setOnAction(e -> {
             SelectBall selectBall = new SelectBall(); // tạo đối tượng mới
-            stage.setScene(selectBall.getScene(stage, main)); // gọi phương thức thông qua đối tượng
+            stage.setScene(selectBall.getScene(stage)); // gọi phương thức thông qua đối tượng
         });
-
+        button3.setOnAction(e -> {
+            HighScore highScore = new HighScore();
+            stage.setScene(highScore.getScene(stage));
+        });
         button2.setOnAction(e -> {
-            SaveLoadGame saveLoadGame = new SaveLoadGame();
-            if (saveLoadGame.getLives() != 0) {
-                main.Continue = true;
-                main.startGame();
-            }
+            Round round = new Round();
+            stage.setScene(round.getScene(stage));
         });
         root.getChildren().addAll(button1, button2, button3);
         root.setBackground(new Background(backgroundImage));

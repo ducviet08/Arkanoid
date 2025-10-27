@@ -14,7 +14,6 @@ import static Arkanoid.Main.ballImage;
 
 public class SelectBall {
 
-    private String pathBall;
     Pane root = new Pane();
 
     Image bgImage = new Image("/images/background.png");
@@ -29,11 +28,11 @@ public class SelectBall {
     );
 
     // tạo button
-    private Button createBallButton(String path, double x, double y) {
+    private Button createBallButton(String path, double x, double y,int a,int b) {
         Image image = new Image(getClass().getResourceAsStream(path));
         ImageView view = new ImageView(image);
-        view.setFitWidth(50);
-        view.setFitHeight(50);
+        view.setFitWidth(a);
+        view.setFitHeight(b);
         view.setPreserveRatio(true);
 
         Button btn = new Button();
@@ -44,32 +43,30 @@ public class SelectBall {
         return btn;
     }
 
-    public Scene getScene(Stage stage,Main main) {
+    public Scene getScene(Stage stage) {
 
         //button ball
-        Button ball1 = createBallButton("/images/ball1.png", 200, 300);
-        Button ball2 = createBallButton("/images/ball2.png", 350, 300);
-        Button ball3 = createBallButton("/images/ball3.png", 500, 300);
-
+        Button ball1 = createBallButton("/images/ball1.png", 200, 300,50,50);
+        Button ball2 = createBallButton("/images/ball2.png", 350, 300,50,50);
+        Button ball3 = createBallButton("/images/ball3.png", 500, 300,50,50);
+        Button select = createBallButton("/images/selectball.png", 260, 150,250,110);
         EventHandler<ActionEvent> handler = event -> {
-            Button clicked = (Button) event.getSource(); // nút nào được nhấn
-            ImageView view = (ImageView) clicked.getGraphic();
-            Image img = view.getImage();
-
-            // Lấy path tương ứng của nút đó
-            if (clicked == ball1) pathBall = "/images/ball1.png";
-            else if (clicked == ball2) pathBall = "/images/ball2.png";
-            else if (clicked == ball3) pathBall = "/images/ball3.png";
             SelectPaddle select_paddle = new SelectPaddle();
-            ballImage = pathBall;
-            stage.setScene(select_paddle.getScene(stage,main));
+            stage.setScene(select_paddle.getScene(stage));
         };
         ball1.setOnAction(handler);
         ball2.setOnAction(handler);
         ball3.setOnAction(handler);
+        Button back = new Button("Back");
+        back.setLayoutX(50);
+        back.setLayoutY(50);
+        back.setOnAction(e -> {
+            Menu menu = new Menu();
+            stage.setScene(menu.getScene(stage));
+        });
 
         //root
-        root.getChildren().addAll(ball1, ball2, ball3);
+        root.getChildren().addAll(ball1, ball2, ball3,  select, back);
         root.setBackground(new Background(backgroundImage));
 
         Scene scene = new Scene(root, 800, 600);
