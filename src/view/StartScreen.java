@@ -1,24 +1,19 @@
 package view;
 
 import Arkanoid.Main;
-import javafx.geometry.Insets; // Import lớp Insets
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.scene.paint.Color;
 
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
 
 public class StartScreen {
     public Scene getScene(Stage stage,Main main) {
         Pane root = new Pane();
+
+        // Nền chính của game
         Image bgImage = new Image("/images/background.png");
         BackgroundImage backgroundImage = new BackgroundImage(
                 bgImage,
@@ -29,30 +24,26 @@ public class StartScreen {
                         BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, false
                 )
         );
-        // button press start
-        Button PressStart =  new Button("Press Start");
-        PressStart.setStyle("-fx-font-size: 30;" +
-                " -fx-text-fill: black;" +
-                " -fx-background-color: lightblue;" +
-                "-fx-borfer-color : transparent;" +
-                "-fx-focus-color: transparent;" +
-                "-fx-background-radius:30;" +
-                "-fx-border-radius:30;"
-        );
-        PressStart.setLayoutX(300);
-        PressStart.setLayoutY(300);
-        //action cho pressStart
-        PressStart.setOnAction(e -> {
+        root.setBackground(new Background(backgroundImage));
+
+        // Ảnh "Press Start" có nền trong suốt
+        Image image = new Image(getClass().getResourceAsStream("/images/pressStart.png"));
+        ImageView view = new ImageView(image);
+        view.setFitWidth(250);   // vừa khung
+        view.setPreserveRatio(true);
+
+        Button pressStart = new Button();
+        pressStart.setGraphic(view);
+        pressStart.setStyle("-fx-background-color: transparent;");
+        pressStart.setLayoutX(265);
+        pressStart.setLayoutY(300);
+
+        pressStart.setOnAction(e -> {
             Menu menu = new Menu();
-            stage.setScene(menu.getScene(stage,main));
+            stage.setScene(menu.getScene(stage));
         });
 
-        root.setBackground(new Background(backgroundImage));
-        root.getChildren().addAll(PressStart);
-        Scene scene = new Scene(root, 800, 600);
-
-        // Load CSS đúng cách
-
-        return scene;
+        root.getChildren().add(pressStart);
+        return new Scene(root, 800, 600);
     }
 }
