@@ -89,7 +89,7 @@ public class GameManager {
         powerUps = new ArrayList<>();
         steels = new ArrayList<>();
         score = 0;
-        lives = 3;
+        lives = 10;
         gameState = GameState.START;
         lastPowerUpTime = 0;
         activePowerUp = null;
@@ -223,7 +223,7 @@ public class GameManager {
                     if (Math.random() < 0.2) {
                         PowerUp newPowerup;
                         if(Math.random() < 10) {
-                            newPowerup = new StickyPaddle("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 50000, ball);
+                            newPowerup = new StickyPaddle("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 10000, ball);
                         } else if (Math.random() < 0.5) {
                             newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000);
                         } else if (Math.random() < 0.8) {
