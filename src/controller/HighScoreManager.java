@@ -1,15 +1,14 @@
-package Arkanoid.controller;
+package controller;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Gatherer;
 
 public class HighScoreManager {
     private static final String FILE_PATH = "src/data/highScore.txt";
     private static final int MAX_SCORES = 10;
     private int minHighScore;
-    private List<Integer> highScores;
+    private List<ScoreInput> highScores;
 
     public HighScoreManager() {
         minHighScore = 0;
@@ -17,7 +16,7 @@ public class HighScoreManager {
         loadHighScore();
     }
 
-    public List<Integer> getHighScores() {
+    public List<ScoreInput> getHighScores() {
         return highScores;
     }
 
@@ -32,16 +31,18 @@ public class HighScoreManager {
             String line;
 
             while ((line = reader.readLine()) != null && highScores.size() < MAX_SCORES) {
-                int score = Integer.parseInt(line.trim());
-                highScores.add(score);
+                line = line.trim();
+                String[] parts = line.split("\\s+");
+                int score = Integer.parseInt(parts[1]);
+                ScoreInput scoreInput = new ScoreInput(parts[0], score);
+                highScores.add(scoreInput);
             }
             if (!highScores.isEmpty()) {
-                minHighScore = highScores.get(highScores.size() - 1);
+                minHighScore = highScores.get(highScores.size() - 1).getPlayerScore();
             }
             updateHighScore();
             reader.close();
         } catch (FileNotFoundException e) {
-            highScores.add(0);
             System.out.println("High score file not found.");
         } catch (Exception e) {
             System.out.println("Can't read the highScore.txt file!");
@@ -52,8 +53,8 @@ public class HighScoreManager {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH));
 
-            for (int x : highScores) {
-                writer.write(Integer.toString(x));
+            for (ScoreInput x : highScores) {
+                writer.write(x.toString());
                 writer.newLine();
             }
 
@@ -64,26 +65,41 @@ public class HighScoreManager {
     }
 
     public void updateHighScore() {
-        Collections.sort(highScores, Collections.reverseOrder());
+        highScores.sort((e1, e2) -> Integer.compare(e2.getPlayerScore(), e1.getPlayerScore()));
     }
 
-    public void checkHighScore(int highScore) {
-        if (highScore > minHighScore) {
-            highScores.add(highScore);
-
-            while (highScores.size() > 10) {
-                Integer minValue = Collections.min(highScores);
-                highScores.remove(minValue);
+    public boolean checkHighScore(int score) {
+        if (score > minHighScore) {
+            ScoreInput lowest = null;
+            for (int i = 0; i < highScores.size(); i++) {
+                if (highScores.get(i).getPlayerScore() < minHighScore) {
+                    lowest = highScores.get(i);
+                }
             }
-            this.minHighScore = Collections.min(highScores);
-            updateHighScore();
+            if (lowest != null) {
+                highScores.remove(lowest);
+                minHighScore = Collections.min(highScores, Comparator.comparingInt(ScoreInput::getPlayerScore)).getPlayerScore();
+            } else {
+                minHighScore = score;
+            }
+            return true;
         }
+        return false;
+    }
+
+    public void addHighScores(String playerName, int score) {
+        ScoreInput newScoreInput = new ScoreInput(playerName, score);
+        highScores.add(newScoreInput);
+    }
+
+    public void deleteAllDataHighScore() {
+        highScores.clear();
     }
 
     public int getMaxHighScore() {
         if (highScores.isEmpty()) {
             return 0;
         }
-        return Collections.max(highScores);
+        return Collections.max(highScores, Comparator.comparingInt(ScoreInput::getPlayerScore)).getPlayerScore();
     }
 }
