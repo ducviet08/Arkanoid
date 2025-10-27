@@ -6,7 +6,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image; // Thêm import này
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
@@ -86,6 +88,21 @@ public class EndScreen {
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setMaxWidth(Region.USE_PREF_SIZE);
         buttonLayout.setMaxHeight(Region.USE_PREF_SIZE);
+
+        TextField inputBox = new TextField();
+        inputBox.setLayoutX(100); // vị trí X
+        inputBox.setLayoutY(150); // vị trí Y
+        inputBox.setPrefWidth(200); // chiều rộng
+
+        // nút lấy dữ liệu
+        inputBox.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                String text = inputBox.getText();
+                System.out.println("Người dùng nhập: " + text);
+                inputBox.setVisible(false);
+
+            }
+        });
 
         StackPane root = new StackPane(buttonLayout);
         root.setBackground(new Background(backgroundImage)); // Gắn background vào root StackPane
