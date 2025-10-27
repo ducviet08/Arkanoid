@@ -32,7 +32,10 @@ public class GameManager {
     private long lastPaddlePowerUpTime;
     private PowerUp activeBallPowerUp;
     private PowerUp activePaddlePowerUp;
+    private long lastMixPowerUpTime;
+    private PowerUp activeMixPowerUp;
     private final Set<KeyCode> pressedKeys = new HashSet<>();
+
     public enum GameState {
         START, PLAYING, PAUSED, GAME_OVER, LEVEL_COMPLETE
     }
@@ -42,8 +45,8 @@ public class GameManager {
     }
 
     public void initializeGame() {
-        paddle = new Paddle("file:src/images/paddle2.png",350, 550);
-        ball = new Ball("file:src/images/ball1.png",395, 530, 1, -1);
+        paddle = new Paddle("/images/paddle2.png", 350, 550);
+        ball = new Ball("/images/ball1.png", 395, 530, 1, -1);
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         steels = new ArrayList<>();
@@ -54,8 +57,11 @@ public class GameManager {
         lastPaddlePowerUpTime = 0;
         activeBallPowerUp = null;
         activePaddlePowerUp = null;
-
+        lastMixPowerUpTime = 0;
+        activeMixPowerUp = null;
+        //ball.setOffset(paddle.getWidth() / 2 - ball.getWidth() / 2);
     }
+
     public void loadLevel(String filename) {
         bricks.clear();
         try {
@@ -80,17 +86,15 @@ public class GameManager {
                     double y = marginTop + rowIndex * (brickHeight + gap);
 
                     if (c == '1') {
-                        bricks.add(new NormalBrick("file:src/images/brick1.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new NormalBrick("/images/brick1.png", x, y, brickWidth, brickHeight));
                     } else if (c == '2') {
-                        bricks.add(new StrongBrick("file:src/images/brick6.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new StrongBrick("/images/brick6.png", x, y, brickWidth, brickHeight));
                     } else if (c == '3') {
-                        bricks.add(new ExplosiveBrick("file:src/images/brick2.png", x, y, brickWidth, brickHeight));
+                        bricks.add(new ExplosiveBrick("/images/brick2.png", x, y, brickWidth, brickHeight));
                     } else if (c == '4') {
-                        bricks.add(new GlassBrick("file:src/images/brick2.png", x, y, brickWidth, brickHeight));
-                    } else if (c == '5') {
-                        bricks.add(new TeleportBrick("file:src/images/brick1.png", x, y, brickWidth, brickHeight, bricks));
+                        bricks.add(new GlassBrick("/images/brick2.png", x, y, brickWidth, brickHeight));
                     } else if (c == '9') {
-                        steels.add((new Steel("file:src/images/brick2.png", x, y, brickWidth, brickHeight)));
+                        steels.add((new Steel("/images/brick2.png", x, y, brickWidth, brickHeight)));
                     }
                     colIndex++;
                 }
@@ -134,7 +138,7 @@ public class GameManager {
         }
         ball.updateRotation();
         paddle.update();
-        ball.move(paddle);
+        ball.move(paddle, activeMixPowerUp);
 
 
         if (activeBallPowerUp != null) {
@@ -147,6 +151,14 @@ public class GameManager {
             if (System.currentTimeMillis() - lastPaddlePowerUpTime > activePaddlePowerUp.getDuration()) {
                 activePaddlePowerUp.removeEffect(paddle);
                 activePaddlePowerUp = null;
+            }
+        }
+        if (activeMixPowerUp != null) {
+            if (System.currentTimeMillis() - lastMixPowerUpTime > activeMixPowerUp.getDuration()) {
+                activeMixPowerUp.removeEffect(paddle);
+                if (!(activeMixPowerUp instanceof StickyPaddlePowerUp st && st.isStuck())) {
+                    activeMixPowerUp = null;
+                }
             }
         }
         Iterator<PowerUp> powerUpIterator = powerUps.iterator();
@@ -163,12 +175,16 @@ public class GameManager {
                     lastBallPowerUpTime = System.currentTimeMillis();
                 } else if (pu instanceof ExtraLifePowerUp) {
                     if (lives < 5) {
-                        this.lives ++;
+                        this.lives++;
                     }
                 } else if (pu instanceof FireBallPowerUp) {
                     ((FireBallPowerUp) pu).setGameBall(ball);
                     activeBallPowerUp = pu;
                     lastBallPowerUpTime = System.currentTimeMillis();
+                } else if (pu instanceof StickyPaddlePowerUp) {
+                    ((StickyPaddlePowerUp) pu).setGameBall(ball);
+                    activeMixPowerUp = pu;
+                    lastMixPowerUpTime = System.currentTimeMillis();
                 } else {
                     activePaddlePowerUp = pu;
                     lastPaddlePowerUpTime = System.currentTimeMillis();
@@ -190,7 +206,11 @@ public class GameManager {
      */
     public void handleInput(int keyCodeOrdinal) {
         if (!ball.isActive() && keyCodeOrdinal == KeyCode.ENTER.ordinal()) {
-            ball.setActive(true);
+            if(activeMixPowerUp instanceof StickyPaddlePowerUp stickyPaddle && paddle.isSticky() && stickyPaddle.isStuck()) {
+                stickyPaddle.releaseBall(ball, paddle);
+            } else {
+                ball.setActive(true);
+            }
         }
 //        if (keyCodeOrdinal == KeyCode.LEFT.ordinal()) {
 //            paddle.moveLeft();
@@ -222,14 +242,19 @@ public class GameManager {
         }
         if (ball.getY() + ball.getHeight() >= 600) {
             ball.setActive(false);
-            if(activeBallPowerUp != null) {
+            if (activeBallPowerUp != null) {
                 activeBallPowerUp.removeEffect(paddle);
                 activeBallPowerUp = null;
             }
-            if(activePaddlePowerUp != null) {
+            if (activePaddlePowerUp != null) {
                 activePaddlePowerUp.removeEffect(paddle);
                 activePaddlePowerUp = null;
             }
+            if (activeMixPowerUp != null) {
+                activeMixPowerUp.removeEffect(paddle);
+                activeMixPowerUp = null;
+            }
+            //ball.setOffset(paddle.getWidth() / 2 - ball.getWidth() / 2);
             lives--;
             if (lives <= 0) {
                 gameOver();
@@ -242,14 +267,19 @@ public class GameManager {
         }
 
         if (ball.checkCollision(paddle)) {
-            ball.bounceOff(paddle);
+//            if (((activeMixPowerUp != null && activeMixPowerUp instanceof StickyPaddlePowerUp) || !ball.isActive())
+//                    && ball.getY() < paddle.getY()) {
+//                ball.setOffset(ball.getX() - paddle.getX());
+//                ball.setActive(false);
+//            }
+            ball.bounceOff(paddle, activeMixPowerUp);
         }
 
         Iterator<Steel> steelIterator = steels.iterator();
         while (steelIterator.hasNext()) {
             Steel steel = steelIterator.next();
             if (ball.checkCollision(steel)) {
-                ball.bounceOff(steel);
+                ball.bounceOff(steel, activeMixPowerUp);
             }
         }
 
@@ -257,10 +287,10 @@ public class GameManager {
         while (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
             if (ball.checkCollision(brick)) {
-                if(activeBallPowerUp != null && activeBallPowerUp instanceof FireBallPowerUp) {
+                if (activeBallPowerUp != null && activeBallPowerUp instanceof FireBallPowerUp) {
                     brick.takeDestroy();
                 } else {
-                    ball.bounceOff(brick);
+                    ball.bounceOff(brick, activeMixPowerUp);
                     brick.takeHit();
                 }
                 if (brick.isDestroyed()) {
@@ -270,19 +300,22 @@ public class GameManager {
                         ExplosiveBrick temp = (ExplosiveBrick) brick;
                         temp.explode(bricks, brick);
                     }
-                    if (Math.random() < 0.2) {
+
+                    if (Math.random() < 0.5) {
                         PowerUp newPowerup;
                         double rand = Math.random();
-                        if (rand < 0.2) {
-                            newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000);
-                        } else if (rand < 0.4) {
-                            newPowerup = new FastBallPowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000, ball);
-                        } else if (rand < 0.6) {
-                            newPowerup = new ExtraLifePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20);
-                        }  else if (rand < 0.8) {
-                            newPowerup = new FireBallPowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000,ball);
+                        if (rand < 0.15) {
+                            newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000);
+                        } else if (rand < 0.1) {
+                            newPowerup = new FastBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000, ball);
+                        } else if (rand < 0.2) {
+                            newPowerup = new ExtraLifePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20);
+                        } else if (rand < 0.1) {
+                            newPowerup = new FireBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000, ball);
+                        } else if (rand < 0.3) {
+                            newPowerup = new ShrinkPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000);
                         } else {
-                            newPowerup = new ShrinkPaddlePowerUp("/images/slow_ball.png",brick.getX(), brick.getY(), 20, 20, 5000);
+                            newPowerup = new StickyPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, ball);
                         }
                         powerUps.add(newPowerup);
                     }
@@ -387,6 +420,10 @@ public class GameManager {
         return activePaddlePowerUp;
     }
 
+    public long getLastMixPowerUpTime() {
+        return lastMixPowerUpTime;
+    }
+
     public long getPaddleLastPowerUpTime() {
         return lastPaddlePowerUpTime;
     }
@@ -394,12 +431,17 @@ public class GameManager {
     public long getBallLastPowerUpTime() {
         return lastBallPowerUpTime;
     }
+
     public void setScore(int score) {
         this.score = score;
     }
 
     public void setLives(int lives) {
         this.lives = lives;
+    }
+
+    public void setMixLastPowerTime(long ballMixPowerTime) {
+        this.lastMixPowerUpTime = ballMixPowerTime;
     }
 
     public void setBallLastPowerUpTime(long lastBallPowerUpTime) {
@@ -419,20 +461,20 @@ public class GameManager {
     }
 
     public void setActivePowerUpByName(String className) {
-        if(className.equals("null")){
+        if (className.equals("null")) {
             return;
         }
         if (className.equals("ExpandPaddlePowerUp")) {
-            this.activePaddlePowerUp = new ExpandPaddlePowerUp("/images/slow_ball.png",paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
+            this.activePaddlePowerUp = new ExpandPaddlePowerUp("/images/slow_ball.png", paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
             activePaddlePowerUp.applyEffect(paddle);
         } else if (className.equals("FastBallPowerUp")) {
-            this.activeBallPowerUp = new FastBallPowerUp("/images/slow_ball.png",ball.getX(), ball.getY(), 0, 0, 5000, ball);
+            this.activeBallPowerUp = new FastBallPowerUp("/images/slow_ball.png", ball.getX(), ball.getY(), 0, 0, 5000, ball);
             activeBallPowerUp.applyEffect(paddle);
         } else if (className.equals("FireBallPowerUp")) {
-            this.activeBallPowerUp = new FireBallPowerUp("/images/slow_ball.png",ball.getX(), ball.getY(), 0, 0, 5000, ball);
+            this.activeBallPowerUp = new FireBallPowerUp("/images/slow_ball.png", ball.getX(), ball.getY(), 0, 0, 5000, ball);
             activeBallPowerUp.applyEffect(paddle);
         } else if (className.equals("ShrinkPaddlePowerUp")) {
-            this.activePaddlePowerUp = new ShrinkPaddlePowerUp("/images/slow_ball.png",paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
+            this.activePaddlePowerUp = new ShrinkPaddlePowerUp("/images/slow_ball.png", paddle.getX(), paddle.getY(), 0, 0, 5000); // Cần truyền tọa độ
             activePaddlePowerUp.applyEffect(paddle);
         }
         // Thêm các power-up khác...

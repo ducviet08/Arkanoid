@@ -31,10 +31,19 @@ public class HighScoreManager {
             String line;
 
             while ((line = reader.readLine()) != null && highScores.size() < MAX_SCORES) {
-                line = line.trim();
                 String[] parts = line.split("\\s+");
-                int score = Integer.parseInt(parts[1]);
-                ScoreInput scoreInput = new ScoreInput(parts[0], score);
+                int n = parts.length;
+                int score = Integer.parseInt(parts[n - 1]);
+
+                String name = "";
+                for (int i = 0; i < n - 1; i++) {
+                    if (i != n - 2) {
+                        name += parts[i] + " ";
+                    } else {
+                        name += parts[i];
+                    }
+                }
+                ScoreInput scoreInput = new ScoreInput(name, score);
                 highScores.add(scoreInput);
             }
             if (!highScores.isEmpty()) {
