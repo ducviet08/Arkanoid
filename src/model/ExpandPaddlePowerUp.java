@@ -14,7 +14,7 @@ public class ExpandPaddlePowerUp extends PowerUp {
     public void applyEffect(Paddle paddle) {
         System.out.println("ExpandPaddle PowerUp activated!");
         paddle.setWidth(Paddle.ORIGINAL_WIDTH + EXPAND_AMOUNT);
-        paddle.setImage("/images/paddle.png");
+        //paddle.setImage("/images/paddle.png");
         // Đảm bảo paddle không vượt quá kích thước màn hình
         if (paddle.getX() + paddle.getWidth() > 800) {
             paddle.setX(800 - paddle.getWidth());
@@ -23,7 +23,7 @@ public class ExpandPaddlePowerUp extends PowerUp {
 
     @Override
     public void removeEffect(Paddle paddle) {
-        paddle.setImage(paddleImage);
+        //paddle.setImage(paddleImage);
         System.out.println("ExpandPaddle PowerUp deactivated!");
         paddle.resetWidth(); // Trở về kích thước ban đầu
     }
