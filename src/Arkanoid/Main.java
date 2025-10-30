@@ -166,10 +166,11 @@ public class Main extends Application {
 
     // ------------------ END GAME ------------------
     private void showEndScreen(int score, boolean win) {
-        endScreen.setMessage(win ? "🎉 LEVEL COMPLETE!" : "💀 GAME OVER!");
-        endScreen.setScore(score);
 
-        Scene endScene = endScreen.getScene(primaryStage, WIDTH, HEIGHT, win);
+        endScreen.setMessage(win);
+
+        Scene endScene = endScreen.getScene(primaryStage, WIDTH, HEIGHT, win,score);
+        primaryStage.setScene(endScene);
 
         endScreen.getRestartButton().setOnAction(e -> {
             currentLevel = 1;
