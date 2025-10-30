@@ -51,7 +51,7 @@ public class GameManager {
         powerUps = new ArrayList<>();
         steels = new ArrayList<>();
         score = 0;
-        lives = 3;
+        lives = 10;
         gameState = GameState.START;
         lastBallPowerUpTime = 0;
         lastPaddlePowerUpTime = 0;
@@ -140,7 +140,6 @@ public class GameManager {
         paddle.update();
         ball.move(paddle, activeMixPowerUp);
 
-
         if (activeBallPowerUp != null) {
             if (System.currentTimeMillis() - lastBallPowerUpTime > activeBallPowerUp.getDuration()) {
                 activeBallPowerUp.removeEffect(paddle);
@@ -167,7 +166,8 @@ public class GameManager {
             pu.update();
             if (pu.getY() > 600) {
                 powerUpIterator.remove();
-            } else if (paddle.checkCollision(pu)) {
+            } else if (paddle.checkCollision(pu)){
+                SoundManager.playSound(SoundManager.SOUND_POWERUP_GET);
                 paddle.applyPowerUp(pu);
                 if (pu instanceof FastBallPowerUp) {
                     ((FastBallPowerUp) pu).setGameBall(ball);
@@ -193,6 +193,9 @@ public class GameManager {
             }
         }
         checkCollisions();
+        if(ball.getY() > paddle.getY() + Paddle.ORIGINAL_HEIGHT) {
+            SoundManager.playSound(SoundManager.SOUND_LOSE_LIFE);
+        }
         if (lives == 0) {
             gameOver();
         }
@@ -206,7 +209,7 @@ public class GameManager {
      */
     public void handleInput(int keyCodeOrdinal) {
         if (!ball.isActive() && keyCodeOrdinal == KeyCode.ENTER.ordinal()) {
-            if(activeMixPowerUp instanceof StickyPaddlePowerUp stickyPaddle && paddle.isSticky() && stickyPaddle.isStuck()) {
+            if (activeMixPowerUp instanceof StickyPaddlePowerUp stickyPaddle && paddle.isSticky() && stickyPaddle.isStuck()) {
                 stickyPaddle.releaseBall(ball, paddle);
             } else {
                 ball.setActive(true);
@@ -236,11 +239,14 @@ public class GameManager {
     private void checkCollisions() {
         if (ball.getX() <= 0 || ball.getX() + ball.getWidth() >= 800) {
             ball.setDirectionX(-ball.getDirectionX());
+            SoundManager.playSound(SoundManager.SOUND_PADDLE_HIT);
         }
         if (ball.getY() <= 0) {
             ball.setDirectionY(-ball.getDirectionY());
+            SoundManager.playSound(SoundManager.SOUND_PADDLE_HIT);
         }
         if (ball.getY() + ball.getHeight() >= 600) {
+            SoundManager.playSound(SoundManager.SOUND_LOSE_LIFE);
             ball.setActive(false);
             if (activeBallPowerUp != null) {
                 activeBallPowerUp.removeEffect(paddle);
@@ -272,6 +278,9 @@ public class GameManager {
 //                ball.setOffset(ball.getX() - paddle.getX());
 //                ball.setActive(false);
 //            }
+            if (ball.isActive()) {  // Kiểm tra dính âm thanh
+                SoundManager.playSound(SoundManager.SOUND_PADDLE_HIT);
+            }
             ball.bounceOff(paddle, activeMixPowerUp);
         }
 
@@ -280,6 +289,7 @@ public class GameManager {
             Steel steel = steelIterator.next();
             if (ball.checkCollision(steel)) {
                 ball.bounceOff(steel, activeMixPowerUp);
+                SoundManager.playSound(SoundManager.SOUND_STEELBRICK_HIT);
             }
         }
 
@@ -287,6 +297,7 @@ public class GameManager {
         while (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
             if (ball.checkCollision(brick)) {
+                SoundManager.playSound(SoundManager.SOUND_NORMALBRICK_HIT);
                 if (activeBallPowerUp != null && activeBallPowerUp instanceof FireBallPowerUp) {
                     brick.takeDestroy();
                 } else {
@@ -301,21 +312,21 @@ public class GameManager {
                         temp.explode(bricks, brick);
                     }
 
-                    if (Math.random() < 0.5) {
+                    if (Math.random() < 0.2) {
                         PowerUp newPowerup;
                         double rand = Math.random();
-                        if (rand < 0.15) {
+                        if (rand < 0.2) {
                             newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000);
-                        } else if (rand < 0.1) {
+                        } else if (rand < 0.4) {
                             newPowerup = new FastBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000, ball);
-                        } else if (rand < 0.2) {
+                        } else if (rand < 0.5) {
                             newPowerup = new ExtraLifePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20);
-                        } else if (rand < 0.1) {
+                        } else if (rand < 0.7) {
                             newPowerup = new FireBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000, ball);
-                        } else if (rand < 0.3) {
+                        } else if (rand < 0.9) {
                             newPowerup = new ShrinkPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 5000);
                         } else {
-                            newPowerup = new StickyPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, ball);
+                            newPowerup = new StickyPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 100000, ball);
                         }
                         powerUps.add(newPowerup);
                     }
@@ -334,10 +345,12 @@ public class GameManager {
     }
 
     public void gameOver() {
+        SoundManager.playSound(SoundManager.SOUND_GAME_OVER);
         gameState = GameState.GAME_OVER;
     }
 
     public void levelComplete() {
+        SoundManager.playSound(SoundManager.SOUND_LEVEL_COMPLETE);
         gameState = GameState.LEVEL_COMPLETE;
     }
 
