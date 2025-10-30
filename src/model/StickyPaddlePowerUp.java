@@ -34,7 +34,8 @@ public class StickyPaddlePowerUp extends PowerUp {
     private Ball gameBall; // Tham chiếu đến quả bóng chính của game
     private boolean stuck = false;  // bóng đang dính trên paddle
     private Paddle currentPaddle;   // Paddle hiện tại
-    private double offSetX = 0; // Khoảng cách giữa ball và paddle khi dính
+
+    private double relativeOffset = 0.5;
 
     public StickyPaddlePowerUp(String imagePath, double x, double y, double width, double height, long duration, Ball ball) {
         super(imagePath, x, y, width, height, FALL_SPEED, duration);
@@ -72,18 +73,14 @@ public class StickyPaddlePowerUp extends PowerUp {
             gameBall.setActive(false);  // Ball ngừng di chuyển
 
             // Vị trí của bóng và Paddle
-            this.offSetX = gameBall.getX() - paddle.getX();
-            this.setOffSetX(offSetX);
+            double absoluteOffset = gameBall.getX() - paddle.getX();
 
-            // Gắn bóng lên trên paddle, xử lý các trường hợp cạnh
-            if (gameBall.x < currentPaddle.x) {
-                currentPaddle.setLeftBoder(currentPaddle.getLeftBoder() + currentPaddle.x - gameBall.x);
-            }
+            // Tính toán tỉ lệ offset
+            this.relativeOffset = absoluteOffset / paddle.getWidth();
 
-            if (gameBall.x + gameBall.width > currentPaddle.x + currentPaddle.width) {
-                currentPaddle.setRightBoder(currentPaddle.getRightBoder()
-                        - ((gameBall.x + gameBall.width) - (currentPaddle.x + currentPaddle.width)));
-            }
+            // Đảm bảo tỉ lệ luôn nằm trong khoảng hợp lệ [0, 1]
+            // (Phòng trường hợp bóng va chạm ở rìa ngoài)
+            this.relativeOffset = Math.max(0, Math.min(1, this.relativeOffset));
         }
     }
 
@@ -96,7 +93,7 @@ public class StickyPaddlePowerUp extends PowerUp {
 
             // cho bóng di chuyển
             stuck = false;
-            this.setStuck(stuck);
+            //this.setStuck(stuck);
             gameBall.setActive(true);
 
             // Điều chỉnh hướng bóng
@@ -123,15 +120,17 @@ public class StickyPaddlePowerUp extends PowerUp {
         return stuck;
     }
 
-    public double getOffSetX() {
-        return offSetX;
-    }
 
     public void setStuck(boolean stuck) {
         this.stuck = stuck;
     }
 
-    public void setOffSetX(double offSetX) {
-        this.offSetX = offSetX;
+    public double getRelativeOffset() {
+        return relativeOffset;
     }
+
+    public void setRelativeOffset(double relativeOffset) {
+        this.relativeOffset = relativeOffset;
+    }
+
 }

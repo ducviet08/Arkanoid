@@ -7,6 +7,10 @@ public class FastBallPowerUp extends PowerUp {
     private static final double SPEED_MULTIPLIER = 1.5; // Tăng tốc bóng lên 1.5 lần
     private Ball gameBall; // Tham chiếu đến quả bóng chính của game
 
+    public static final double FAST_MIN_SPEED = 5;
+    public static final double FAST_MAX_SPEED = 8;
+    public static final double FAST_INITIAL_SPEED = 5.5;
+
     public FastBallPowerUp(String imagePath, double x, double y, double width, double height, long duration, Ball ball) {
         super(imagePath, x, y, width, height, FALL_SPEED, duration);
         this.gameBall = ball;
@@ -22,7 +26,9 @@ public class FastBallPowerUp extends PowerUp {
         System.out.println("FastBall PowerUp activated!");
         gameBall.setImage("/images/fast_ball.png");
         if (gameBall != null) {
-            gameBall.setSpeed(Ball.ORIGINAL_SPEED * SPEED_MULTIPLIER);
+            gameBall.setMinSpeed(FAST_MIN_SPEED);
+            gameBall.setMaxSpeed(FAST_MAX_SPEED);
+            gameBall.setSpeed(FAST_INITIAL_SPEED);
         }
     }
 
@@ -30,8 +36,9 @@ public class FastBallPowerUp extends PowerUp {
     public void removeEffect(Paddle paddle) { // Paddle không thay đổi, chỉ ball thay đổi
         System.out.println("FastBall PowerUp deactivated!");
         if (gameBall != null) {
-            gameBall.setOriginalSpeed();
             gameBall.setImage(ballImage);
+            gameBall.resetSpeedLimits();
+            gameBall.clampSpeedToLimits();
         }
     }
 }

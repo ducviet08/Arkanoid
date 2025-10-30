@@ -21,7 +21,7 @@ public class SaveLoadGame {
         try {
             BufferedWriter writer = new BufferedWriter((new FileWriter("src/data/save.txt")));
 
-            writer.write("level " + currentLevel );
+            writer.write("level " + currentLevel);
             writer.newLine();
 
             writer.write("paddle " + paddleImage + " " + gameManager.getPaddle().getX());
@@ -60,6 +60,15 @@ public class SaveLoadGame {
             writer.write("activePaddlePowerUp " + activePaddlePowerUpType);
             writer.newLine();
 
+            writer.write("lastMixPowerUpTime " + (System.currentTimeMillis() - gameManager.getLastMixPowerUpTime()));
+            writer.newLine();
+            String activeMixPowerUpType = "null";
+            if (gameManager.getMixActivePowerUp() != null) {
+                activeMixPowerUpType = gameManager.getMixActivePowerUp().getClass().getSimpleName();
+            }
+            writer.write("activeMixPowerUp " + activeMixPowerUpType);
+            writer.newLine();
+
             writer.write("bricks");
             writer.newLine();
             List<Brick> saveBricks = gameManager.getBricks();
@@ -73,33 +82,22 @@ public class SaveLoadGame {
             }
 
             writer.write("steels");
+            writer.newLine();
             List<Steel> steels = gameManager.getSteels();
             for (Steel steel : steels) {
-                writer.write(" " + steel.getPath() + " "
+                writer.write(steel.getPath() + " "
                         + steel.getX() + " " + steel.getY());
+                writer.newLine();
             }
-            writer.newLine();
 
             writer.write("powerUps");
+            writer.newLine();
             List<PowerUp> powerUps = gameManager.getPowerUps();
             for (PowerUp powerUp : powerUps) {
                 String type = powerUp.getClass().getSimpleName();
-                writer.write(" " + type + " " + powerUp.getX() + " " + powerUp.getY());
-                /*if (powerUp instanceof ExpandPaddlePowerUp) {
-                    writer.write(" ExpandPaddlePowerUp " + powerUp.getX() + " " + powerUp.getY());
-                } else if (powerUp instanceof ShrinkPaddle) {
-                    writer.write(" ShrinkPaddle " + powerUp.getX() + " " + powerUp.getY());
-                } else if (powerUp instanceof StickyPaddle) {
-                    writer.write(" StickyPaddle " + powerUp.getX() + " " + powerUp.getY());
-                } else if (powerUp instanceof FastBallPowerUp) {
-                    writer.write(" FastBallPowerUp " + powerUp.getX() + " " + powerUp.getY());
-                } else if (powerUp instanceof SlowBall) {
-                    writer.write(" SlowBall " + powerUp.getX() + " " + powerUp.getY());
-                } else if (powerUp instanceof TinyBall) {
-                    writer.write(" TinyBall " + powerUp.getX() + " " + powerUp.getY());
-                }*/
+                writer.write(type + " " + powerUp.getX() + " " + powerUp.getY()); // XÓA KHOẢNG TRẮNG ĐẦU
+                writer.newLine();
             }
-            writer.newLine();
 
             writer.close();
             System.out.println("Game saved successfully!");
@@ -114,11 +112,17 @@ public class SaveLoadGame {
      * @param gameManager
      */
     public static void loadGame(GameManager gameManager) {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader("src/data/save.txt"));
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/data/save.txt"))) {
             String line;
+
+            // Khai báo các list
+            List<Brick> bricks = new ArrayList<>();
+            List<Steel> steels = new ArrayList<>();
+            List<PowerUp> powerUps = new ArrayList<>();
+
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\s+");
+                if (parts.length == 0) continue;
                 String key = parts[0];
 
                 switch (key) {
@@ -133,7 +137,7 @@ public class SaveLoadGame {
                         Ball ball = new Ball(parts[1], Double.parseDouble(parts[2]),
                                 Double.parseDouble(parts[3]), Double.parseDouble(parts[4]), Double.parseDouble(parts[5]));
                         gameManager.setBall(ball);
-                        gameManager.getBall().setActive(true);
+                        gameManager.getBall().setActive(true); // Giả sử bóng active khi load
                         break;
                     case "score":
                         gameManager.setScore(Integer.parseInt(parts[1]));
@@ -153,58 +157,77 @@ public class SaveLoadGame {
                     case "activePaddlePowerUp":
                         gameManager.setActivePowerUpByName(parts[1]);
                         break;
+                    // THÊM MỚI: Load MixPowerUp
+                    case "lastMixPowerUpTime":
+                        gameManager.setMixLastPowerTime(System.currentTimeMillis() - Long.parseLong(parts[1]));
+                        break;
+                    case "activeMixPowerUp":
+                        gameManager.setActivePowerUpByName(parts[1]);
+                        break;
+
                     case "bricks":
-                        List<Brick> bricks = new ArrayList<>();
                         while ((line = reader.readLine()) != null && !line.startsWith("steels")) {
                             String[] parts2 = line.split("\\s+");
+                            if (parts2.length == 0) continue;
                             if (parts2[0].equals("NormalBrick")) {
-                                bricks.add(new NormalBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 20, Integer.parseInt(parts2[4])));
+                                bricks.add(new NormalBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4]))); // Giả sử 80x25
                             } else if (parts2[0].equals("StrongBrick")) {
-                                bricks.add(new StrongBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 20, Integer.parseInt(parts2[4])));
+                                bricks.add(new StrongBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4]))); // Giả sử 80x25
                             }
                         }
                         gameManager.setBricks(bricks);
-                        break;
+                        if (line != null) parts = line.split("\\s+");
+                        else continue;
+                        key = parts[0];
                     case "steels":
-                        List<Steel> steels = new ArrayList<>();
-                        int n1 = parts.length;
-                        for (int i = 1; i < n1; i += 3) {
-                            String path = parts[i];
-                            double x = Double.parseDouble(parts[i + 1]);
-                            double y = Double.parseDouble(parts[i + 2]);
-
-                            steels.add(new Steel(path, x, y, 80, 20));
+                        while ((line = reader.readLine()) != null && !line.startsWith("powerUps")) {
+                            String[] parts2 = line.split("\\s+");
+                            if (parts2.length < 3) continue;
+                            steels.add(new Steel(parts2[0], Double.parseDouble(parts2[1]), Double.parseDouble(parts2[2]), 80, 25)); // Giả sử 80x25
                         }
                         gameManager.setSteels(steels);
+                        if (line != null) parts = line.split("\\s+");
+                        else continue;
+                        key = parts[0];
+                    case "powerUps":
+                        while ((line = reader.readLine()) != null) { // Đọc đến cuối file
+                            String[] parts2 = line.split("\\s+");
+                            if (parts2.length < 3) continue;
+
+                            String type = parts2[0];
+                            double x = Double.parseDouble(parts2[1]);
+                            double y = Double.parseDouble(parts2[2]);
+
+                            // (Giả sử kích thước và thời gian mặc định khi load)
+                            if (type.equals("ExpandPaddlePowerUp")) {
+                                powerUps.add(new ExpandPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 10000));
+                            } else if (type.equals("FastBallPowerUp")) {
+                                powerUps.add(new FastBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 10000, gameManager.getBall()));
+                            } else if (type.equals("ExtraLifePowerUp")) {
+                                powerUps.add(new ExtraLifePowerUp("/images/slow_ball.png", x, y, 20, 20));
+                            } else if (type.equals("FireBallPowerUp")) {
+                                powerUps.add(new FireBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 10000, gameManager.getBall()));
+                            } else if (type.equals("ShrinkPaddlePowerUp")) {
+                                powerUps.add(new ShrinkPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 10000));
+                            } else if (type.equals("StickyPaddlePowerUp")) {
+                                powerUps.add(new StickyPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 10000, gameManager.getBall()));
+                            }
+                        }
+                        gameManager.setPowerUps(powerUps);
                         break;
-//                    case "powerUps":
-//                        gameManager.getPowerUps().clear();
-//                        int n2 = parts.length;
-//                        for (int i = 1; i < n2; i+=3) {
-//                            double x = Double.parseDouble(parts[i + 1]);
-//                            double y = Double.parseDouble(parts[i + 2]);
-//
-//                            if (parts[i].equals("ExpandPaddlePowerUp")) {
-//                                gameManager.getPowerUps().add(new ExpandPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 5000));
-//                            } else if (parts[i].equals("ShrinkPaddle")) {
-//                                // gameManager.getPowerUps().add(new ShrinkPaddle(x, y, 20, 20, 5000));
-//                            }  else if (parts[i].equals("FastBallPowerUp")) {
-//                                gameManager.getPowerUps().add(new FastBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 5000, gameManager.getBall()));
-//                            } else if (parts[i].equals("SlowBall")) {
-//
-//                            } else if (parts[i].equals("TinyBall")) {
-//
-//                            }
-//                        }
-//                        break;
                 }
             }
-            List<PowerUp> powerUps = new ArrayList<>();
-            gameManager.setPowerUps(powerUps);
+
+            // Xóa danh sách power-up nếu file save cũ không có (tránh null)
+            if (gameManager.getPowerUps() == null) {
+                gameManager.setPowerUps(new ArrayList<>());
+            }
+
             gameManager.setGameState(GameManager.GameState.PLAYING);
-            reader.close();
+            // reader.close(); // Tự động đóng nhờ try-with-resources
         } catch (Exception e) {
             System.out.println("Can't read the save.txt file!");
+            e.printStackTrace(); // In ra lỗi để debug
         }
     }
 
