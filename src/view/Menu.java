@@ -1,16 +1,11 @@
 package view;
 
 import Arkanoid.Main;
-import controller.GameManager;
 import controller.SaveLoadGame;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 
@@ -76,7 +71,7 @@ public class Menu {
 
         //action pick skin
         button1.setOnAction(e -> {
-            SelectBall selectBall = new SelectBall(); // tạo đối tượng mới
+            Select_ball selectBall = new Select_ball(); // tạo đối tượng mới
             stage.setScene(selectBall.getScene(stage, main)); // gọi phương thức thông qua đối tượng
         });
 
@@ -86,6 +81,10 @@ public class Menu {
                 main.Continue = true;
                 main.startGame();
             }
+        });
+        button3.setOnAction(e -> {
+            HighScore highScore = new HighScore();
+            stage.setScene(highScore.getScene(stage,0));
         });
         root.getChildren().addAll(button1, button2, button3);
         root.setBackground(new Background(backgroundImage));
