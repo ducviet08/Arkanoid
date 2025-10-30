@@ -2,6 +2,7 @@ package Arkanoid;
 
 import controller.GameManager;
 import controller.SaveLoadGame;
+import controller.SoundManager;
 import javafx.scene.image.Image;
 import view.*;
 import model.GameObject;
@@ -66,6 +67,7 @@ public class Main extends Application {
 
     // ------------------ GAME ------------------
     public void startGame() {
+        SoundManager.playSound(SoundManager.SOUND_GAME_START);
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         renderer = new Renderer(gc);
@@ -139,10 +141,12 @@ public class Main extends Application {
     // ------------------ PAUSE ------------------
     private void togglePause() {
         if (isPaused) {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             isPaused = false;
             primaryStage.setScene(gameScene); // Quay lại scene game
             gameLoop.start(); // Khởi động lại game loop
         } else {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             isPaused = true;
             gameLoop.stop(); // Dừng game loop khi pause
             showPauseScreen();
@@ -153,8 +157,12 @@ public class Main extends Application {
         Scene pauseScene = pauseScreen.getScene(primaryStage, WIDTH, HEIGHT);
 
         saveLoadGame.saveGame(gameManager);
-        pauseScreen.getContinueButton().setOnAction(e -> togglePause());
+        pauseScreen.getContinueButton().setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
+            togglePause();
+        });
         pauseScreen.getExitToMenuButton().setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             gameLoop.stop();
             isPaused = false; // Đảm bảo trạng thái không bị pause khi về menu
             currentLevel = 1;
@@ -172,19 +180,25 @@ public class Main extends Application {
         Scene endScene = endScreen.getScene(primaryStage, WIDTH, HEIGHT, win);
 
         endScreen.getRestartButton().setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             currentLevel = 1;
             showMenu();
         });
 
         endScreen.getExitToMenuButton().setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             currentLevel = 1;
             showMenu();
         });
 
         // Chỉ gắn hành động cho Next Level khi có nút này
         if (win) {
-            saveLoadGame.saveGame(gameManager);
-            endScreen.getNextLevelButton().setOnAction(e -> startNextLevel());
+            SaveLoadGame.saveGame(gameManager);
+            endScreen.getNextLevelButton().setOnAction(e ->
+            {
+                SoundManager.playSound(SoundManager.SOUND_WIN_GAME);
+                startNextLevel();
+            });
         }
 
         primaryStage.setScene(endScene);
@@ -192,6 +206,7 @@ public class Main extends Application {
 
     // ------------------ NEXT LEVEL ------------------
     private void startNextLevel() {
+        SoundManager.playSound(SoundManager.SOUND_GAME_START);
         currentLevel++;
         System.out.println("Starting level " + currentLevel);
         // Ở đây bạn có thể gọi gameManager.loadLevel("level" + currentLevel + ".txt");
