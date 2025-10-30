@@ -2,6 +2,7 @@ package view;
 
 import Arkanoid.Main;
 import controller.GameManager;
+import controller.SoundManager;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -73,6 +74,7 @@ public class SelectPaddle {
 
         Button paddle1 = createpaddleButton("/images/paddle.png", 350, 350);
         EventHandler<ActionEvent> handler = event -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             Button clicked = (Button) event.getSource(); // nút nào được nhấn
             ImageView view = (ImageView) clicked.getGraphic();
             Image img = view.getImage();

@@ -3,6 +3,7 @@ package view;
 import Arkanoid.Main;
 import controller.GameManager;
 import controller.SaveLoadGame;
+import controller.SoundManager;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -76,11 +77,13 @@ public class Menu {
 
         //action pick skin
         button1.setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             SelectBall selectBall = new SelectBall(); // tạo đối tượng mới
             stage.setScene(selectBall.getScene(stage, main)); // gọi phương thức thông qua đối tượng
         });
 
         button2.setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             SaveLoadGame saveLoadGame = new SaveLoadGame();
             if (saveLoadGame.getLives() != 0) {
                 main.Continue = true;

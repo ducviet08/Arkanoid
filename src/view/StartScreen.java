@@ -1,6 +1,7 @@
 package view;
 
 import Arkanoid.Main;
+import controller.SoundManager;
 import javafx.geometry.Insets; // Import lớp Insets
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -65,6 +66,7 @@ public class StartScreen {
 
         // action cho pressStart
         PressStart.setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             Menu menu = new Menu();
             stage.setScene(menu.getScene(stage, main));
         });

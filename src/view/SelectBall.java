@@ -1,6 +1,7 @@
 package view;
 
 import Arkanoid.Main;
+import controller.SoundManager;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -74,6 +75,7 @@ public class SelectBall {
         Button ball3 = createBallButton("/images/ball3.png", 500, 300);
 
         EventHandler<ActionEvent> handler = event -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             Button clicked = (Button) event.getSource(); // nút nào được nhấn
             ImageView view = (ImageView) clicked.getGraphic();
             Image img = view.getImage();
