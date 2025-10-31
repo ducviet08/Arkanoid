@@ -486,7 +486,7 @@ public class Main extends Application {
                     if (gameManagerP1.getGameState() == GameManager.GameState.GAME_OVER ||
                             gameManagerP1.getGameState() == GameManager.GameState.LEVEL_COMPLETE) {
 
-                        if (Continue) saveLoadGame.saveGame(gameManagerP1);
+                        saveLoadGame.saveGame(gameManagerP1);
 
                         stop();
                         boolean win = (gameManagerP1.getGameState() == GameManager.GameState.LEVEL_COMPLETE);

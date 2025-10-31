@@ -224,7 +224,7 @@ import controller.SoundManager;
 public class Ball extends MovableObject {
     private boolean active;
     public static final double MAX_ANGLE = Math.toRadians(75);
-    public static final double ORIGINAL_SPEED = 2.5;
+    public static final double ORIGINAL_SPEED = 3.5;
     public static final double ORIGINAL_RADIUS = 7.5;
     public static final double ORIGINAL_HEIGHT = 15;
     public static final double ORIGINAL_WIDTH = 15;

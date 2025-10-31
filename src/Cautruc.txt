@@ -1,0 +1,122 @@
++------------------+
+                       |   «abstract»     |
+                       |    GameObject    |
+                       |------------------|
+                       | # x, y, width, h |
+                       | # image, path    |
+                       |------------------|
+                       | + checkCollision()|
+                       | + update()       |
+                       +------------------+
+                               ^
+                               | (extends)
+         .---------------------+----------------------.
+         |                     |                      |
++------------------+  +------------------+  +------------------+
+|   «abstract»     |  |   «abstract»     |  |      Steel       |
+|   MovableObject  |  |      Brick       |  '------------------'
+|------------------|  |------------------|
+| # speed, dirX, dirY|  | # health: int    |
+| + update()       |  | + takeHit()      |
++------------------+  | + isDestroyed()  |
+         ^            +------------------+
+         | (extends)           ^
+         |                     | (extends)
+   .-----+-----.---------.     .------------------------------.
+   |     |     |         |             |           |          |
++------+ +------+ +---------+ +-----------+ +------------+ +-----------+
+| Ball | |Paddle| | PowerUp | |NormalBrick| |StrongBrick | |GlassBrick |
+'------+ '------+ '---------' '-----------' '------------' '-----------'
+                      ^                                   |
+                      | (extends)                         +------------------+
+                      |                                   |  ExplosiveBrick  |
+                      |                                   |------------------|
+                      |                                   | + explode()      |
+                      |                                   '------------------'
+ .--------------------+-------------------------------.
+ |         |           |             |                 |
++--------+ +---------+ +----------+ +--------+ +-------+
+|TinyBall| |FastBall | |FireBall  | |Extra.. | |Shrink..|
+'--------' '---------' '----------' '--------' '-------'
+   |         |
++--------+ +---------+
+|Expand..| |Sticky...|
+'--------' '---------'
+
+
+.-----------------------------------------------------------------.
+| GÓI CONTROLLER                                                  |
+'-----------------------------------------------------------------'
+
++------------------+       (Sử dụng)       +------------------+
+|   SaveLoadGame   |---------------------->|    GameManager   |
+|------------------|                       |------------------|
+| + saveGame(gm)   |           (Sử dụng)   | - ball: Ball     |
+| + loadGame(gm)   |<----------------------| - paddle: Paddle |
++------------------+                       | - bricks: List   |
+                                           | - powerUps: List |
+                                           | - steels: List   |
+                                           | - renderer: Rend | 
+                                           |------------------|
+                                           | + updateGame()   |
+                                           | + loadLevel()    |
+                                           | + checkCollisions()|
+                                           +------------------+
+                                                    |
+                                                    | (Sử dụng)
+                                                    v
+                                           +------------------+
+                                           |   SoundManager   |
+                                           |------------------|
+                                           | + playSound()    |
+                                           +------------------+
+
+
+
++------------------+
+|     Renderer     |
+|------------------|
+| - gc: GContext   |
+| + draw(objects)  | ---> (Đọc dữ liệu từ model.GameObject)
++------------------+
+
++------------------+
+|   «Scene»        |
+|   StartScreen    |
++------------------+
+
++------------------+
+|   «Scene»        |
+|      Menu        |
++------------------+
+
+(và các «Scene» khác: SelectBall, SelectPaddle, PauseScreen, EndScreen, HighScore)
+
+
+
++--------------------------------+
+|       Arkanoid.Main            |
+|     (extends Application)      |
+|--------------------------------|
+| - primaryStage: Stage          |
+| - gameLoop: AnimationTimer     |
+| - gameManagerP1: GameManager   | o--- (controller.GameManager)
+| - rendererP1: Renderer         | o--- (view.Renderer)
+| - gameManagerP2: GameManager   | o--- (controller.GameManager)
+| - rendererP2: Renderer         | o--- (view.Renderer)
+| - activeKeys: Set<KeyCode>     |
+|--------------------------------|
+| + start(stage)                 | (Điểm vào JavaFX)
+| + showMainMenu()               | ---> (Tạo/Sử dụng view.Menu)
+| + showSelectBallScreen()       | ---> (Tạo/Sử dụng view.SelectBall)
+| + showSelectPaddleScreen()     | ---> (Tạo/Sử dụng view.SelectPaddle)
+| + showEndScreen()              | ---> (Tạo/Sử dụng view.EndScreen)
+| + togglePause()                | ---> (Tạo/Sử dụng view.PauseScreen)
+| + startGame()                  | (Tạo GameManager, Renderer)
+| + gameLoop.handle()            | (Vòng lặp chính)
+|   |                            |
+|   '---> gameManager.updateGame()| (Gọi Controller)
+|   '---> renderer.draw()        | (Gọi View)
+|   '---> soundManager.playSound()| (Gọi Controller)
+|   '---> saveLoadGame.saveGame() | (Gọi Controller)
++--------------------------------+

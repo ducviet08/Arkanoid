@@ -273,11 +273,12 @@ public class GameManager {
                 }
                 if (brick.isDestroyed()) {
                     if (brick instanceof ExplosiveBrick) {
+                        SoundManager.playSound(SoundManager.SOUND_EXPLOSION);
                         ExplosiveBrick temp = (ExplosiveBrick) brick;
                         temp.explode(bricks, brick);
                     }
 
-                    if (Math.random() < 0.5) {
+                    if (Math.random() < 0.2) {
                         PowerUp newPowerup;
                         double rand = Math.random();
                         if (rand < 0.15) {

@@ -10,13 +10,14 @@ public class SoundManager {
     public static final String SOUND_CLICK = "/sounds/click.mp3";
     public static final String SOUND_PADDLE_HIT = "/sounds/BounceWithPaddle_sound.mp3";
     public static final String SOUND_NORMALBRICK_HIT = "/sounds/BounceWithNormalBrick_sound.mp3";
-    public static final String SOUND_STEELBRICK_HIT = "/sounds/BounceWithSteelBrick.mp3";
+    public static final String SOUND_STEELBRICK_HIT = "/sounds/BounceWithSteelBrick_sound.mp3";
     public static final String SOUND_POWERUP_GET = "/sounds/powerup_get.mp3";
     public static final String SOUND_LOSE_LIFE = "/sounds/fall_out.mp3";
     public static final String SOUND_LEVEL_COMPLETE = "/sounds/click.mp3";
     public static final String SOUND_GAME_OVER = "/sounds/game_over_sound.mp3";
     public static final String SOUND_WIN_GAME = "/sounds/win.mp3";
     public static final String SOUND_GAME_START = "/sounds/start_sound.mp3";
+    public static final String SOUND_EXPLOSION = "/sounds/explosion.mp3";
 
 
     // Lưu player hiện tại để có thể stop khi cần
