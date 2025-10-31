@@ -12,7 +12,7 @@ import javafx.event.EventHandler;
 
 import static Arkanoid.Main.ballImage;
 
-public class Select_ball {
+public class SelectBall {
 
     private String pathBall;
     Pane root = new Pane();

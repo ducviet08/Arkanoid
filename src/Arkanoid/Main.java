@@ -177,7 +177,7 @@ public class Main extends Application {
             showMenu();
         });
 
-        endScreen.getExitToMenuButton().setOnAction(e -> {
+        endScreen.getMainMenuButton().setOnAction(e -> {
             currentLevel = 1;
             showMenu();
         });

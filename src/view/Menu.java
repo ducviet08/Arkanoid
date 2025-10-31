@@ -71,7 +71,7 @@ public class Menu {
 
         //action pick skin
         button1.setOnAction(e -> {
-            Select_ball selectBall = new Select_ball(); // tạo đối tượng mới
+            SelectBall selectBall = new SelectBall(); // tạo đối tượng mới
             stage.setScene(selectBall.getScene(stage, main)); // gọi phương thức thông qua đối tượng
         });
 
