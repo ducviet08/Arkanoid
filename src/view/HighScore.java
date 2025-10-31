@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
 
 import java.io.*;
 import java.util.*;
@@ -15,9 +16,19 @@ public class HighScore {
     // 👉 nếu file nằm trong src/data/
     private final String FILE_PATH = System.getProperty("user.dir") + "/src/data/score.txt";
 
-    public Scene getScene(Stage stage, int playerScore) {
+    public Scene getScene(Stage stage, int playerScore, Arkanoid.Main main) {
         Pane root = new Pane();
 
+        Image im = new Image(getClass().getClassLoader().getResourceAsStream("images/back.png"));
+        ImageView view = new ImageView(im);
+        view.setFitWidth(50);  // tuỳ chỉnh kích thước
+        view.setFitHeight(50);
+
+        Button back = new Button();
+        back.setGraphic(view);  // gán ImageView vào button
+        back.setLayoutX(25);
+        back.setLayoutY(25);
+        back.setStyle("-fx-background-color: transparent;");
         // Ảnh nền
         Image bg = new Image("/images/HighScore.jpg");
         ImageView bgView = new ImageView(bg);
@@ -56,6 +67,11 @@ public class HighScore {
             root.getChildren().addAll(stt, name, score);
         }
 
+        root.getChildren().addAll(back);
+        back.setOnAction(e -> {
+                    Menu menu = new Menu();
+                    stage.setScene(menu.getScene(stage, main));
+                });
         // Cập nhật bảng khi mở
         updateBoard(nameList, scoreList);
 

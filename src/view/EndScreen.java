@@ -1,6 +1,7 @@
 // view/EndGameScreen.java
 package view;
 
+import controller.GameManager;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.application.Platform;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -70,9 +72,8 @@ public class EndScreen {
     }
 
     // 🔹 Gán hình ảnh thắng hoặc thua
-    public void setMessage(boolean win) {
-        String path = win ? "/images/LevelComplete.png" : "/images/gameover.png";
-        Image image = new Image(getClass().getResourceAsStream(path));
+    public void setMessage(String message) {
+        Image image = new Image(getClass().getResourceAsStream(message));
         messageImageView.setImage(image);
     }
 
@@ -130,7 +131,7 @@ public class EndScreen {
     }
 
     // 🔹 Tạo Scene
-    public Scene getScene(Stage stage, int width, int height, boolean win, int score) {
+    public Scene getScene(Stage stage, int width, int height, boolean win, int score, GameManager.GameMode mode) {
         Image bgImage = new Image("/images/background.jpg");
         BackgroundImage backgroundImage = new BackgroundImage(
                 bgImage,
@@ -162,7 +163,12 @@ public class EndScreen {
         }
 
         // 🧩 Gán điểm & thêm TextField nhập tên
-        setScore(score, layout);
+        if(mode == GameManager.GameMode.SINGLE_PLAYER){
+            setScore(score, layout);
+        }
+        exit.setOnAction(e -> {
+            Platform.exit();
+        });
 
         return new Scene(layout, width, height);
     }

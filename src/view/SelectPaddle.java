@@ -57,8 +57,8 @@ public class SelectPaddle {
         );
 
         // Thêm 2 paddle
-        Button paddle1 = createpaddleButton("/images/paddle.png", 350, 350);
-        Button paddle2 = createpaddleButton("/images/paddle2.png", 350, 450); // Nút thứ 2
+        Button paddle1 = createpaddleButton("/images/paddle3.png", 350, 350);
+        Button paddle2 = createpaddleButton("/images/paddle4.png", 350, 450); // Nút thứ 2
 
         // --- CẬP NHẬT: Handler ---
         EventHandler<ActionEvent> handler = event -> {
@@ -66,9 +66,9 @@ public class SelectPaddle {
             Button clicked = (Button) event.getSource();
 
             if (clicked == paddle1) {
-                pathPaddle = "/images/paddle.png";
+                pathPaddle = "/images/paddle3.png";
             } else if (clicked == paddle2) { // Xử lý nút thứ 2
-                pathPaddle = "/images/paddle2.png";
+                pathPaddle = "/images/paddle4.png";
             }
 
             paddleImage = pathPaddle; // Set biến static

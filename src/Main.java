@@ -349,6 +349,8 @@ public class Main extends Application {
             gameManagerP1.initializeGame();
             if (Continue) {
                 saveLoadGame.loadGame(gameManagerP1);
+                paddleImage = gameManagerP1.getPaddle().getPath();
+                ballImage = gameManagerP1.getBall().getPath();
             } else {
                 gameManagerP1.loadLevel("level" + currentLevel + ".txt");
                 if (ballImage != null) gameManagerP1.getBall().setImage(ballImage);
@@ -473,11 +475,11 @@ public class Main extends Application {
 
                     if (p1Won || p2Lost) {
                         stop();
-                        showEndScreen(gameManagerP1.getScore(), false, "🏆 PLAYER 1 WINS! 🏆");
+                        showEndScreen(gameManagerP1.getScore(), false, "/images/player1_win.png");
                     }
                     else if (p2Won || p1Lost) {
                         stop();
-                        showEndScreen(gameManagerP2.getScore(), false, "🏆 PLAYER 2 WINS! 🏆");
+                        showEndScreen(gameManagerP2.getScore(), false, "/images/player2_win.png");
                     }
 
                 } else { // Chế độ 1 người
@@ -488,7 +490,7 @@ public class Main extends Application {
 
                         stop();
                         boolean win = (gameManagerP1.getGameState() == GameManager.GameState.LEVEL_COMPLETE);
-                        showEndScreen(gameManagerP1.getScore(), win, win ? "🎉 LEVEL COMPLETE!" : "💀 GAME OVER!");
+                        showEndScreen(gameManagerP1.getScore(), win, win ? "/images/LevelComplete.png" : "/images/gameover.png");
                     }
                 }
             }
@@ -552,10 +554,10 @@ public class Main extends Application {
     // ------------------ END GAME ------------------
     private void showEndScreen(int score, boolean win, String message) {
         endScreen.setMessage(message); // <-- Dùng message tùy chỉnh
-        endScreen.setScore(score);
+        //endScreen.setScore(score);
 
         // (Bạn cần có file EndScreen.java)
-        Scene endScene = endScreen.getScene(primaryStage, WIDTH, HEIGHT, win);
+        Scene endScene = endScreen.getScene(primaryStage, WIDTH, HEIGHT, win,score,currentGameMode);
 
         endScreen.getRestartButton().setOnAction(e -> {
             SoundManager.playSound(SoundManager.SOUND_CLICK);
@@ -593,7 +595,7 @@ public class Main extends Application {
         System.out.println("Starting level " + currentLevel);
         Continue = false;
         // Next level sẽ đưa bạn về chọn skin
-        showSelectBallScreen(GameManager.GameMode.SINGLE_PLAYER);
+        startGame(GameManager.GameMode.SINGLE_PLAYER);
     }
 
     public static void main(String[] args) {

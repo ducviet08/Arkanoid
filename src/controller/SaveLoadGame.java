@@ -77,6 +77,10 @@ public class SaveLoadGame {
                     writer.write("NormalBrick " + brick.getPath() + " " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
                 } else if (brick instanceof StrongBrick) {
                     writer.write("StrongBrick " + brick.getPath() + " " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
+                } else if (brick instanceof ExplosiveBrick) {
+                    writer.write("ExplosiveBrick " + brick.getPath() + " " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
+                } else if (brick instanceof GlassBrick) {
+                    writer.write("GlassBrick " + brick.getPath() + " " + brick.getX() + " " + brick.getY() + " " + brick.getHealth());
                 }
                 writer.newLine(); // <- thêm dòng mới cho mỗi viên
             }
@@ -173,6 +177,10 @@ public class SaveLoadGame {
                                 bricks.add(new NormalBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4]))); // Giả sử 80x25
                             } else if (parts2[0].equals("StrongBrick")) {
                                 bricks.add(new StrongBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4]))); // Giả sử 80x25
+                            } else if (parts2[0].equals("ExplosiveBrick")) {
+                                bricks.add(new ExplosiveBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4])));
+                            } else if (parts2[0].equals("GlassBrick")) {
+                                bricks.add(new GlassBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4])));
                             }
                         }
                         gameManager.setBricks(bricks);
