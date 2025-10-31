@@ -76,4 +76,8 @@ public class Paddle extends MovableObject {
     public void setRightBoder(double rightBoder) {
         this.rightBoder = rightBoder;
     }
+
+    public double getVelocityX() {
+        return this.directionX * this.speed;
+    }
 }

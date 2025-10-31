@@ -36,7 +36,7 @@ public class PauseScreen {
 
     public Scene getScene(Stage stage, int width, int height) {
         // --- Thêm phần code tải và thiết lập BackgroundImage ---
-        Image img = new Image(getClass().getResource("/images/BG.jpg").toExternalForm());
+        Image img = new Image(getClass().getResource("/images/background.png").toExternalForm());
         BackgroundImage bg = new BackgroundImage(
                 img,
                 BackgroundRepeat.NO_REPEAT,

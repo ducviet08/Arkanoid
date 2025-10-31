@@ -61,6 +61,10 @@ public abstract class GameObject {
         return path;
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     // Phương thức kiểm tra va chạm giữa hai GameObject
     public boolean checkCollision(GameObject other) {
         return this.x < other.x + other.width &&
