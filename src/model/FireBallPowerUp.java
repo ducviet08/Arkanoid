@@ -2,7 +2,7 @@ package model;
 
 import static Arkanoid.Main.ballImage;
 
-public class FireBallPowerUp extends PowerUp{
+public class FireBallPowerUp extends PowerUp {
     private Ball ball;
 
     public FireBallPowerUp(String imagePath, double x, double y, double width, double height, long duration, Ball ball) {
@@ -21,8 +21,7 @@ public class FireBallPowerUp extends PowerUp{
 
     @Override
     public void removeEffect(Paddle paddle) {
-        if(ball != null) {
-            ball.setOriginalSpeed();
+        if (ball != null) {
             ball.setImage(ballImage);
         }
     }
