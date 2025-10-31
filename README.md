@@ -53,7 +53,11 @@ Arkanoid
 
 
 **Mô tả chế độ chơi**
+
 +1player: Người chơi sẽ chơi theo màn, phá hủy hết brick của màn này để đến level màn tiếp theo
+
 +2player: 2 người chơi sẽ chơi ở 1 map bất kì, người cho này sẽ chiến thắng khi phá vỡ hết gạch trước người kia hoặc người kia mất hết mạng
+
 +Có chế độ Continue ở 1player để chơi tiếp tục khi thoát game vào lại
+
 +Có bảng hiển thị highscore để xem tên các người chơi cao điểm và số điểm họ đạt được
