@@ -1,54 +1,123 @@
 // view/EndGameScreen.java
 package view;
 
-import javafx.geometry.Insets;
+import controller.GameManager;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image; // Thêm import này
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.scene.paint.Color;
+import javafx.application.Platform;
+
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class EndScreen {
 
-    private Label messageLabel;
+    private ImageView messageImageView;
     private Label scoreLabel;
     private Button restartButton;
     private Button nextLevelButton;
     private Button exitToMenuButton;
+    private Button exit;
+    private TextField nameField;  // ô nhập tên
+
+    private int currentScore;
+
+    // 🔹 Tạo nút có hình, vị trí (x, y), kích thước (a, b)
+    private Button createbutton(String path, int x, int y, int a, int b) {
+        Image image = new Image(getClass().getResourceAsStream(path));
+        ImageView view = new ImageView(image);
+        view.setFitWidth(a);
+        view.setFitHeight(b);
+        view.setPreserveRatio(true);
+
+        Button btn = new Button();
+        btn.setGraphic(view);
+        btn.setStyle("-fx-background-color: transparent;");
+        btn.setLayoutX(x);
+        btn.setLayoutY(y);
+        return btn;
+    }
 
     public EndScreen() {
-        messageLabel = new Label();
-        messageLabel.setStyle("-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold;");
+        messageImageView = new ImageView();
+        messageImageView.setFitWidth(350);
+        messageImageView.setFitHeight(150);
+        messageImageView.setPreserveRatio(true);
+        messageImageView.setLayoutX(225);
+        messageImageView.setLayoutY(80);
 
         scoreLabel = new Label();
         scoreLabel.setStyle("-fx-text-fill: white; -fx-font-size: 24px;");
+        scoreLabel.setLayoutX(330);
+        scoreLabel.setLayoutY(250);
 
-        restartButton = new Button("Restart");
-        restartButton.setPrefSize(200, 60);
-        restartButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 24px;");
+        restartButton = createbutton("/images/restart.png", 360, 400, 80, 80);
+        nextLevelButton = createbutton("/images/NextLevel.png", 330, 400, 120, 120);
+        exitToMenuButton = createbutton("/images/Home.png", 240, 400, 80, 80);
+        exit = createbutton("/images/exit.png", 470, 405, 80, 80);
 
-        nextLevelButton = new Button("Next Level");
-        nextLevelButton.setPrefSize(200, 60);
-        nextLevelButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 24px;");
-
-        exitToMenuButton = new Button("Exit to Menu");
-        exitToMenuButton.setPrefSize(200, 60);
-        exitToMenuButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 24px;");
+        // 🧩 Tạo ô nhập tên
+        nameField = new TextField();
+        nameField.setPromptText("Enter your name...");
+        nameField.setLayoutX(280);
+        nameField.setLayoutY(330);
+        nameField.setPrefWidth(240);
+        nameField.setStyle("-fx-background-color: rgba(255,255,255,0.9); -fx-font-size: 16px;");
     }
 
-    // Setters để cập nhật nội dung
+    // 🔹 Gán hình ảnh thắng hoặc thua
     public void setMessage(String message) {
-        messageLabel.setText(message);
+        Image image = new Image(getClass().getResourceAsStream(message));
+        messageImageView.setImage(image);
     }
 
-    public void setScore(int score) {
+    // 🔹 Hiển thị điểm và hiện ô nhập tên (chỉ Enter 1 lần)
+    public void setScore(int score, Pane layout) {
+        this.currentScore = score;
         scoreLabel.setText("Your Score: " + score);
+
+        if (score >= 0) {
+            layout.getChildren().add(nameField);
+
+            // Khi nhấn Enter -> lưu 1 lần duy nhất
+            nameField.setOnAction(e -> {
+                String playerName = nameField.getText().trim();
+                if (!playerName.isEmpty()) {
+                    saveHighScore(playerName, currentScore);
+                    nameField.setEditable(false); // khóa ô nhập
+                    nameField.setPromptText("Saved!");
+                    nameField.setStyle("-fx-background-color: lightgray; -fx-font-size: 16px;");
+                }
+            });
+        }
     }
 
-    // Getters cho các nút
+    // 🔹 Lưu tên + điểm vào file
+    private void saveHighScore(String name, int score) {
+        try {
+            // Lấy đường dẫn tuyệt đối tới thư mục project
+            String projectPath = System.getProperty("user.dir");
+
+            // Ghi vào file trong src/data/
+            String filePath = projectPath + "/src/data/score.txt";
+
+            FileWriter fw = new FileWriter(filePath, true);
+            fw.write(name + "," + score + "\n");
+            fw.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     public Button getRestartButton() {
         return restartButton;
     }
@@ -61,9 +130,9 @@ public class EndScreen {
         return exitToMenuButton;
     }
 
-    public Scene getScene(Stage stage, int width, int height, boolean win) {
-        // --- Thêm phần code tải và thiết lập BackgroundImage ---
-        Image bgImage = new Image("/images/background.png");
+    // 🔹 Tạo Scene
+    public Scene getScene(Stage stage, int width, int height, boolean win, int score, GameManager.GameMode mode) {
+        Image bgImage = new Image("/images/background.jpg");
         BackgroundImage backgroundImage = new BackgroundImage(
                 bgImage,
                 BackgroundRepeat.NO_REPEAT,
@@ -73,25 +142,34 @@ public class EndScreen {
                         BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, false
                 )
         );
-        // --------------------------------------------------------
 
-        VBox buttonLayout = new VBox(20);
-        buttonLayout.getChildren().addAll(messageLabel, scoreLabel);
+        Pane layout = new Pane();
+        layout.setBackground(new Background(backgroundImage));
+
+        layout.getChildren().addAll(
+                messageImageView,
+                scoreLabel,
+                exitToMenuButton,
+                exit
+        );
 
         if (win) {
-            buttonLayout.getChildren().add(nextLevelButton);
+            layout.getChildren().add(nextLevelButton);
+            nameField.setVisible(false);
         }
-        buttonLayout.getChildren().addAll(restartButton, exitToMenuButton);
+        if(!win){
+            layout.getChildren().add(restartButton);
+            nameField.setVisible(true);
+        }
 
-        buttonLayout.setAlignment(Pos.CENTER);
-        buttonLayout.setMaxWidth(Region.USE_PREF_SIZE);
-        buttonLayout.setMaxHeight(Region.USE_PREF_SIZE);
+        // 🧩 Gán điểm & thêm TextField nhập tên
+        if(mode == GameManager.GameMode.SINGLE_PLAYER){
+            setScore(score, layout);
+        }
+        exit.setOnAction(e -> {
+            Platform.exit();
+        });
 
-        StackPane root = new StackPane(buttonLayout);
-        root.setBackground(new Background(backgroundImage)); // Gắn background vào root StackPane
-        // root.setStyle("-fx-background-color: black;"); // Bỏ dòng này để ảnh nền hiển thị
-
-        Scene scene = new Scene(root, width, height);
-        return scene;
+        return new Scene(layout, width, height);
     }
 }

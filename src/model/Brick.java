@@ -3,30 +3,40 @@ package model;
 
 public abstract class Brick extends GameObject {
     protected int health;
-    protected String type; // Normal, Strong, Invisible
 
-    public Brick(String imagePath, double x, double y, double width, double height, int health, String type) {
+    public Brick(String imagePath, double x, double y, double width, double height, int health) {
         super(imagePath, x, y, width, height);
         this.health = health;
-        this.type = type;
     }
 
-    /** getter function. */
+    /**
+     * getter function.
+     */
     public int getHealth() {
         return health;
     }
 
-    public String getType() {
-        return type;
-    }
+//    public String getType() {
+//        return type;
+//    }
 
     public void takeHit() {
         health--;
-        System.out.println(type + " Brick hit! Health: " + health);
+        System.out.println(" Brick hit! Health: " + health);
+        if (health > 0) {
+            String s[] = super.getPath().split("\\.");
+            super.setPath(s[0] + "-1" + ".png");
+            super.setImage(s[0]+ "-1" + ".png");
+        }
     }
 
     public boolean isDestroyed() {
         return health <= 0;
+    }
+
+    public void takeDestroy() {
+        health = 0;
+        System.out.println(" Brick destroyed!");
     }
 
     @Override

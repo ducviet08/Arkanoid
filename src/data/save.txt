@@ -1,0 +1,15 @@
+level 2
+paddle /images/paddle3.png 295.0
+ball /images/ball2.png 209.2634210933733 195.1 0.9847690404394055 0.17386758465007968
+score 56
+lives 5
+lastBallPowerUpTime 16179
+activeBallPowerUp null
+lastPaddlePowerUpTime 5337
+activePaddlePowerUp ShrinkPaddlePowerUp
+lastMixPowerUpTime 34298
+activeMixPowerUp null
+bricks
+steels
+powerUps
+StickyPaddlePowerUp 147.5 170.0

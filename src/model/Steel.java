@@ -8,10 +8,6 @@ public class Steel extends GameObject {
 
     }
 
-    public void takeHit() {
-        System.out.println("Steel cannot be destroyed");
-    }
-
     @Override
     public void update() {
 
