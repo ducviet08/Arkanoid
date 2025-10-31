@@ -1,48 +1,15 @@
-level 1
-paddle /images/paddle.png 350.0
-ball /images/ball2.png 395.0 530.0 1.0 -1.0
-score 40
-lives 0
-lastBallPowerUpTime 12995
+level 2
+paddle /images/paddle3.png 295.0
+ball /images/ball2.png 209.2634210933733 195.1 0.9847690404394055 0.17386758465007968
+score 56
+lives 5
+lastBallPowerUpTime 16179
 activeBallPowerUp null
-lastPaddlePowerUpTime 19590
-activePaddlePowerUp null
+lastPaddlePowerUpTime 5337
+activePaddlePowerUp ShrinkPaddlePowerUp
+lastMixPowerUpTime 34298
+activeMixPowerUp null
 bricks
-NormalBrick /images/brick1.png 62.5 50.0 1
-NormalBrick /images/brick1.png 147.5 50.0 1
-NormalBrick /images/brick1.png 232.5 50.0 1
-NormalBrick /images/brick1.png 317.5 50.0 1
-NormalBrick /images/brick1.png 402.5 50.0 1
-NormalBrick /images/brick1.png 487.5 50.0 1
-NormalBrick /images/brick1.png 572.5 50.0 1
-NormalBrick /images/brick1.png 147.5 80.0 1
-NormalBrick /images/brick1.png 232.5 80.0 1
-NormalBrick /images/brick1.png 317.5 80.0 1
-NormalBrick /images/brick1.png 402.5 80.0 1
-NormalBrick /images/brick1.png 487.5 80.0 1
-NormalBrick /images/brick1.png 572.5 80.0 1
-NormalBrick /images/brick1.png 62.5 110.0 1
-NormalBrick /images/brick1.png 147.5 110.0 1
-NormalBrick /images/brick1.png 232.5 110.0 1
-NormalBrick /images/brick1.png 317.5 110.0 1
-NormalBrick /images/brick1.png 402.5 110.0 1
-NormalBrick /images/brick1.png 487.5 110.0 1
-NormalBrick /images/brick1.png 572.5 110.0 1
-NormalBrick /images/brick1.png 657.5 110.0 1
-NormalBrick /images/brick1.png 62.5 140.0 1
-NormalBrick /images/brick1.png 147.5 140.0 1
-NormalBrick /images/brick1.png 232.5 140.0 1
-NormalBrick /images/brick1.png 317.5 140.0 1
-NormalBrick /images/brick1.png 402.5 140.0 1
-NormalBrick /images/brick1.png 487.5 140.0 1
-NormalBrick /images/brick1.png 572.5 140.0 1
-NormalBrick /images/brick1.png 657.5 140.0 1
-NormalBrick /images/brick1.png 232.5 170.0 1
-NormalBrick /images/brick1.png 402.5 170.0 1
-NormalBrick /images/brick1.png 487.5 170.0 1
-NormalBrick /images/brick1.png 572.5 170.0 1
-NormalBrick /images/brick1.png 402.5 200.0 1
-NormalBrick /images/brick1.png 487.5 200.0 1
-NormalBrick /images/brick1.png 657.5 230.0 1
 steels
 powerUps
+StickyPaddlePowerUp 147.5 170.0
