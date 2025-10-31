@@ -21,7 +21,7 @@ public class SelectPaddle {
     private Button createpaddleButton(String path, double x, double y) {
         Image image = new Image(getClass().getResourceAsStream(path));
         ImageView view = new ImageView(image);
-        view.setFitWidth(100);
+        view.setFitWidth(150);
         view.setFitHeight(30);
         view.setPreserveRatio(true);
 
@@ -71,13 +71,21 @@ public class SelectPaddle {
         );
         // round là cái bàm hình gameplay nhá
 
-        Button paddle1 = createpaddleButton("/images/paddle.png", 350, 350);
+        Button paddle1 = createpaddleButton("/images/paddle1.png", 350, 350);
+        Button paddle3 = createpaddleButton("/images/paddle3.png", 550, 350);
+        Button paddle4 = createpaddleButton("/images/paddle4.png", 150, 350);
         EventHandler<ActionEvent> handler = event -> {
             Button clicked = (Button) event.getSource(); // nút nào được nhấn
             ImageView view = (ImageView) clicked.getGraphic();
             Image img = view.getImage();
             if (clicked == paddle1) {
-                pathPaddle = "/images/paddle.png";
+                pathPaddle = "/images/paddle1.png";
+            }
+            else if (clicked == paddle3) {
+                pathPaddle = "/images/paddle3.png";
+            }
+            else if (clicked == paddle4) {
+                pathPaddle = "/images/paddle4.png";
             }
             paddleImage = pathPaddle;
             main.Continue = false;
@@ -85,9 +93,11 @@ public class SelectPaddle {
         };
 
         paddle1.setOnAction(handler);
+        paddle3.setOnAction(handler);
+        paddle4.setOnAction(handler);
         Scene scene = new Scene(root, 800, 600);
         root.setBackground(new Background(backgroundImage));
-        root.getChildren().addAll(paddle1);
+        root.getChildren().addAll(paddle1,paddle3,paddle4);
         return scene;
 
     }

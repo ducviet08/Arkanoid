@@ -49,7 +49,7 @@ public class StickyPaddlePowerUp extends PowerUp {
     @Override
     public void applyEffect(Paddle paddle) {
         System.out.println("StickyPaddle PowerUp activated!");
-        paddle.setImage("/images/paddle2.png");
+        paddle.setImage("/images/StickyPaddle.png");
         paddle.setSticky(true);
         this.currentPaddle = paddle;
     }
