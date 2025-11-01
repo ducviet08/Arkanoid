@@ -1,0 +1,114 @@
+
+
+// Arkanoid/FastBallPowerUp.java
+package Arkanoid.model.paddle;
+
+import Arkanoid.model.powerup.PowerUp;
+import Arkanoid.model.ball.Ball;
+
+import static Arkanoid.Main.paddleImage;
+
+public class StickyPaddlePowerUp extends PowerUp {
+    private Ball gameBall; // Tham chiếu đến quả bóng chính của game
+    private boolean stuck = false;  // bóng đang dính trên paddle
+    private Paddle currentPaddle;   // Paddle hiện tại
+
+    private double relativeOffset = 0.5;
+
+    public StickyPaddlePowerUp(String imagePath, double x, double y, double width, double height, long duration, Ball ball) {
+        super(imagePath, x, y, width, height, FALL_SPEED, duration);
+        this.gameBall = ball;
+    }
+
+    // Setter để GameManager có thể thiết lập tham chiếu đến ball
+    public void setGameBall(Ball gameBall) {
+        this.gameBall = gameBall;
+    }
+
+    @Override
+    public void applyEffect(Paddle paddle) {
+        System.out.println("StickyPaddle PowerUp activated!");
+        paddle.setImage("file:src/images/paddle1.png");
+        paddle.setSticky(true);
+        this.currentPaddle = paddle;
+    }
+
+    @Override
+    public void removeEffect(Paddle paddle) {
+        paddle.setImage(paddleImage);
+        System.out.println("ExpandPaddle PowerUp deactivated!");
+    }
+
+    // Xử lý bóng dính khi va chạm
+    public void onBallHitPaddle(Ball ball, Paddle paddle) {
+        if (paddle.isSticky() && !stuck) {
+            stuck = true;
+
+            // Tham chiếu đến ball và paddle hiện tại
+            this.currentPaddle = paddle;
+            this.gameBall = ball;
+
+            gameBall.setActive(false);  // Ball ngừng di chuyển
+
+            // Vị trí của bóng và Paddle
+            double absoluteOffset = gameBall.getX() - paddle.getX();
+
+            // Tính toán tỉ lệ offset
+            this.relativeOffset = absoluteOffset / paddle.getWidth();
+
+            // Đảm bảo tỉ lệ luôn nằm trong khoảng hợp lệ [0, 1]
+            // (Phòng trường hợp bóng va chạm ở rìa ngoài)
+            this.relativeOffset = Math.max(0, Math.min(1, this.relativeOffset));
+        }
+    }
+
+    // Ném bóng ra
+    public void releaseBall(Ball gameBall, Paddle paddle) {
+        if(stuck && gameBall != null) {
+            // Tham chiếu đến đến bóng và paddle hiện tại
+            this.gameBall = gameBall;
+            this.currentPaddle = paddle;
+
+            // cho bóng di chuyển
+            stuck = false;
+            //this.setStuck(stuck);
+            gameBall.setActive(true);
+
+            // Điều chỉnh hướng bóng
+            double ballCenterX = x + width / 2;
+            double paddleCenterX = currentPaddle.getX() + currentPaddle.getWidth() / 2.0;
+            double relativeIntersect = (ballCenterX - paddleCenterX) / (currentPaddle.getWidth() / 2.0);
+
+            // Giới hạn lại giá trị [-1, 1]
+            relativeIntersect = Math.max(-1, Math.min(1, relativeIntersect));
+
+            // Góc bật (0 = giữa, ±MAX_ANGLE = hai mép)
+            double bounceAngle = relativeIntersect * Ball.MAX_ANGLE;
+
+            // Tính lại hướng bóng
+            gameBall.setDirectionX(Math.sin(bounceAngle));
+            gameBall.setDirectionY(-Math.cos(bounceAngle));
+
+            currentPaddle.setRightBoder(800);
+            currentPaddle.setLeftBoder(0);
+        }
+    }
+
+    public boolean isStuck() {
+        return stuck;
+    }
+
+
+    public void setStuck(boolean stuck) {
+        this.stuck = stuck;
+    }
+
+    public double getRelativeOffset() {
+        return relativeOffset;
+    }
+
+    public void setRelativeOffset(double relativeOffset) {
+        this.relativeOffset = relativeOffset;
+    }
+
+}
