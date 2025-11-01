@@ -305,7 +305,7 @@ public class Ball extends MovableObject {
             if (boostStacks <= 0) {
                 lastPaddleHitTime = 0;
                 currentBoost = 0.0;
-                System.out.println("Boost expired! (Speed: " + String.format("%.2f", getSpeed()) + ")");
+                //System.out.println("Boost expired! (Speed: " + String.format("%.2f", getSpeed()) + ")");
             } else {
                 System.out.println("Boost decayed: " + oldStacks + " → " + boostStacks +
                         " stacks (Speed: " + String.format("%.2f", getSpeed()) + ")");
@@ -453,10 +453,10 @@ public class Ball extends MovableObject {
 
                 setSpeed(newSpeed);
 
-                System.out.println("⚡ Speed: " + String.format("%.2f", newSpeed) +
+                /*System.out.println("⚡ Speed: " + String.format("%.2f", newSpeed) +
                         " (Base: " + String.format("%.2f", baseSpeed) +
                         " + Momentum: " + String.format("%.2f", Math.abs(transferredMomentum)) +
-                        " + Boost: " + String.format("%.2f", currentBoost) + ")");
+                        " + Boost: " + String.format("%.2f", currentBoost) + ")");*/
             }
 
         } else if (ballCenterX < paddleLeft && directionX > 0) {
@@ -612,9 +612,9 @@ public class Ball extends MovableObject {
         // Cập nhật speed về base (không có boost)
         updateSpeedWithBoost();
 
-        if (oldStacks > 0) {
+        /*if (oldStacks > 0) {
             System.out.println("🔄 Boost reset: " + oldStacks + " → 0 stacks");
-        }
+        }*/
     }
 
     public int getBoostStacks() {
@@ -631,8 +631,8 @@ public class Ball extends MovableObject {
     public void setBaseSpeedMultiplier(double multiplier) {
         this.baseSpeedMultiplier = multiplier;
         updateSpeedWithBoost();
-        System.out.println("📊 Base speed multiplier: " + String.format("%.2f", multiplier) +
-                " (Speed: " + String.format("%.2f", getSpeed()) + ")");
+        /*System.out.println("📊 Base speed multiplier: " + String.format("%.2f", multiplier) +
+                " (Speed: " + String.format("%.2f", getSpeed()) + ")");*/
     }
 
     @Override
@@ -649,5 +649,9 @@ public class Ball extends MovableObject {
 
     @Override
     public void render() {
+    }
+
+    public String getImagePath() {
+        return this.path;
     }
 }

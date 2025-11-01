@@ -17,10 +17,9 @@ import javafx.scene.input.KeyCode;
 
 import static Arkanoid.Main.paddleImage;
 
-
 public class GameManager {
     private Paddle paddle;
-    private Ball ball;
+    private List<Ball> balls; // THAY ĐỔI: Từ Ball sang List<Ball>
     private List<Brick> bricks;
     private List<PowerUp> powerUps;
     private List<Steel> steels;
@@ -51,7 +50,12 @@ public class GameManager {
 
     public void initializeGame() {
         paddle = new Paddle("/images/paddle2.png", 350, 550);
-        ball = new Ball("/images/ball1.png", 395, 530, 1, -1);
+
+        // Khởi tạo danh sách bóng với 1 bóng ban đầu
+        balls = new ArrayList<>();
+        Ball mainBall = new Ball("/images/ball1.png", 395, 530, 1, -1);
+        balls.add(mainBall);
+
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         steels = new ArrayList<>();
@@ -120,12 +124,13 @@ public class GameManager {
             return;
         }
 
-        // Logic di chuyển paddle (pressedKeys) đã được XÓA
-        // Main.java (gameLoop) sẽ gọi paddle.moveLeft/Right/Stop()
+        paddle.update();
 
-        ball.updateRotation();
-        paddle.update(); // Paddle tự di chuyển dựa trên directionX
-        ball.move(paddle, activeMixPowerUp);
+        // Update tất cả các bóng
+        for (Ball ball : balls) {
+            ball.updateRotation();
+            ball.move(paddle, activeMixPowerUp);
+        }
 
         // Xử lý Power-up hết hạn
         if (activeBallPowerUp != null) {
@@ -159,26 +164,37 @@ public class GameManager {
             } else if (paddle.checkCollision(pu)) {
                 SoundManager.playSound(SoundManager.SOUND_POWERUP_GET);
                 paddle.applyPowerUp(pu);
+
                 if (pu instanceof FastBallPowerUp) {
-                    ((FastBallPowerUp) pu).setGameBall(ball);
+                    ((FastBallPowerUp) pu).setGameBall(getMainBall());
                     activeBallPowerUp = pu;
                     lastBallPowerUpTime = System.currentTimeMillis();
+
                 } else if (pu instanceof ExtraLifePowerUp) {
                     if (lives < 5) {
                         this.lives++;
                     }
+
                 } else if (pu instanceof FireBallPowerUp) {
-                    ((FireBallPowerUp) pu).setGameBall(ball);
+                    ((FireBallPowerUp) pu).setGameBall(getMainBall());
                     activeBallPowerUp = pu;
                     lastBallPowerUpTime = System.currentTimeMillis();
+
                 } else if (pu instanceof StickyPaddlePowerUp) {
-                    ((StickyPaddlePowerUp) pu).setGameBall(ball);
+                    ((StickyPaddlePowerUp) pu).setGameBall(getMainBall());
                     activeMixPowerUp = pu;
                     lastMixPowerUpTime = System.currentTimeMillis();
+
+                } else if (pu instanceof MultipleBallPowerUp) {
+                    ((MultipleBallPowerUp) pu).setBalls(balls);
+                    pu.applyEffect(paddle);
+                    // MultipleBall không cần tracking time vì hiệu ứng là tức thì
+
                 } else {
                     activePaddlePowerUp = pu;
                     lastPaddlePowerUpTime = System.currentTimeMillis();
                 }
+
                 powerUpIterator.remove();
             }
         }
@@ -195,114 +211,137 @@ public class GameManager {
     }
 
     public void handleInput(int keyCodeOrdinal) {
-        if (!ball.isActive() && keyCodeOrdinal == KeyCode.ENTER.ordinal()) {
+        Ball mainBall = getMainBall();
+        if (mainBall != null && !mainBall.isActive() && keyCodeOrdinal == KeyCode.ENTER.ordinal()) {
             if(activeMixPowerUp instanceof StickyPaddlePowerUp stickyPaddle && paddle.isSticky() && stickyPaddle.isStuck()) {
-                stickyPaddle.releaseBall(ball, paddle);
+                stickyPaddle.releaseBall(mainBall, paddle);
             } else {
-                ball.setActive(true);
+                mainBall.setActive(true);
             }
         }
-        // (Không cần dùng pressedKeys ở đây nữa)
     }
 
     public void handleKeyReleased(int keyCodeOrdinal) {
-        // (Không cần dùng pressedKeys ở đây nữa)
+        // Không cần dùng pressedKeys ở đây nữa
     }
 
-
     private void checkCollisions() {
+        // Xóa các bóng rơi xuống đáy
+        Iterator<Ball> ballIterator = balls.iterator();
+        while (ballIterator.hasNext()) {
+            Ball ball = ballIterator.next();
 
-        if (ball.getY() + ball.getHeight() >= 600) {
-            SoundManager.playSound(SoundManager.SOUND_LOSE_LIFE);
-            ball.setActive(false);
+            if (ball.getY() + ball.getHeight() >= 600) {
+                SoundManager.playSound(SoundManager.SOUND_LOSE_LIFE);
 
-            if (activeBallPowerUp != null) {
-                activeBallPowerUp.removeEffect(paddle);
-                activeBallPowerUp = null;
-            }
-            if (activePaddlePowerUp != null) {
-                activePaddlePowerUp.removeEffect(paddle);
-                activePaddlePowerUp = null;
-            }
-            if (activeMixPowerUp != null) {
-                activeMixPowerUp.removeEffect(paddle);
-                activeMixPowerUp = null;
-            }
+                // Nếu chỉ còn 1 bóng cuối cùng
+                if (balls.size() == 1) {
+                    ball.setActive(false);
 
-            lives--;
-            if (lives <= 0) {
-                gameOver();
-            }
+                    if (activeBallPowerUp != null) {
+                        activeBallPowerUp.removeEffect(paddle);
+                        activeBallPowerUp = null;
+                    }
+                    if (activePaddlePowerUp != null) {
+                        activePaddlePowerUp.removeEffect(paddle);
+                        activePaddlePowerUp = null;
+                    }
+                    if (activeMixPowerUp != null) {
+                        activeMixPowerUp.removeEffect(paddle);
+                        activeMixPowerUp = null;
+                    }
 
-            ball.setOriginalSpeed();
-            //ball.resetSpeedLimits();
+                    lives--;
+                    if (lives <= 0) {
+                        gameOver();
+                        return;
+                    }
 
-            ball.setX(395);
-            ball.setY(530);
-            ball.setDirectionX(1);
-            ball.setDirectionY(-1);
-            paddle.setX(350);
-        }
-
-        if (ball.checkCollision(paddle)) {
-            if (ball.isActive()) {  // Kiểm tra dính âm thanh
-                SoundManager.playSound(SoundManager.SOUND_PADDLE_HIT);
-            }
-            ball.bounceOff(paddle, activeMixPowerUp);
-        }
-
-        Iterator<Steel> steelIterator = steels.iterator();
-        while (steelIterator.hasNext()) {
-            Steel steel = steelIterator.next();
-            if (ball.checkCollision(steel)) {
-                SoundManager.playSound(SoundManager.SOUND_STEELBRICK_HIT);
-                ball.bounceOff(steel, activeMixPowerUp);
+                    ball.setOriginalSpeed();
+                    ball.setX(395);
+                    ball.setY(530);
+                    ball.setDirectionX(1);
+                    ball.setDirectionY(-1);
+                    ball.resetBoost();
+                    paddle.setX(350);
+                } else {
+                    // Xóa bóng này khỏi list
+                    ballIterator.remove();
+                    System.out.println("Ball removed! Remaining: " + balls.size());
+                }
             }
         }
 
+        // Kiểm tra va chạm với paddle
+        for (Ball ball : balls) {
+            if (ball.checkCollision(paddle)) {
+                if (ball.isActive()) {
+                    SoundManager.playSound(SoundManager.SOUND_PADDLE_HIT);
+                }
+                ball.bounceOff(paddle, activeMixPowerUp);
+            }
+        }
+
+        // Kiểm tra va chạm với steel
+        for (Steel steel : steels) {
+            for (Ball ball : balls) {
+                if (ball.checkCollision(steel)) {
+                    SoundManager.playSound(SoundManager.SOUND_STEELBRICK_HIT);
+                    ball.bounceOff(steel, activeMixPowerUp);
+                }
+            }
+        }
+
+        // Kiểm tra va chạm với brick
         Iterator<Brick> brickIterator = bricks.iterator();
         while (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
-            if (ball.checkCollision(brick)) {
-                if (activeBallPowerUp != null && activeBallPowerUp instanceof FireBallPowerUp) {
-                    brick.takeDestroy();
-                } else {
-                    SoundManager.playSound(SoundManager.SOUND_NORMALBRICK_HIT);
-                    ball.bounceOff(brick, activeMixPowerUp);
-                    brick.takeHit();
-                }
-                if (brick.isDestroyed()) {
-                    if (brick instanceof ExplosiveBrick) {
-                        ExplosiveBrick temp = (ExplosiveBrick) brick;
-                        temp.explode(bricks, brick);
+
+            for (Ball ball : balls) {
+                if (ball.checkCollision(brick)) {
+                    if (activeBallPowerUp != null && activeBallPowerUp instanceof FireBallPowerUp) {
+                        brick.takeDestroy();
+                    } else {
+                        SoundManager.playSound(SoundManager.SOUND_NORMALBRICK_HIT);
+                        ball.bounceOff(brick, activeMixPowerUp);
+                        brick.takeHit();
                     }
 
-                    if (Math.random() < 0.5) {
-                        PowerUp newPowerup;
-                        double rand = Math.random();
-                        if (rand < 0.15) {
-                            newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000);
-                        } else if (rand < 0.3) {
-                            newPowerup = new FastBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, ball);
-                        } else if (rand < 0.45) {
-                            newPowerup = new ExtraLifePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20);
-                        } else if (rand < 0.6) {
-                            newPowerup = new FireBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, ball);
-                        } else if (rand < 0.8) {
-                            newPowerup = new ShrinkPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000);
-                        } else {
-                            newPowerup = new StickyPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, ball);
+                    if (brick.isDestroyed()) {
+                        if (brick instanceof ExplosiveBrick) {
+                            ExplosiveBrick temp = (ExplosiveBrick) brick;
+                            temp.explode(bricks, brick);
                         }
-                        powerUps.add(newPowerup);
+
+                        // Spawn power-up
+                        if (Math.random() < 0.5) {
+                            PowerUp newPowerup;
+                            double rand = Math.random();
+                            if (rand < 0.12) {
+                                newPowerup = new ExpandPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000);
+                            } else if (rand < 0.24) {
+                                newPowerup = new FastBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, getMainBall());
+                            } else if (rand < 0.36) {
+                                newPowerup = new ExtraLifePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20);
+                            } else if (rand < 0.48) {
+                                newPowerup = new FireBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, getMainBall());
+                            } else if (rand < 0.64) {
+                                newPowerup = new ShrinkPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000);
+                            } else if (rand < 0.80) {
+                                newPowerup = new StickyPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, getMainBall());
+                            } else {
+                                // 20% chance cho MultipleBall
+                                newPowerup = new MultipleBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20);
+                            }
+                            newPowerup = new MultipleBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20);
+                            powerUps.add(newPowerup);
+                        }
+
+                        score++;
+                        brickIterator.remove();
+                        break; // Dừng kiểm tra các bóng khác với brick này
                     }
                 }
-            }
-        }
-
-        for (int i = bricks.size() - 1; i >= 0; i--) {
-            if (bricks.get(i).isDestroyed()) {
-                score++;
-                bricks.remove(i);
             }
         }
     }
@@ -318,7 +357,7 @@ public class GameManager {
     }
 
     // -----------------------------------------------------------------
-    // --- GETTERS VÀ SETTERS (CHO MAIN VÀ SAVELOADGAME) ---
+    // --- GETTERS VÀ SETTERS ---
     // -----------------------------------------------------------------
 
     public GameState getGameState() {
@@ -337,12 +376,22 @@ public class GameManager {
         this.paddle = paddle;
     }
 
-    public Ball getBall() {
-        return ball;
+    /**
+     * Lấy bóng chính (bóng đầu tiên trong list)
+     */
+    public Ball getMainBall() {
+        return balls.isEmpty() ? null : balls.get(0);
     }
 
-    public void setBall(Ball ball) {
-        this.ball = ball;
+    /**
+     * Lấy tất cả các bóng
+     */
+    public List<Ball> getBalls() {
+        return balls;
+    }
+
+    public void setBalls(List<Ball> balls) {
+        this.balls = balls;
     }
 
     public List<Brick> getBricks() {
@@ -439,17 +488,18 @@ public class GameManager {
         }
 
         System.out.println("Loading active power-up: " + className);
+        Ball mainBall = getMainBall();
 
         if (className.equals("ExpandPaddlePowerUp")) {
             this.activePaddlePowerUp = new ExpandPaddlePowerUp(paddleImage, 0, 0, 0, 0, 5000);
             activePaddlePowerUp.applyEffect(paddle);
 
         } else if (className.equals("FastBallPowerUp")) {
-            this.activeBallPowerUp = new FastBallPowerUp("/images/fast_ball.png", 0, 0, 0, 0, 5000, ball);
+            this.activeBallPowerUp = new FastBallPowerUp("/images/fast_ball.png", 0, 0, 0, 0, 5000, mainBall);
             activeBallPowerUp.applyEffect(paddle);
 
         } else if (className.equals("FireBallPowerUp")) {
-            this.activeBallPowerUp = new FireBallPowerUp("/images/fire_ball.png", 0, 0, 0, 0, 5000, ball);
+            this.activeBallPowerUp = new FireBallPowerUp("/images/fire_ball.png", 0, 0, 0, 0, 5000, mainBall);
             activeBallPowerUp.applyEffect(paddle);
 
         } else if (className.equals("ShrinkPaddlePowerUp")) {
@@ -457,7 +507,7 @@ public class GameManager {
             activePaddlePowerUp.applyEffect(paddle);
 
         } else if (className.equals("StickyPaddlePowerUp")) {
-            this.activeMixPowerUp = new StickyPaddlePowerUp("/images/paddle1.png", 0, 0, 0, 0, 10000, ball);
+            this.activeMixPowerUp = new StickyPaddlePowerUp("/images/paddle1.png", 0, 0, 0, 0, 10000, mainBall);
             activeMixPowerUp.applyEffect(paddle);
         }
     }
