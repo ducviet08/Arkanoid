@@ -79,7 +79,7 @@
 //            System.out.println(gameManager.getLives());
 //        } else {
 //            gameManager.loadLevel("level" + currentLevel + ".txt");
-//            gameManager.getBall().setImage(ballImage);
+//            gameManager.getMainBall().setImage(ballImage);
 //            gameManager.getPaddle().setImage(paddleImage);
 //        }
 //
@@ -116,7 +116,7 @@
 //                // Thu thập và vẽ
 //                List<GameObject> objects = new ArrayList<>();
 //                objects.add(gameManager.getPaddle());
-//                objects.add(gameManager.getBall());
+//                objects.add(gameManager.getMainBall());
 //                objects.addAll(gameManager.getBricks());
 //                objects.addAll(gameManager.getPowerUps());
 //                renderer.draw(objects, gameManager.getScore(), gameManager.getLives());
@@ -350,10 +350,10 @@ public class Main extends Application {
             if (Continue) {
                 saveLoadGame.loadGame(gameManagerP1);
                 paddleImage = gameManagerP1.getPaddle().getPath();
-                ballImage = gameManagerP1.getBall().getPath();
+                ballImage = gameManagerP1.getMainBall().getPath();
             } else {
                 gameManagerP1.loadLevel("level" + currentLevel + ".txt");
-                if (ballImage != null) gameManagerP1.getBall().setImage(ballImage);
+                if (ballImage != null) gameManagerP1.getMainBall().setImage(ballImage);
                 if (paddleImage != null) gameManagerP1.getPaddle().setImage(paddleImage);
             }
 
@@ -386,8 +386,8 @@ public class Main extends Application {
 
             // Set skin cho cả 2
             if (ballImage != null) {
-                gameManagerP1.getBall().setImage(ballImage);
-                gameManagerP2.getBall().setImage(ballImage);
+                gameManagerP1.getMainBall().setImage(ballImage);
+                gameManagerP2.getMainBall().setImage(ballImage);
             }
             if (paddleImage != null) {
                 gameManagerP1.getPaddle().setImage(paddleImage);
@@ -433,7 +433,7 @@ public class Main extends Application {
             public void handle(long now) {
                 if (isPaused) return;
 
-                System.out.println(gameManagerP1.getBall().getSpeed());
+                System.out.println(gameManagerP1.getMainBall().getSpeed());
                 // --- 1. Xử lý Input (liên tục) ---
                 // P1: Dùng phím Mũi tên
                 if (activeKeys.contains(KeyCode.LEFT)) gameManagerP1.getPaddle().moveLeft();
@@ -503,7 +503,7 @@ public class Main extends Application {
     private List<GameObject> getAllObjects(GameManager gm) {
         List<GameObject> objects = new ArrayList<>();
         objects.add(gm.getPaddle());
-        objects.add(gm.getBall());
+        objects.addAll(gm.getBalls());
         objects.addAll(gm.getBricks());
         objects.addAll(gm.getPowerUps());
         objects.addAll(gm.getSteels());

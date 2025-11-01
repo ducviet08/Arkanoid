@@ -2,6 +2,7 @@ package controller;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.lang.String;
 
@@ -28,10 +29,10 @@ public class SaveLoadGame {
             writer.newLine();
 
             writer.write("ball " + ballImage
-                    + " " + gameManager.getBall().getX()
-                    + " " + gameManager.getBall().getY()
-                    + " " + gameManager.getBall().getDirectionX()
-                    + " " + gameManager.getBall().getDirectionY());
+                    + " " + gameManager.getMainBall().getX()
+                    + " " + gameManager.getMainBall().getY()
+                    + " " + gameManager.getMainBall().getDirectionX()
+                    + " " + gameManager.getMainBall().getDirectionY());
             writer.newLine();
 
             writer.write("score " + gameManager.getScore());
@@ -140,8 +141,8 @@ public class SaveLoadGame {
                     case "ball":
                         Ball ball = new Ball(parts[1], Double.parseDouble(parts[2]),
                                 Double.parseDouble(parts[3]), Double.parseDouble(parts[4]), Double.parseDouble(parts[5]));
-                        gameManager.setBall(ball);
-                        gameManager.getBall().setActive(true); // Giả sử bóng active khi load
+                        gameManager.setBalls(new ArrayList<>(Collections.singleton(ball)));
+                        gameManager.getMainBall().setActive(true); // Giả sử bóng active khi load
                         break;
                     case "score":
                         gameManager.setScore(Integer.parseInt(parts[1]));
@@ -210,15 +211,15 @@ public class SaveLoadGame {
                             if (type.equals("ExpandPaddlePowerUp")) {
                                 powerUps.add(new ExpandPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 10000));
                             } else if (type.equals("FastBallPowerUp")) {
-                                powerUps.add(new FastBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 10000, gameManager.getBall()));
+                                powerUps.add(new FastBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 10000, gameManager.getMainBall()));
                             } else if (type.equals("ExtraLifePowerUp")) {
                                 powerUps.add(new ExtraLifePowerUp("/images/slow_ball.png", x, y, 20, 20));
                             } else if (type.equals("FireBallPowerUp")) {
-                                powerUps.add(new FireBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 10000, gameManager.getBall()));
+                                powerUps.add(new FireBallPowerUp("/images/slow_ball.png", x, y, 20, 20, 10000, gameManager.getMainBall()));
                             } else if (type.equals("ShrinkPaddlePowerUp")) {
                                 powerUps.add(new ShrinkPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 10000));
                             } else if (type.equals("StickyPaddlePowerUp")) {
-                                powerUps.add(new StickyPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 10000, gameManager.getBall()));
+                                powerUps.add(new StickyPaddlePowerUp("/images/slow_ball.png", x, y, 20, 20, 10000, gameManager.getMainBall()));
                             }
                         }
                         gameManager.setPowerUps(powerUps);
