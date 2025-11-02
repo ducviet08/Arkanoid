@@ -12,4 +12,15 @@ public class StrongBrick extends Brick {
     }
 
     // Có thể override takeHit() hoặc update() nếu có hành vi đặc biệt
+
+    @Override
+    public void takeHit() {
+        health--;
+        System.out.println(" Brick hit! Health: " + health);
+        if (health == 1) {
+            String s[] = super.getPath().split("\\.");
+            super.setPath(s[0] + "-1" + ".png");
+            super.setImage(s[0]+ "-1" + ".png");
+        }
+    }
 }

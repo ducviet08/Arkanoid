@@ -1,16 +1,10 @@
-
+// Arkanoid/controller/GameManager.java
 package Arkanoid.controller;
 
 import Arkanoid.model.ball.Ball;
-import Arkanoid.model.powerup.FastBallPowerUp;
-import Arkanoid.model.powerup.FireBallPowerUp;
 import Arkanoid.model.brick.*;
 import Arkanoid.model.paddle.Paddle;
-import Arkanoid.model.powerup.StickyPaddlePowerUp;
-import Arkanoid.model.powerup.ExpandPaddlePowerUp;
-import Arkanoid.model.powerup.ExtraLifePowerUp;
-import Arkanoid.model.powerup.PowerUp;
-import Arkanoid.model.powerup.ShrinkPaddlePowerUp;
+import Arkanoid.model.powerup.*;
 import Arkanoid.view.Renderer;
 
 import java.io.IOException;
@@ -78,7 +72,6 @@ public class GameManager {
         activeMixPowerUp = null;
     }
 
-    // Load map khi vào chọn new game hoặc là khi chuyển map
     public void loadLevel(String filename) {
         bricks.clear();
         steels.clear();

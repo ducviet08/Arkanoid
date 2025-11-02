@@ -1,12 +1,11 @@
-package Arkanoid;
-
-
 // Arkanoid/Main.java
+package Arkanoid;
 
 import Arkanoid.controller.SoundManager;
 import Arkanoid.controller.GameManager;
 import Arkanoid.controller.SaveLoadGame;
-import Arkanoid.view.*;
+import javafx.scene.image.Image;
+import Arkanoid.view.*; // Import tất cả các view
 import Arkanoid.model.base.GameObject;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -14,9 +13,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -137,10 +139,10 @@ public class Main extends Application {
             if (Continue) {
                 saveLoadGame.loadGame(gameManagerP1);
                 paddleImage = gameManagerP1.getPaddle().getPath();
-                ballImage = gameManagerP1.getBall().getPath();
+                ballImage = gameManagerP1.getMainBall().getPath();
             } else {
                 gameManagerP1.loadLevel("level" + currentLevel + ".txt");
-                if (ballImage != null) gameManagerP1.getBall().setImage(ballImage);
+                if (ballImage != null) gameManagerP1.getMainBall().setImage(ballImage);
                 if (paddleImage != null) gameManagerP1.getPaddle().setImage(paddleImage);
             }
 
@@ -173,8 +175,8 @@ public class Main extends Application {
 
             // Set skin cho cả 2
             if (ballImage != null) {
-                gameManagerP1.getBall().setImage(ballImage);
-                gameManagerP2.getBall().setImage(ballImage);
+                gameManagerP1.getMainBall().setImage(ballImage);
+                gameManagerP2.getMainBall().setImage(ballImage);
             }
             if (paddleImage != null) {
                 gameManagerP1.getPaddle().setImage(paddleImage);
@@ -220,7 +222,7 @@ public class Main extends Application {
             public void handle(long now) {
                 if (isPaused) return;
 
-                System.out.println(gameManagerP1.getBall().getSpeed());
+                System.out.println(gameManagerP1.getMainBall().getSpeed());
                 // --- 1. Xử lý Input (liên tục) ---
                 // P1: Dùng phím Mũi tên
                 if (activeKeys.contains(KeyCode.LEFT)) gameManagerP1.getPaddle().moveLeft();
@@ -273,7 +275,7 @@ public class Main extends Application {
                     if (gameManagerP1.getGameState() == GameManager.GameState.GAME_OVER ||
                             gameManagerP1.getGameState() == GameManager.GameState.LEVEL_COMPLETE) {
 
-                        if (Continue) saveLoadGame.loadGame(gameManagerP1);
+                        if (Continue) saveLoadGame.saveGame(gameManagerP1);
 
                         stop();
                         boolean win = (gameManagerP1.getGameState() == GameManager.GameState.LEVEL_COMPLETE);
@@ -290,7 +292,7 @@ public class Main extends Application {
     private List<GameObject> getAllObjects(GameManager gm) {
         List<GameObject> objects = new ArrayList<>();
         objects.add(gm.getPaddle());
-        objects.add(gm.getBall());
+        objects.addAll(gm.getBalls());
         objects.addAll(gm.getBricks());
         objects.addAll(gm.getPowerUps());
         objects.addAll(gm.getSteels());

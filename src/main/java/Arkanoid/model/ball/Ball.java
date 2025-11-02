@@ -1,14 +1,21 @@
-
-// Ball.java
+// Arkanoid/model/Ball.java
 package Arkanoid.model.ball;
 
 import Arkanoid.controller.SoundManager;
+import Arkanoid.model.base.GameObject;
+import Arkanoid.model.base.MovableObject;
 import Arkanoid.model.paddle.Paddle;
 import Arkanoid.model.powerup.PowerUp;
 import Arkanoid.model.powerup.StickyPaddlePowerUp;
-import Arkanoid.model.base.GameObject;
-import Arkanoid.model.base.MovableObject;
 
+/**
+ * Ball - Quả bóng trong game
+ *
+ * CẢI TIẾN MỚI:
+ * ✅ Va chạm Ball-Ball với vật lý elastic collision
+ * ✅ Thêm method getBaseSpeedMultiplier() để copy cho bóng mới
+ * ✅ Hỗ trợ StickyPaddle với nhiều bóng
+ */
 public class Ball extends MovableObject {
     private boolean active;
     public static final double MAX_ANGLE = Math.toRadians(75);
@@ -18,19 +25,16 @@ public class Ball extends MovableObject {
     public static final double ORIGINAL_WIDTH = 15;
 
     // ===== HỆ THỐNG BOOST =====
-    private static final double PADDLE_MOMENTUM_INFLUENCE = 0.25; // 25% vận tốc paddle
-    private static final double INSTANT_BOOST_PER_HIT = 0.15; // +0.15 speed mỗi hit
-    private static final long BOOST_DECAY_INTERVAL = 2000; // 2 giây mỗi stack
-    private static final int MAX_BOOST_STACKS = 4; // Tối đa 4 stacks (+0.6 tốc độ)
+    private static final double PADDLE_MOMENTUM_INFLUENCE = 0.25;
+    private static final double INSTANT_BOOST_PER_HIT = 0.15;
+    private static final long BOOST_DECAY_INTERVAL = 2000;
+    private static final int MAX_BOOST_STACKS = 4;
 
-    // Tracking boost
     private double currentBoost = 0.0;
     private long lastPaddleHitTime = 0;
     private int boostStacks = 0;
 
-    // ===== TRACKING BASE SPEED TỪ POWERUP =====
-    private double baseSpeedMultiplier = 1.0; // Hệ số từ PowerUp (FastBall, TinyBall, etc.)
-
+    private double baseSpeedMultiplier = 1.0;
     private double radius;
     private double rotationAngle = 0;
 
@@ -65,9 +69,6 @@ public class Ball extends MovableObject {
         }
     }
 
-    /**
-     * Giảm boost theo thời gian
-     */
     private void updateBoostDecay() {
         if (boostStacks <= 0 || lastPaddleHitTime == 0) {
             return;
@@ -79,32 +80,21 @@ public class Ball extends MovableObject {
         int stacksToDecay = (int) (timeSinceLastHit / BOOST_DECAY_INTERVAL);
 
         if (stacksToDecay > 0) {
-            int oldStacks = boostStacks;
             boostStacks = Math.max(0, boostStacks - stacksToDecay);
             currentBoost = boostStacks * INSTANT_BOOST_PER_HIT;
 
-            // Cập nhật thời gian
             long elapsedDecayTime = stacksToDecay * BOOST_DECAY_INTERVAL;
             lastPaddleHitTime = currentTime - (timeSinceLastHit - elapsedDecayTime);
 
-            // Cập nhật speed = base + boost mới
             updateSpeedWithBoost();
 
             if (boostStacks <= 0) {
                 lastPaddleHitTime = 0;
                 currentBoost = 0.0;
-                System.out.println("Boost expired! (Speed: " + String.format("%.2f", getSpeed()) + ")");
-            } else {
-                System.out.println("Boost decayed: " + oldStacks + " → " + boostStacks +
-                        " stacks (Speed: " + String.format("%.2f", getSpeed()) + ")");
             }
         }
     }
 
-    /**
-     * ===== QUAN TRỌNG: Cập nhật speed = base speed + boost =====
-     * Base speed = ORIGINAL_SPEED * baseSpeedMultiplier (từ PowerUp)
-     */
     private void updateSpeedWithBoost() {
         double baseSpeed = ORIGINAL_SPEED * baseSpeedMultiplier;
         setSpeed(baseSpeed + currentBoost);
@@ -114,30 +104,141 @@ public class Ball extends MovableObject {
         if (active) {
             update();
         } else if (paddle.isSticky() && activePowerUp instanceof StickyPaddlePowerUp stickyPaddle
-                && stickyPaddle.isStuck()) {
-            // kiểm tra nếu đang dính trên paddle trong StickyPaddle thì di chuyển theo vị trí của Paddle
-//            x = paddle.getX() + stickyPaddle.getOffSetX();
-//            y = paddle.getY() - height - 1;
-            double newX = paddle.getX() + (stickyPaddle.getRelativeOffset() * paddle.getWidth());
-
-            // Đảm bảo bóng luôn nằm *trên* paddle, ngay cả khi paddle co lại
-            // Căn newX để bóng không lòi ra bên trái paddle
-            if (newX < paddle.getX()) {
-                newX = paddle.getX();
-            }
-            // Căn newX để bóng không lòi ra bên phải paddle
-            if (newX + getWidth() > paddle.getX() + paddle.getWidth()) {
-                newX = paddle.getX() + paddle.getWidth() - getWidth();
-            }
-
+                && stickyPaddle.isStuckBall(this)) {
+            // ⭐ StickyPaddle mới: Kiểm tra bóng CỤ THỂ có dính không
+            double newX = paddle.getX() + (stickyPaddle.getRelativeOffset(this) * paddle.getWidth());
             setX(newX);
-            setY(paddle.getY() - getHeight()); // Đặt bóng ngay trên paddle
+            setY(paddle.getY() - getHeight());
         } else {
             x = paddle.getX() + paddle.getWidth() / 2 - getWidth() / 2;
             y = paddle.getY() - paddle.getHeight() / 2;
         }
     }
 
+    // ===== 🆕 VA CHẠM BALL - BALL =====
+    /**
+     * Kiểm tra và xử lý va chạm với bóng khác
+     * Sử dụng Elastic Collision Physics
+     */
+    // ===== 🆕 VA CHẠM BALL - BALL =====
+    /**
+     * Kiểm tra và xử lý va chạm với bóng khác
+     *
+     * LOGIC MỚI:
+     * - Nếu CẢ HAI bóng đều active → va chạm elastic bình thường
+     * - Nếu một bóng DÍNH (active=false), bóng còn lại ACTIVE:
+     *   → Bóng active bật ra (phản xạ), bóng dính vẫn dính
+     */
+    public void checkBallCollision(Ball other) {
+        if (other == this) {
+            return;
+        }
+
+        double dx = this.getCenterX() - other.getCenterX();
+        double dy = this.getCenterY() - other.getCenterY();
+        double distance = Math.sqrt(dx * dx + dy * dy);
+        double minDistance = this.radius + other.radius;
+
+        if (distance < minDistance && distance > 0) {
+
+            // ===== TRƯỜNG HỢP 1: CẢ HAI BÓNG ACTIVE =====
+            if (this.isActive() && other.isActive()) {
+                SoundManager.playSound(SoundManager.SOUND_PADDLE_HIT);
+
+                // 1. TÁCH BÓNG RA
+                double overlap = minDistance - distance;
+                double nx = dx / distance; // Normal vector
+                double ny = dy / distance;
+
+                this.setCenterX(this.getCenterX() + nx * overlap / 2);
+                this.setCenterY(this.getCenterY() + ny * overlap / 2);
+                other.setCenterX(other.getCenterX() - nx * overlap / 2);
+                other.setCenterY(other.getCenterY() - ny * overlap / 2);
+
+                // 2. TÍNH VẬN TỐC MỚI (Elastic Collision)
+                double v1x = this.directionX * this.speed;
+                double v1y = this.directionY * this.speed;
+                double v2x = other.directionX * other.speed;
+                double v2y = other.directionY * other.speed;
+
+                double dvx = v1x - v2x;
+                double dvy = v1y - v2y;
+                double dvn = dvx * nx + dvy * ny;
+
+                if (dvn >= 0) {
+                    return; // Đang tách ra
+                }
+
+                double impulse = dvn;
+
+                v1x -= impulse * nx;
+                v1y -= impulse * ny;
+                v2x += impulse * nx;
+                v2y += impulse * ny;
+
+                // 3. CẬP NHẬT DIRECTION VÀ SPEED
+                double newSpeed1 = Math.sqrt(v1x * v1x + v1y * v1y);
+                if (newSpeed1 > 0.01) {
+                    this.directionX = v1x / newSpeed1;
+                    this.directionY = v1y / newSpeed1;
+                    this.setSpeed(newSpeed1);
+                }
+
+                double newSpeed2 = Math.sqrt(v2x * v2x + v2y * v2y);
+                if (newSpeed2 > 0.01) {
+                    other.directionX = v2x / newSpeed2;
+                    other.directionY = v2y / newSpeed2;
+                    other.setSpeed(newSpeed2);
+                }
+            }
+
+            // ===== TRƯỜNG HỢP 2: MỘT BÓNG DÍNH, MỘT BÓNG ACTIVE =====
+            else if (this.isActive() && !other.isActive()) {
+                // THIS active, OTHER dính → Bật THIS ra
+                SoundManager.playSound(SoundManager.SOUND_PADDLE_HIT);
+
+                double overlap = minDistance - distance;
+                double nx = dx / distance;
+                double ny = dy / distance;
+
+                // Chỉ đẩy bóng ACTIVE ra
+                this.setCenterX(this.getCenterX() + nx * overlap);
+                this.setCenterY(this.getCenterY() + ny * overlap);
+
+                // Phản xạ hướng bóng active (bounce off)
+                double dotProduct = this.directionX * nx + this.directionY * ny;
+
+                // Chỉ phản xạ nếu đang đi VÀO bóng dính
+                if (dotProduct < 0) {
+                    this.directionX -= 2 * dotProduct * nx;
+                    this.directionY -= 2 * dotProduct * ny;
+                }
+            }
+
+            else if (!this.isActive() && other.isActive()) {
+                // THIS dính, OTHER active → Bật OTHER ra
+                SoundManager.playSound(SoundManager.SOUND_PADDLE_HIT);
+
+                double overlap = minDistance - distance;
+                double nx = dx / distance;
+                double ny = dy / distance;
+
+                // Chỉ đẩy bóng ACTIVE ra
+                other.setCenterX(other.getCenterX() - nx * overlap);
+                other.setCenterY(other.getCenterY() - ny * overlap);
+
+                // Phản xạ hướng bóng active
+                double dotProduct = other.directionX * (-nx) + other.directionY * (-ny);
+
+                if (dotProduct < 0) {
+                    other.directionX -= 2 * dotProduct * (-nx);
+                    other.directionY -= 2 * dotProduct * (-ny);
+                }
+            }
+
+            // TRƯỜNG HỢP 3: CẢ HAI DÍNH → Không xử lý (để StickyPaddle tự quản lý vị trí)
+        }
+    }
     public void bounceOff(GameObject obj, PowerUp activePowerUp) {
         double ballCenterX = getCenterX();
         double ballCenterY = getCenterY();
@@ -164,8 +265,7 @@ public class Ball extends MovableObject {
         double paddleLeft = paddle.getX();
         double paddleRight = paddle.getX() + paddle.getWidth();
 
-        if (ballCenterY < paddleTop + paddle.getHeight() / 2 && directionY > 0) {
-            // ===== VA CHẠM MẶT TRÊN PADDLE =====
+        if (ballCenterY < paddleTop && ballCenterX >= paddleLeft - getRadius()/Math.sqrt(2) && ballCenterX <= paddleRight + getRadius()/Math.sqrt(2) && directionY > 0) {
             setCenterY(paddleTop - radius - 0.1);
 
             if (activePowerUp instanceof StickyPaddlePowerUp stickyPaddle && paddle.isSticky()) {
@@ -185,7 +285,6 @@ public class Ball extends MovableObject {
             }
 
             if (active) {
-                // === TÍNH GÓC BẬT ===
                 double paddleCenterX = paddle.getX() + paddle.getWidth() / 2.0;
                 double relativeIntersect = (ballCenterX - paddleCenterX) / (paddle.getWidth() / 2.0);
                 relativeIntersect = Math.max(-1, Math.min(1, relativeIntersect));
@@ -194,43 +293,31 @@ public class Ball extends MovableObject {
                 double baseDirectionX = Math.sin(bounceAngle);
                 double baseDirectionY = -Math.cos(bounceAngle);
 
-                // === MOMENTUM TRANSFER ===
                 double paddleVelocityX = paddle.getVelocityX();
                 double transferredMomentum = paddleVelocityX * PADDLE_MOMENTUM_INFLUENCE;
 
-                // === BASE SPEED (chỉ từ PowerUp, KHÔNG bao gồm boost cũ) ===
                 double baseSpeed = ORIGINAL_SPEED * baseSpeedMultiplier;
 
-                // Vector vận tốc cơ bản
                 double baseVelX = baseDirectionX * baseSpeed;
                 double baseVelY = baseDirectionY * baseSpeed;
 
-                // === THÊM BOOST STACK ===
                 long currentTime = System.currentTimeMillis();
 
                 if (boostStacks < MAX_BOOST_STACKS) {
                     boostStacks++;
                     currentBoost = boostStacks * INSTANT_BOOST_PER_HIT;
                     lastPaddleHitTime = currentTime;
-
-                    System.out.println("🔥 Boost +1 → " + boostStacks + " stacks (+" +
-                            String.format("%.2f", currentBoost) + " speed)");
                 } else {
                     lastPaddleHitTime = currentTime;
-                    System.out.println("🔥 Boost MAX (" + boostStacks + " stacks)");
                 }
 
-                // === TÍNH VẬN TỐC CUỐI CÙNG ===
-                // Velocity = Base + Momentum
                 double finalVelX = baseVelX + transferredMomentum;
                 double finalVelY = baseVelY;
 
                 double velocityMagnitude = Math.sqrt(finalVelX * finalVelX + finalVelY * finalVelY);
 
-                // Speed = Velocity Magnitude + Boost
                 double newSpeed = velocityMagnitude + currentBoost;
 
-                // === CẬP NHẬT DIRECTION ===
                 if (velocityMagnitude > 0.01) {
                     this.directionX = finalVelX / velocityMagnitude;
                     this.directionY = finalVelY / velocityMagnitude;
@@ -240,22 +327,17 @@ public class Ball extends MovableObject {
                 }
 
                 setSpeed(newSpeed);
-
-                System.out.println("⚡ Speed: " + String.format("%.2f", newSpeed) +
-                        " (Base: " + String.format("%.2f", baseSpeed) +
-                        " + Momentum: " + String.format("%.2f", Math.abs(transferredMomentum)) +
-                        " + Boost: " + String.format("%.2f", currentBoost) + ")");
             }
 
-        } else if (ballCenterX < paddleLeft && directionX > 0) {
+        } else if (ballCenterX < paddleLeft - getRadius()/Math.sqrt(2) && directionX > 0) {
             setCenterX(paddleLeft - radius - 0.1);
             directionX = -Math.abs(directionX);
 
-        } else if (ballCenterX > paddleRight && directionX < 0) {
+        } else if (ballCenterX > paddleRight + getRadius()/Math.sqrt(2) && directionX < 0) {
             setCenterX(paddleRight + radius + 0.1);
             directionX = Math.abs(directionX);
 
-        } else if (ballCenterY > paddleBottom - paddle.getHeight() / 3) {
+        } else {
             setCenterY(paddleBottom + radius + 0.1);
             directionY = Math.abs(directionY);
         }
@@ -351,13 +433,8 @@ public class Ball extends MovableObject {
         this.rotationAngle = rotationAngle;
     }
 
-    /**
-     * ===== SET SPEED - CẬP NHẬT BASE MULTIPLIER TỪ POWERUP =====
-     */
     @Override
     public void setSpeed(double speed) {
-        // Khi PowerUp gọi setSpeed(), tính lại baseSpeedMultiplier
-        // Nhưng chỉ khi KHÔNG có boost active
         if (boostStacks == 0) {
             baseSpeedMultiplier = speed / ORIGINAL_SPEED;
         }
@@ -382,27 +459,15 @@ public class Ball extends MovableObject {
         this.active = active;
 
         if (wasActive && !active) {
-            System.out.println("🔄 Ball deactivated - Resetting boost");
             resetBoost();
         }
     }
 
-    /**
-     * Reset boost về 0
-     */
     public void resetBoost() {
-        int oldStacks = boostStacks;
-
         boostStacks = 0;
         currentBoost = 0.0;
         lastPaddleHitTime = 0;
-
-        // Cập nhật speed về base (không có boost)
         updateSpeedWithBoost();
-
-        if (oldStacks > 0) {
-            System.out.println("🔄 Boost reset: " + oldStacks + " → 0 stacks");
-        }
     }
 
     public int getBoostStacks() {
@@ -413,14 +478,14 @@ public class Ball extends MovableObject {
         return currentBoost;
     }
 
-    /**
-     * ===== SET BASE SPEED MULTIPLIER (cho PowerUp) =====
-     */
     public void setBaseSpeedMultiplier(double multiplier) {
         this.baseSpeedMultiplier = multiplier;
         updateSpeedWithBoost();
-        System.out.println("📊 Base speed multiplier: " + String.format("%.2f", multiplier) +
-                " (Speed: " + String.format("%.2f", getSpeed()) + ")");
+    }
+
+    // ⭐ QUAN TRỌNG: Getter cho baseSpeedMultiplier
+    public double getBaseSpeedMultiplier() {
+        return baseSpeedMultiplier;
     }
 
     @Override
@@ -437,5 +502,9 @@ public class Ball extends MovableObject {
 
     @Override
     public void render() {
+    }
+
+    public String getImagePath() {
+        return this.path;
     }
 }
