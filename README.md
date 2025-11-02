@@ -1,4 +1,15 @@
 Arkanoid
+
+**Thành viên:**
+
+-Lê Đức Việt: 24020360 25%
+
+-Nguyễn Đắc Vượng: 24020369 25%
+
+-Nguyễn Duy Tú: 24020342 25%
+
+-Nguyễn Văn Toán: 24020324 25%
+
 **Mô tả về các đối tượng:**
 
 +Paddle(thanh đỡ): là đối tượng mà người chơi có thể điều khiển sang trái hoặc phải để đỡ bóng.
@@ -61,3 +72,18 @@ Arkanoid
 +Có chế độ Continue ở 1player để chơi tiếp tục khi thoát game vào lại
 
 +Có bảng hiển thị highscore để xem tên các người chơi cao điểm và số điểm họ đạt được
+
+
+**Các phân việc của mỗi thành viên**
+
+-Lê Đức Việt: Quản lí GameLoop, GameManager,2player(*)
+
+-Nguyễn Đắc Vượng: Brick,Map,Steel,SaveLoadGame(*)
+
+-Nguyễn Duy Tú:View,Images,PowerUps,LoadLevel,HighScore
+
+-Nguyễn Văn Toán: Ball,Paddle,StickyPaddle(*)
+
+(*)bounceOff(Tú+Toán)
+
+
