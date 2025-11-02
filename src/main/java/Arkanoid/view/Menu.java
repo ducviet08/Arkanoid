@@ -1,6 +1,7 @@
 // Arkanoid//Menu.java
 package Arkanoid.view;
 
+import Arkanoid.controller.SoundManager;
 import Arkanoid.Main;
 import Arkanoid.controller.GameManager; // <-- IMPORT QUAN TRỌNG
 import Arkanoid.controller.SaveLoadGame;
@@ -69,18 +70,21 @@ public class Menu {
 
         // action 1 PLAYER (CẬP NHẬT)
         button1.setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             // Chuyển sang màn hình chọn bóng với chế độ 1P
             main.showSelectBallScreen(GameManager.GameMode.SINGLE_PLAYER);
         });
 
         // action 2 PLAYERS (MỚI)
         button2P.setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             // Chuyển sang màn hình chọn bóng với chế độ 2P
             main.showSelectBallScreen(GameManager.GameMode.TWO_PLAYER);
         });
 
         // action CONTINUE (Giữ nguyên)
         button2.setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             SaveLoadGame saveLoadGame = new SaveLoadGame();
             if (saveLoadGame.getLives() != 0) {
                 main.Continue = true;
@@ -90,6 +94,7 @@ public class Menu {
         });
 
         button3.setOnAction(e -> {
+            SoundManager.playSound(SoundManager.SOUND_CLICK);
             HighScore highScore = new HighScore();
             stage.setScene(highScore.getScene(stage,0,main));
         });

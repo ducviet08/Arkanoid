@@ -17,10 +17,12 @@ public class StrongBrick extends Brick {
     public void takeHit() {
         health--;
         System.out.println(" Brick hit! Health: " + health);
-        if (health == 1) {
-            String s[] = super.getPath().split("\\.");
-            super.setPath(s[0] + "-1" + ".png");
-            super.setImage(s[0]+ "-1" + ".png");
+        if (health == 2) {
+            super.setPath("/images/brick10-2.jpg");
+            super.setImage("/images/brick10-2.jpg");
+        } else if (health == 1) {
+            super.setPath("/images/brick10-1.png");
+            super.setImage("/images/brick10-1.png");
         }
     }
 }

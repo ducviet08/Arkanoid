@@ -105,7 +105,7 @@ public class EndScreen {
             String projectPath = System.getProperty("user.dir");
 
             // Ghi vào file trong score.txt
-            String filePath = projectPath + "/data/score.txt";
+            String filePath = projectPath + "/src/main/resources/data/score.txt";
 
             FileWriter fw = new FileWriter(filePath, true);
             fw.write(name + "," + score + "\n");

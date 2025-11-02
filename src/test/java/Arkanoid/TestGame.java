@@ -175,7 +175,10 @@ public class TestGame {
         assertFalse(brick.isDestroyed(), "Strong brick should not break after 1 hit");
 
         brick.takeHit();
-        assertTrue(brick.isDestroyed(), "Strong brick should break after 2 hits");
+        assertFalse(brick.isDestroyed(), "Strong brick should break after 2 hits");
+
+        brick.takeHit();
+        assertTrue(brick.isDestroyed(), "Strong brick should break after 3 hits");
     }
 
     @Test

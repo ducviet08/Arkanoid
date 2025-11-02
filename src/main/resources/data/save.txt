@@ -1,0 +1,43 @@
+level 2
+paddle /images/paddle3.png 350.0
+balls
+/images/ball2.png 415.4515585102678 225.1 0.06540312923014308 0.9978589232386035 true
+score 7
+lives 3
+lastBallPowerUpTime 1762101856141
+activeBallPowerUp null
+lastPaddlePowerUpTime 1762101856141
+activePaddlePowerUp null
+lastMixPowerUpTime 1762101856141
+activeMixPowerUp null
+bricks
+StrongBrick /images/brick10.png 232.5 50.0 3
+StrongBrick /images/brick10.png 487.5 50.0 3
+StrongBrick /images/brick10.png 147.5 80.0 3
+NormalBrick /images/brick1.png 232.5 80.0 1
+ExplosiveBrick /images/brick8-1.png 317.5 80.0 1
+ExplosiveBrick /images/brick8-1.png 402.5 80.0 1
+NormalBrick /images/brick1.png 487.5 80.0 1
+StrongBrick /images/brick10.png 572.5 80.0 3
+StrongBrick /images/brick10.png 62.5 110.0 3
+NormalBrick /images/brick1.png 147.5 110.0 1
+GlassBrick /images/brick7.png 232.5 110.0 2
+GlassBrick /images/brick7.png 317.5 110.0 2
+GlassBrick /images/brick7.png 402.5 110.0 2
+GlassBrick /images/brick7.png 487.5 110.0 2
+NormalBrick /images/brick1.png 572.5 110.0 1
+StrongBrick /images/brick10.png 657.5 110.0 3
+StrongBrick /images/brick10.png 147.5 140.0 3
+NormalBrick /images/brick1.png 232.5 140.0 1
+
+
+NormalBrick /images/brick1.png 487.5 140.0 1
+StrongBrick /images/brick10.png 572.5 140.0 3
+StrongBrick /images/brick10.png 232.5 170.0 3
+NormalBrick /images/brick1.png 317.5 170.0 1
+NormalBrick /images/brick1.png 402.5 170.0 1
+StrongBrick /images/brick10.png 487.5 170.0 3
+StrongBrick /images/brick10.png 317.5 200.0 3
+StrongBrick /images/brick10-2.jpg 402.5 200.0 2
+steels
+powerUps

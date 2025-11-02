@@ -4,6 +4,7 @@ package Arkanoid;
 import Arkanoid.controller.SoundManager;
 import Arkanoid.controller.GameManager;
 import Arkanoid.controller.SaveLoadGame;
+import Arkanoid.model.ball.Ball;
 import javafx.scene.image.Image;
 import Arkanoid.view.*; // Import tất cả các view
 import Arkanoid.model.base.GameObject;
@@ -41,7 +42,6 @@ public class Main extends Application {
     private Renderer rendererP1;
     private GameManager gameManagerP1;
     private GraphicsContext gcP1;
-
     // Đối tượng cho P2
     private Renderer rendererP2;
     private GameManager gameManagerP2;
@@ -60,6 +60,7 @@ public class Main extends Application {
     private EndScreen endScreen = new EndScreen();
     private PauseScreen pauseScreen = new PauseScreen();
     // (Menu, SelectBall, SelectPaddle sẽ được tạo khi cần)
+    private int lastScore = 0;
 
     @Override
     public void start(Stage primaryStage) {
@@ -96,7 +97,7 @@ public class Main extends Application {
      */
     public void showSelectBallScreen(GameManager.GameMode mode) {
         SelectBall selectBall = new SelectBall();
-        Scene scene = selectBall.getScene(primaryStage, this,mode);
+        Scene scene = selectBall.getScene(primaryStage, this, mode);
         primaryStage.setScene(scene);
     }
 
@@ -112,6 +113,7 @@ public class Main extends Application {
 
 
     // ------------------ GAME ------------------
+
     /**
      * 5. Bắt đầu game (được gọi từ SelectPaddle hoặc Menu-Continue)
      */
@@ -136,6 +138,7 @@ public class Main extends Application {
             gameScene = new Scene(root, WIDTH, HEIGHT, Color.BLACK);
 
             gameManagerP1.initializeGame();
+            gameManagerP1.setScore(lastScore);
             if (Continue) {
                 saveLoadGame.loadGame(gameManagerP1);
                 paddleImage = gameManagerP1.getPaddle().getPath();
@@ -161,7 +164,7 @@ public class Main extends Application {
 
             HBox hbox = new HBox(10);
             hbox.setAlignment(Pos.CENTER);
-            hbox.getChildren().addAll(canvasP2,canvasP1);
+            hbox.getChildren().addAll(canvasP2, canvasP1);
 
             root = hbox;
             gameScene = new Scene(root, WIDTH * 2 + 10, HEIGHT, Color.BLACK);
@@ -169,7 +172,7 @@ public class Main extends Application {
             gameManagerP1.initializeGame();
             gameManagerP2.initializeGame();
 
-            String mapFile = "level" + currentLevel + ".txt";
+            String mapFile = "level" + ((int) (Math.random() * 8) + 1) + ".txt";
             gameManagerP1.loadLevel(mapFile);
             gameManagerP2.loadLevel(mapFile);
 
@@ -194,6 +197,21 @@ public class Main extends Application {
                 togglePause();
                 return;
             }
+
+            if (event.getCode() == KeyCode.BACK_SPACE) {
+                for (Ball ball : gameManagerP1.getBalls()) {
+                    ball.setY(620);
+                }
+            }
+
+            if (currentGameMode == GameManager.GameMode.TWO_PLAYER) {
+                if (event.getCode() == KeyCode.Q) {
+                    for (Ball ball : gameManagerP2.getBalls()) {
+                        ball.setY(620);
+                    }
+                }
+            }
+
             // P1 Launch Ball (Enter)
             if (event.getCode() == KeyCode.ENTER) {
                 gameManagerP1.handleInput(KeyCode.ENTER.ordinal());
@@ -265,8 +283,7 @@ public class Main extends Application {
                     if (p1Won || p2Lost) {
                         stop();
                         showEndScreen(gameManagerP1.getScore(), false, "/images/player1_win.png");
-                    }
-                    else if (p2Won || p1Lost) {
+                    } else if (p2Won || p1Lost) {
                         stop();
                         showEndScreen(gameManagerP2.getScore(), false, "/images/player2_win.png");
                     }
@@ -275,7 +292,10 @@ public class Main extends Application {
                     if (gameManagerP1.getGameState() == GameManager.GameState.GAME_OVER ||
                             gameManagerP1.getGameState() == GameManager.GameState.LEVEL_COMPLETE) {
 
-                        if (Continue) saveLoadGame.saveGame(gameManagerP1);
+                        if(gameManagerP1.getGameState() == GameManager.GameState.LEVEL_COMPLETE){
+                            lastScore = gameManagerP1.getScore();
+                        }
+                        saveLoadGame.saveGame(gameManagerP1);
 
                         stop();
                         boolean win = (gameManagerP1.getGameState() == GameManager.GameState.LEVEL_COMPLETE);
@@ -346,7 +366,7 @@ public class Main extends Application {
         //endScreen.setScore(score);
 
         // (Bạn cần có file EndScreen.java)
-        Scene endScene = endScreen.getScene(primaryStage, WIDTH, HEIGHT, win,score,currentGameMode);
+        Scene endScene = endScreen.getScene(primaryStage, WIDTH, HEIGHT, win, score, currentGameMode);
 
         endScreen.getRestartButton().setOnAction(e -> {
             SoundManager.playSound(SoundManager.SOUND_CLICK);

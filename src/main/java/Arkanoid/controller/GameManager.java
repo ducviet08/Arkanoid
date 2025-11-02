@@ -245,10 +245,6 @@ public class GameManager {
         }
     }
 
-    public void handleKeyReleased(int keyCodeOrdinal) {
-        // Không cần dùng pressedKeys ở đây nữa
-    }
-
     private void checkCollisions() {
         // ===== XÓA CÁC BÓNG RƠI XUỐNG ĐÁY =====
         Iterator<Ball> ballIterator = balls.iterator();
@@ -273,9 +269,21 @@ public class GameManager {
                         return;
                     }
 
+                    if (activeBallPowerUp != null) {
+                        activeBallPowerUp.removeEffect(paddle);
+                        activeBallPowerUp = null;
+                    }
+                    if (activePaddlePowerUp != null) {
+                        activePaddlePowerUp.removeEffect(paddle);
+                        activePaddlePowerUp = null;
+                    }
+                    if (activeMixPowerUp != null) {
+                        activeMixPowerUp.removeEffect(paddle);
+                        activeMixPowerUp = null;
+                    }
                     // Reset bóng
                     ball.setOriginalSpeed();
-                    ball.setX(paddle.getX()+paddle.getWidth()/2 - ball.getRadius());
+                    ball.setX(paddle.getX() + paddle.getWidth() / 2 - ball.getRadius());
                     ball.setY(530);
                     ball.setDirectionX(1);
                     ball.setDirectionY(-1);
@@ -329,7 +337,7 @@ public class GameManager {
                         SoundManager.playSound(SoundManager.SOUND_EXPLOSION);
                         brick.takeDestroy();
                     } else {
-                        if(brick instanceof ExplosiveBrick) {
+                        if (brick instanceof ExplosiveBrick) {
                             SoundManager.playSound(SoundManager.SOUND_EXPLOSION);
                         } else {
                             SoundManager.playSound(SoundManager.SOUND_NORMALBRICK_HIT);
@@ -340,9 +348,9 @@ public class GameManager {
 
                     brickHit = true;
 
-                    if (brick.isDestroyed()) {
-                        break; // Dừng kiểm tra các bóng khác với brick này
-                    }
+//                    if (brick.isDestroyed()) {
+//                        break; // Dừng kiểm tra các bóng khác với brick này
+//                    }
                 }
             }
 
@@ -368,7 +376,7 @@ public class GameManager {
                     } else if (rand < 0.70) {
                         newPowerup = new ShrinkPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000);
                     } else if (rand < 0.85) {
-                        newPowerup = new StickyPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 100000, getMainBall());
+                        newPowerup = new StickyPaddlePowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20, 10000, getMainBall());
                     } else {
                         // 20% chance cho MultipleBall
                         newPowerup = new MultipleBallPowerUp("/images/slow_ball.png", brick.getX(), brick.getY(), 20, 20);
@@ -376,13 +384,18 @@ public class GameManager {
                     powerUps.add(newPowerup);
                 }
 
+            }
+        }
+        for (int i = 0; i < bricks.size(); i++) {
+            if (bricks.get(i).isDestroyed()) {
                 score++;
-                brickIterator.remove();
+                bricks.remove(i);
             }
         }
     }
 
     public void gameOver() {
+
         SoundManager.playSound(SoundManager.SOUND_GAME_OVER);
         gameState = GameState.GAME_OVER;
     }
