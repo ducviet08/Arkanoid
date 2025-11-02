@@ -5,7 +5,7 @@ package Arkanoid.model.ball;
 import Arkanoid.controller.SoundManager;
 import Arkanoid.model.paddle.Paddle;
 import Arkanoid.model.powerup.PowerUp;
-import Arkanoid.model.paddle.StickyPaddlePowerUp;
+import Arkanoid.model.powerup.StickyPaddlePowerUp;
 import Arkanoid.model.base.GameObject;
 import Arkanoid.model.base.MovableObject;
 

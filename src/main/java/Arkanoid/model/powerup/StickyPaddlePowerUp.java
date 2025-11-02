@@ -1,9 +1,7 @@
-
-
 // Arkanoid/FastBallPowerUp.java
-package Arkanoid.model.paddle;
+package Arkanoid.model.powerup;
 
-import Arkanoid.model.powerup.PowerUp;
+import Arkanoid.model.paddle.Paddle;
 import Arkanoid.model.ball.Ball;
 
 import static Arkanoid.Main.paddleImage;
@@ -28,7 +26,7 @@ public class StickyPaddlePowerUp extends PowerUp {
     @Override
     public void applyEffect(Paddle paddle) {
         System.out.println("StickyPaddle PowerUp activated!");
-        paddle.setImage("file:src/images/paddle1.png");
+        paddle.setImage("/images/paddle1.png");
         paddle.setSticky(true);
         this.currentPaddle = paddle;
     }

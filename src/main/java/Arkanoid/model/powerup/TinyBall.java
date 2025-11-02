@@ -31,10 +31,10 @@
 //    }
 //}
 // Arkanoid/TinyBall.java
-package Arkanoid.model.ball;
+package Arkanoid.model.powerup;
 
+import Arkanoid.model.ball.Ball;
 import Arkanoid.model.paddle.Paddle;
-import Arkanoid.model.powerup.PowerUp;
 
 public class TinyBall extends PowerUp {
     private static final double SPEED_MULTIPLIER = 1.8; // 1.8x tốc độ

@@ -43,10 +43,10 @@
 
 
 // Arkanoid/FastBallPowerUp.java
-package Arkanoid.model.ball;
+package Arkanoid.model.powerup;
 
+import Arkanoid.model.ball.Ball;
 import Arkanoid.model.paddle.Paddle;
-import Arkanoid.model.powerup.PowerUp;
 
 import static Arkanoid.Main.ballImage;
 

@@ -8,17 +8,22 @@ public class TeleportBrick extends Brick {
     private static final double BRICKHEIGHT = 25;
     private static final double GAP = 5;
     private List<Brick> bricks;
+    private List<Steel> steels;
 
-    public TeleportBrick(String imagePart, double x, double y, double width, double height, List<Brick> bricks) {
+    public TeleportBrick(String imagePart, double x, double y, double width, double height,
+                         List<Brick> bricks, List<Steel> steels) {
         super(imagePart, x, y, width, height, 1);
         this.teleportsLeft = 3;
         this.bricks = bricks;
+        this.steels = steels;
     }
 
-    public TeleportBrick(String imagePart, double x, double y, double width, double height, int health, List<Brick> bricks) {
+    public TeleportBrick(String imagePart, double x, double y, double width, double height,
+                         int health, List<Brick> bricks, List<Steel> steels) {
         super(imagePart, x, y, width, height, health);
         this.teleportsLeft = 3;
         this.bricks = bricks;
+        this.steels = steels;
     }
 
     @Override
@@ -33,6 +38,7 @@ public class TeleportBrick extends Brick {
         }
     }
 
+    // Dịch chuyển gạch tele sang vị trí mới
     private void teleport() {
         int attempt = 0;
 
@@ -57,6 +63,7 @@ public class TeleportBrick extends Brick {
         }
     }
 
+    // Kiểm tra có brick nào trùng với vị trí mới hay không
     private boolean isOverlapping(double newX, double newY) {
 
         for (Brick brick : bricks) {
@@ -65,6 +72,12 @@ public class TeleportBrick extends Brick {
             }
             
             if (Math.abs(newX - brick.getX()) < 0.01 && Math.abs(newY - brick.getY()) < 0.01) {
+                return true;
+            }
+        }
+
+        for (Steel steel : steels) {
+            if (Math.abs(newX - steel.getX()) < 0.01 && Math.abs(newY - steel.getY()) < 0.01) {
                 return true;
             }
         }

@@ -18,10 +18,6 @@ public abstract class Brick extends GameObject {
         return health;
     }
 
-//    public String getType() {
-//        return type;
-//    }
-
     public void takeHit() {
         health--;
         System.out.println(" Brick hit! Health: " + health);

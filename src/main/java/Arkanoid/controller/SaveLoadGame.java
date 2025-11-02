@@ -6,11 +6,11 @@ import java.util.List;
 import java.lang.String;
 
 import Arkanoid.model.ball.Ball;
-import Arkanoid.model.ball.FastBallPowerUp;
-import Arkanoid.model.ball.FireBallPowerUp;
+import Arkanoid.model.powerup.FastBallPowerUp;
+import Arkanoid.model.powerup.FireBallPowerUp;
 import Arkanoid.model.brick.*;
 import Arkanoid.model.paddle.Paddle;
-import Arkanoid.model.paddle.StickyPaddlePowerUp;
+import Arkanoid.model.powerup.StickyPaddlePowerUp;
 import Arkanoid.model.powerup.ExpandPaddlePowerUp;
 import Arkanoid.model.powerup.ExtraLifePowerUp;
 import Arkanoid.model.powerup.PowerUp;
@@ -19,7 +19,7 @@ import Arkanoid.model.powerup.ShrinkPaddlePowerUp;
 import static Arkanoid.Main.*;
 
 public class SaveLoadGame {
-    private static final String FILE_PATH = "src/main/resources/data/save.txt";
+    public static final String FILE_PATH = "src/main/resources/data/save.txt";
 
     /**
      * This method is used when player wants to save the game and play it next time.
@@ -179,28 +179,6 @@ public class SaveLoadGame {
                     case "activeMixPowerUp":
                         gameManager.setActivePowerUpByName(parts[1]);
                         break;
-
-                    case "bricks":
-                        while ((line = reader.readLine()) != null && !line.startsWith("steels")) {
-                            String[] parts2 = line.split("\\s+");
-                            if (parts2.length == 0) continue;
-                            if (parts2[0].equals("NormalBrick")) {
-                                bricks.add(new NormalBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4]))); // Giả sử 80x25
-                            } else if (parts2[0].equals("StrongBrick")) {
-                                bricks.add(new StrongBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4]))); // Giả sử 80x25
-                            } else if (parts2[0].equals("ExplosiveBrick")) {
-                                bricks.add(new ExplosiveBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4])));
-                            } else if (parts2[0].equals("GlassBrick")) {
-                                bricks.add(new GlassBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4])));
-                            } else if (parts2[0].equals("TeleportBrick")) {
-                                bricks.add(new TeleportBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25, Integer.parseInt(parts2[4]), gameManager.getBricks()));
-                            }
-                        }
-                        gameManager.setBricks(bricks);
-                        if (line != null) parts = line.split("\\s+");
-                        else continue;
-                        key = parts[0];
-                        break;
                     case "steels":
                         while ((line = reader.readLine()) != null && !line.startsWith("powerUps")) {
                             String[] parts2 = line.split("\\s+");
@@ -208,6 +186,32 @@ public class SaveLoadGame {
                             steels.add(new Steel(parts2[0], Double.parseDouble(parts2[1]), Double.parseDouble(parts2[2]), 80, 25)); // Giả sử 80x25
                         }
                         gameManager.setSteels(steels);
+                        if (line != null) parts = line.split("\\s+");
+                        else continue;
+                        key = parts[0];
+                        break;
+                    case "bricks":
+                        while ((line = reader.readLine()) != null && !line.startsWith("steels")) {
+                            String[] parts2 = line.split("\\s+");
+                            if (parts2.length == 0) continue;
+                            if (parts2[0].equals("NormalBrick")) {
+                                bricks.add(new NormalBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25,
+                                                    Integer.parseInt(parts2[4]))); // kích thước của brick là 80x25
+                            } else if (parts2[0].equals("StrongBrick")) {
+                                bricks.add(new StrongBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25,
+                                                    Integer.parseInt(parts2[4])));
+                            } else if (parts2[0].equals("ExplosiveBrick")) {
+                                bricks.add(new ExplosiveBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25,
+                                                    Integer.parseInt(parts2[4])));
+                            } else if (parts2[0].equals("GlassBrick")) {
+                                bricks.add(new GlassBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25,
+                                                    Integer.parseInt(parts2[4])));
+                            } else if (parts2[0].equals("TeleportBrick")) {
+                                bricks.add(new TeleportBrick(parts2[1], Double.parseDouble(parts2[2]), Double.parseDouble(parts2[3]), 80, 25,
+                                                    Integer.parseInt(parts2[4]), bricks, steels));
+                            }
+                        }
+                        gameManager.setBricks(bricks);
                         if (line != null) parts = line.split("\\s+");
                         else continue;
                         key = parts[0];

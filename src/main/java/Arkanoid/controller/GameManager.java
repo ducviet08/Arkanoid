@@ -2,11 +2,11 @@
 package Arkanoid.controller;
 
 import Arkanoid.model.ball.Ball;
-import Arkanoid.model.ball.FastBallPowerUp;
-import Arkanoid.model.ball.FireBallPowerUp;
+import Arkanoid.model.powerup.FastBallPowerUp;
+import Arkanoid.model.powerup.FireBallPowerUp;
 import Arkanoid.model.brick.*;
 import Arkanoid.model.paddle.Paddle;
-import Arkanoid.model.paddle.StickyPaddlePowerUp;
+import Arkanoid.model.powerup.StickyPaddlePowerUp;
 import Arkanoid.model.powerup.ExpandPaddlePowerUp;
 import Arkanoid.model.powerup.ExtraLifePowerUp;
 import Arkanoid.model.powerup.PowerUp;
@@ -58,7 +58,6 @@ public class GameManager {
         this.renderer = renderer;
     }
 
-
     public void initializeGame() {
         paddle = new Paddle("/images/paddle2.png", 350, 550);
         ball = new Ball("/images/ball1.png", 395, 530, 1, -1);
@@ -76,6 +75,7 @@ public class GameManager {
         activeMixPowerUp = null;
     }
 
+    // Load map khi vào chọn new game hoặc là khi chuyển map
     public void loadLevel(String filename) {
         bricks.clear();
         steels.clear();
@@ -108,7 +108,7 @@ public class GameManager {
                     } else if (c == '4') {
                         bricks.add(new GlassBrick("/images/brick7.png", x, y, brickWidth, brickHeight));
                     } else if (c == '5') {
-                        bricks.add(new TeleportBrick("/images/brick9.png", x, y, brickWidth, brickHeight, bricks));
+                        bricks.add(new TeleportBrick("/images/brick9.png", x, y, brickWidth, brickHeight, bricks, steels));
                     } else if (c == '9') {
                         steels.add((new Steel("/images/steel.png", x, y, brickWidth, brickHeight)));
                     }

@@ -24,6 +24,7 @@ public class ExplosiveBrick extends Brick {
         return explosionDamage;
     }
 
+    // Tìm kiếm và giảm máu của các brick xung quang, bao gồm cả 4 góc và 4 hướng
     public void explode(List<Brick> bricks, Brick explosiveBrick) {
         for (Brick brick : bricks) {
             if (brick == explosiveBrick || brick.isDestroyed()) {
