@@ -132,7 +132,7 @@ public class EndScreen {
 
     // 🔹 Tạo Scene
     public Scene getScene(Stage stage, int width, int height, boolean win, int score, GameManager.GameMode mode) {
-        Image bgImage = new Image(getClass().getResourceAsStream("/images/background.jpg"));
+        Image bgImage = new Image(getClass().getResourceAsStream("images/background.png"));
         BackgroundImage backgroundImage = new BackgroundImage(
                 bgImage,
                 BackgroundRepeat.NO_REPEAT,

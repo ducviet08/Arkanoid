@@ -72,6 +72,7 @@ public class GameManager {
         activeMixPowerUp = null;
     }
 
+    // Tải map từ file txt
     public void loadLevel(String filename) {
         bricks.clear();
         steels.clear();
@@ -227,6 +228,7 @@ public class GameManager {
         }
     }
 
+    // Nhấn nút Enter để kích hoạt bóng khi bóng bị dính ở thanh đỡ
     public void handleInput(int keyCodeOrdinal) {
         if (keyCodeOrdinal == KeyCode.ENTER.ordinal()) {
             // ===== NẾM TẤT CẢ BÓNG ĐANG DÍNH =====
@@ -249,6 +251,7 @@ public class GameManager {
         // Không cần dùng pressedKeys ở đây nữa
     }
 
+    // Kiểm tra va chạm của bóng, thanh đỡ, tường gạch
     private void checkCollisions() {
         // ===== XÓA CÁC BÓNG RƠI XUỐNG ĐÁY =====
         Iterator<Ball> ballIterator = balls.iterator();
@@ -376,8 +379,15 @@ public class GameManager {
                     powerUps.add(newPowerup);
                 }
 
+                // score++;
+                // brickIterator.remove();
+            }
+        }
+
+        for (int i = 0; i < bricks.size(); i++) {
+            if (bricks.get(i).isDestroyed()) {
                 score++;
-                brickIterator.remove();
+                bricks.remove(i);
             }
         }
     }
@@ -512,6 +522,7 @@ public class GameManager {
         this.activeMixPowerUp = activeMixPowerUp;
     }
 
+    // Hàm này dùng trong tải game khi bấm continue, áp dụng power up đang còn hiệu lực khi thoát hoặc pause
     public void setActivePowerUpByName(String className) {
         if (className == null || className.equals("null")) {
             return;

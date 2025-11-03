@@ -128,7 +128,7 @@ public class TestGame {
     @Test
     public void testBallPaddleCollision() {
         ball.setX(paddle.getX() + 35);
-        ball.setY(paddle.getY() + ball.getHeight());
+        ball.setY(paddle.getY() - ball.getHeight() + 0.01);
 
         assertTrue(ball.checkCollision(paddle), "Ball should collide with paddle");
     }
@@ -142,10 +142,20 @@ public class TestGame {
     }
 
     @Test
+    public void testBallBallCollision() {
+        Ball newBall = new Ball("/images/ball2.png", 100, 100, 1, -1);
+
+        ball.setY(86);
+        ball.setX(100);
+
+        assertTrue(ball.checkCollision(newBall), "Ball should collide with other ball");
+    }
+
+    @Test
     public void testBallBrickCollision() {
         NormalBrick brick = new NormalBrick("/images/brick1.png", 100, 100, 80, 25);
         ball.setX(brick.getX() + 30);
-        ball.setY(brick.getY() + ball.getHeight());
+        ball.setY(brick.getY() - ball.getHeight() + 0.01);
 
         assertTrue(ball.checkCollision(brick), "Ball should collide with brick");
     }
@@ -172,10 +182,13 @@ public class TestGame {
         assertFalse(brick.isDestroyed());
 
         brick.takeHit();
-        assertFalse(brick.isDestroyed(), "Strong brick should not break after 1 hit");
+        assertFalse(brick.isDestroyed(), "Strong brick should not break after 2 hit");
 
         brick.takeHit();
-        assertTrue(brick.isDestroyed(), "Strong brick should break after 2 hits");
+        assertFalse(brick.isDestroyed(), "Strong brick should not break after 2 hits");
+
+        brick.takeHit();
+        assertTrue(brick.isDestroyed(), "Strong brick should break after 3 hits");
     }
 
     @Test
@@ -196,9 +209,12 @@ public class TestGame {
 
     @Test
     public void testBrickTakeDestroy() {
-        NormalBrick brick = new NormalBrick("/images/brick1.png", 50, 50, 80, 25);
-        brick.takeDestroy();
-        assertTrue(brick.isDestroyed(), "Brick should be destroyed immediately");
+        NormalBrick brick1 = new NormalBrick("/images/brick1.png", 50, 50, 80, 25);
+        StrongBrick brick2 = new StrongBrick("/images/brick1.png", 50, 50, 80, 25);
+        brick1.takeDestroy();
+        brick2.takeDestroy();
+        assertTrue(brick1.isDestroyed(), "Brick should be destroyed immediately");
+        assertTrue(brick2.isDestroyed(), "Brick should be destroyed immediately");
     }
 
     // ========== STEEL TESTS ==========

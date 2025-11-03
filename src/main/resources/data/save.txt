@@ -1,0 +1,35 @@
+level 1
+paddle /images/paddle3.png 280.0
+balls
+/images/ball3.png 636.4221906630291 40.5805351629408 -0.9693372985057312 -0.2457340060423281 true
+/images/ball3.png 782.8696484266501 253.97503753710464 0.8328013852765705 -0.553571903804217 true
+score 37
+lives 3
+lastBallPowerUpTime 1762090919071
+activeBallPowerUp null
+lastPaddlePowerUpTime 119278
+activePaddlePowerUp null
+lastMixPowerUpTime 27721
+activeMixPowerUp StickyPaddlePowerUp
+bricks
+StrongBrick /images/brick10-1.png 62.5 80.0 1
+
+StrongBrick /images/brick10.png 232.5 140.0 2
+StrongBrick /images/brick10.png 147.5 170.0 2
+GlassBrick /images/brick7-1.png 232.5 170.0 1
+StrongBrick /images/brick10.png 232.5 200.0 2
+GlassBrick /images/brick7-1.png 317.5 200.0 1
+StrongBrick /images/brick10.png 402.5 200.0 2
+NormalBrick /images/brick1.png 572.5 200.0 0
+StrongBrick /images/brick10.png 317.5 230.0 2
+GlassBrick /images/brick7-1.png 402.5 230.0 1
+StrongBrick /images/brick10-1.png 487.5 230.0 1
+steels
+/images/steel.png 62.5 50.0
+/images/steel.png 402.5 80.0
+/images/steel.png 232.5 110.0
+/images/steel.png 572.5 140.0
+/images/steel.png 402.5 170.0
+/images/steel.png 147.5 200.0
+/images/steel.png 572.5 230.0
+powerUps

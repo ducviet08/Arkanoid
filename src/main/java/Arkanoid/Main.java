@@ -222,7 +222,7 @@ public class Main extends Application {
             public void handle(long now) {
                 if (isPaused) return;
 
-                System.out.println(gameManagerP1.getMainBall().getSpeed());
+                // System.out.println(gameManagerP1.getMainBall().getSpeed());
                 // --- 1. Xử lý Input (liên tục) ---
                 // P1: Dùng phím Mũi tên
                 if (activeKeys.contains(KeyCode.LEFT)) gameManagerP1.getPaddle().moveLeft();

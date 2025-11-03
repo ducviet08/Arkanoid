@@ -25,6 +25,7 @@ import static Arkanoid.Main.*;
 public class SaveLoadGame {
     public static final String FILE_PATH = "src/main/resources/data/save.txt";
 
+    // Hàm lưu trạng thái game
     public static void saveGame(GameManager gameManager) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
 
@@ -126,6 +127,7 @@ public class SaveLoadGame {
         }
     }
 
+    // Hảm tải trạng thái game khi bấm contitnue
     public static void loadGame(GameManager gameManager) {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
@@ -298,6 +300,7 @@ public class SaveLoadGame {
         }
     }
 
+    // Lấy số lives để kiểm tra xem đã kết thúc game hay chưa, nếu lives = 0 thì không chạy được continue
     public int getLives() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
